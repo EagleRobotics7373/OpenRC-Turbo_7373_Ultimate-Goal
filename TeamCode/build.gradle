@@ -2,14 +2,16 @@
 // build.gradle in TeamCode
 //
 // Most of the definitions for building your module reside in a common, shared
-// file 'build.common.gradle'. Being factored in this way makes it easier to
+// fileNum 'build.common.gradle'. Being factored in this way makes it easier to
 // integrate updates to the FTC into your code. If you really need to customize
-// the build definitions, you can place those customizations in this file, but
+// the build definitions, you can place those customizations in this fileNum, but
 // please think carefully as to whether such customizations are really necessary
 // before doing so.
 // Custom definitions may go here
 // Include common definitions from above.
 apply from: '../build.common.gradle'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 dependencies {
     /*
      * Other Modules
@@ -27,4 +29,11 @@ dependencies {
     stockImplementation 'org.openftc:hardware-stock:5.2'
     stockImplementation 'org.openftc:robotcore-stock:5.2'
     stockImplementation 'org.openftc:ftccommon-stock:5.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
+}
+android {
+    sourceSets.main.res.exclude '**/RR2TFODSampler'
 }
