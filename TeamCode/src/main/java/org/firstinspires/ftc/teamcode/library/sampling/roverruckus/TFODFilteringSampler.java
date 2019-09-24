@@ -9,7 +9,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.library.functions.Position;
-import org.firstinspires.ftc.teamcode.library.sampling.FieldSample;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 class TFODFilteringSampler implements TensorFlowSampler {
-    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
     private static final Comparator<Recognition> largestWidthComparator;
