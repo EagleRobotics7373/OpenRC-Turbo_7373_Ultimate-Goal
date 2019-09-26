@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.hardware.*
 
 class FieldRobot(val hardwareMap: HardwareMap) {
     // Drivetrain (DcMotor) Variables
-     @JvmField val frontLeftMotor          : DcMotor               = hwInit("frontLeftMotor")
-     @JvmField val backLeftMotor           : DcMotor               = hwInit("backLeftMotor")
-     @JvmField val frontRightMotor         : DcMotor               = hwInit("frontRightMotor")
-     @JvmField val backRightMotor          : DcMotor               = hwInit("backRightMotor")
+//     @JvmField val frontLeftMotor          : DcMotor               = hwInit("frontLeftMotor")
+//     @JvmField val backLeftMotor           : DcMotor               = hwInit("backLeftMotor")
+//     @JvmField val frontRightMotor         : DcMotor               = hwInit("frontRightMotor")
+//     @JvmField val backRightMotor          : DcMotor               = hwInit("backRightMotor")
 
     // Servo Variables
-     @JvmField val teamMarkerServo         : Servo                 = hwInit("teamMarkerServo")
+//     @JvmField val teamMarkerServo         : Servo                 = hwInit("teamMarkerServo")
 
 
     // IMU Variables
