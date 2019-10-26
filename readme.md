@@ -25,6 +25,8 @@ For the curious: the cause of the incompatibility is the result of a bug in the 
      - Competition legal
 
  - **Turbo - 10MB APK** *(4x smaller!)*
+
+     *Note: If you would like to use Blocks, you will need to copy your private Vuforia key into the `Blocks/src/main/assets/CzechWolf` file*
      - Vuforia native library loaded dynamically
      - Vuforia/TF datasets loaded dynamically
      - OnBotJava removed
@@ -107,6 +109,18 @@ tfod.loadModelFromFile("/sdcard/FIRST/DatasetName.tflite");
 
 
 ## Release Notes:
+
+### 5.3A
+
+Released on 19 October 2019
+
+ - Update to SDK v5.3
+
+### 5.2B
+
+Released on 19 September 2019
+
+ - Remove universal Blocks Vuforia key per request of FIRST. If you would like to use Blocks, you will need to copy your private Vuforia key into the `Blocks/src/main/assets/CzechWolf` file.
 
 ### 5.2A
 
