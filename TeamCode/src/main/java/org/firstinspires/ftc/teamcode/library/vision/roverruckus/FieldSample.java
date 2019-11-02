@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.library.sampling.roverruckus;
+package org.firstinspires.ftc.teamcode.library.vision.roverruckus;
 
 public enum FieldSample {
     NULL, SILVER, GOLD;

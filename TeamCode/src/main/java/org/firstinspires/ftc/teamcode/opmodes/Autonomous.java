@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -58,204 +61,226 @@ public class Autonomous extends LinearOpMode {
             ExtDirMusicPlayer player = new ExtDirMusicPlayer(menuController.getMusicFile(), true);
             player.play();
 
-
+            PIDFCoefficients pidf = ((DcMotorEx)robot.frontLeftMotor).getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+            telemetry.addData("p", pidf.p);
+            telemetry.addData("i", pidf.i);
+            telemetry.addData("d", pidf.d);
+            telemetry.addData("f", pidf.f);
+            telemetry.update();
+            sleep(5000);
         /*
                 Robot Actions
          */
 
 
-            if (menuController.getStartingPosition()== FieldSide.WAFFLE_SIDE) {
-                if (menuController.getAllianceColor()== AllianceColor.RED) {
-                    // Drive forward to clear the wall
-    //                drive(0, 5, 0.7);
-    //                sleep(500);
-    //                // Rotate 180 degrees using IMU PI controller
-    //                imuPIRotate(180);
+            if (menuController.getParkOnly()) {
+                sleep(menuController.getDelayBeforeParking()*1000);
+                if (!isStopRequested()) {
+                    if (menuController.getStartingPosition()==FieldSide.WAFFLE_SIDE) {
+                        if (menuController.getAllianceColor()==AllianceColor.RED)   drive(36, 0, 0.5);
+                        else                                                        drive(-36, 0, 0.5);
+                    }
 
-                    // Find distance away from the wall
-                    double distWall = 42 - robot.distanceSensor_side.getDistance(DistanceUnit.INCH);
+                    if (menuController.getStartingPosition()==FieldSide.LOADING_ZONE) {
+                        if (menuController.getAllianceColor()==AllianceColor.RED) drive(0, -20, 0.5);
+                        else                                                        drive(0, 20, 0.5);
+                    }
+                }
 
-                    // Drive to the foundation
-                    drive(0, -29, 0.2);
-                    sleep(250);
+            }
+            else{
+                if (menuController.getStartingPosition()== FieldSide.WAFFLE_SIDE) {
+                    if (menuController.getAllianceColor()== AllianceColor.RED) {
+                        // Drive forward to clear the wall
+        //                drive(0, 5, 0.7);
+        //                sleep(500);
+        //                // Rotate 180 degrees using IMU PI controller
+        //                imuPIRotate(180);
 
-                    // Deploy the foundation grabber, grabbing the foundation
-                    robot.foundationGrabbers.lock();
-                    sleep(2000);
+                        // Find distance away from the wall
+                        double distWall = 42 - robot.distanceSensor_side.getDistance(DistanceUnit.INCH);
 
-                    // Drive back to the wall
-                    drive(0, 32, 0.7);
+                        // Drive to the foundation
+                        drive(0, -29, 0.2);
+                        sleep(250);
 
-                    // Release the foundation grabbers
-                    robot.foundationGrabbers.unlock();
-                    sleep(500);
+                        // Deploy the foundation grabber, grabbing the foundation
+                        robot.foundationGrabbers.lock();
+                        sleep(2000);
 
-                    // Drive forward to get clearance from the foundation
-                    drive(0, 2, 0.7);
-
-                    // Drive toward the alliance bridge to start moving around the foundation
-                    drive(distWall, 0, 0.7);
-                    // Drive parallel to the bridges to move to the other side of the foundation
-                    drive(0, -18, 0.7);
-                    drive(-20, 0, 0.7);
-
-                    // Park under the bridge
-                    drive(23, 0, 0.2);
-                    if (menuController.getParkNearDS()) timeDrive(0,0.8, 0, 1000);
-                    else timeDrive(0, -0.5, 0, 500);
-                } else { // Blue side waffle
-                    // Drive forward to clear the wall
-    //                drive(0, 5, 0.4);
-    //                sleep(500);
-                    // Find distance away from the wall
-    //                double distWall = 44 - robot.distanceSensor_side.getDistance(DistanceUnit.INCH);
-
-                    // Drive to the foundation
-                    drive(0, -29, 0.2);
-                    sleep(250);
-
-                    // Deploy the foundation grabber, grabbing the foundation
-                    robot.foundationGrabbers.lock();
-                    sleep(2000);
-
-                    // Drive back to the wall
-                    drive(0, 36, 0.2);
-
-                    // Release the foundation grabbers
-                    robot.foundationGrabbers.unlock();
-                    sleep(500);
-
-                    // Drive toward the alliance bridge to start moving around the foundation
-                    drive(-32, 0, 0.7);
-                    // Drive parallel to the bridges to move to the other side of the foundation
-                    drive(0, -15.5, 0.7);
-                    //push foundation
-                    drive(20, 0, 0.5);
-                    sleep(1000);
-                    // drive back
-                    drive(-26, 0, 0.7);
-                    if(menuController.getParkNearDS()) drive(0, 24,0.2);
-                    else {
-                        timeDrive(0, -0.4, 0, 500);
+                        // Drive back to the wall
+    //                    drive(0, 32, 0.7);
+                        timeDrive(0, 1, 0, 2000);
+                        // Release the foundation grabbers
+                        robot.foundationGrabbers.unlock();
                         sleep(500);
-                        robot.holonomic.stop();
+
+                        // Drive toward the alliance bridge to start moving around the foundation
+                        drive(30, 0, 0.7);
+                        // Drive parallel to the bridges to move to the other side of the foundation
+                        drive(0, -18, 0.7);
+                        drive(-20, 0, 0.7);
+
+                        // Park under the bridge
+                        drive(23, 0, 0.2);
+                        if (menuController.getParkNearDS()) timeDrive(0,0.8, 0, 1000);
+                        else timeDrive(0, -0.5, 0, 500);
+                    } else { // Blue side waffle
+                        // Drive forward to clear the wall
+        //                drive(0, 5, 0.4);
+        //                sleep(500);
+                        // Find distance away from the wall
+        //                double distWall = 44 - robot.distanceSensor_side.getDistance(DistanceUnit.INCH);
+
+                        // Drive to the foundation
+                        drive(0, -29, 0.2);
+                        sleep(250);
+
+                        // Deploy the foundation grabber, grabbing the foundation
+                        robot.foundationGrabbers.lock();
+                        sleep(2000);
+
+                        // Drive back to the wall
+//                        drive(0, 36, 0.2);
+                        timeDrive(0, 1, 0, 2000);
+
+                        // Release the foundation grabbers
+                        robot.foundationGrabbers.unlock();
+                        sleep(500);
+
+                        // Drive toward the alliance bridge to start moving around the foundation
+                        drive(-32, 0, 0.7);
+                        // Drive parallel to the bridges to move to the other side of the foundation
+                        drive(0, -15.5, 0.7);
+                        //push foundation
+                        drive(20, 0, 0.5);
+                        sleep(1000);
+                        // drive back
+                        drive(-26, 0, 0.7);
+                        if(menuController.getParkNearDS()) drive(0, 24,0.2);
+                        else {
+                            timeDrive(0, -0.4, 0, 500);
+                            sleep(500);
+                            robot.holonomic.stop();
+                        }
                     }
                 }
-            } else { // FIELD POSITION IS LOADING ZONE!!!
-                VuforiaLocalizer vuforia = VisionInitializer.createVuforia(VisionInitializer.CameraType.PHONE_REAR, hardwareMap);
-                VuforiaController vuforiaController = new VuforiaController(vuforia, telemetry);
-                vuforiaController.activate();
+                else { // FIELD POSITION IS LOADING ZONE!!!
+                    VuforiaLocalizer vuforia = VisionInitializer.createVuforia(VisionInitializer.CameraType.PHONE_REAR, hardwareMap);
+                    VuforiaController vuforiaController = new VuforiaController(vuforia, telemetry);
+                    vuforiaController.activate();
 
-                // Drive closer to the stone to see it more reliably
-                drive(15, 0, .2);
-                sleep(1000);
-                Point3D vuforiaTargetPoint = vuforiaController.analyzeVuforiaResult();
-                for (int i = 0; i < 5 & vuforiaTargetPoint==null; i++) {
-                    vuforiaTargetPoint = vuforiaController.analyzeVuforiaResult();
-                    sleep(500);
-                }
-
-                Position skystonePosition = Position.RIGHT;
-
-                if (vuforiaTargetPoint != null) {
-                    telemetry.addData("Skystone y", vuforiaTargetPoint.y);
-                    if (vuforiaTargetPoint.y < 1.0) skystonePosition = Position.LEFT;
-                    else skystonePosition = Position.CENTER;
-                }
-
-                telemetry.addData("Skystone position", skystonePosition);
-                telemetry.update();
-                double driveToSkystoneDist;
-                if (menuController.getAllianceColor()==AllianceColor.RED) {
-                    switch (skystonePosition) {
-                        case CENTER:
-                            driveToSkystoneDist = 2.0;
-                            break;
-                        case RIGHT:
-                            driveToSkystoneDist = -7.0;
-                            break;
-                        default:
-                            driveToSkystoneDist = 10.5;
-                            break;
+                    // Drive closer to the stone to see it more reliably
+                    drive(15, 0, .2);
+                    sleep(1000);
+                    Point3D vuforiaTargetPoint = vuforiaController.analyzeVuforiaResult();
+                    for (int i = 0; i < 5 & vuforiaTargetPoint==null; i++) {
+                        vuforiaTargetPoint = vuforiaController.analyzeVuforiaResult();
+                        sleep(500);
                     }
-                } else {
-                    switch (skystonePosition) {
-                        case CENTER:
-                            driveToSkystoneDist = 2.75;
-                            break;
-                        case RIGHT:
-                            driveToSkystoneDist = -6.0;
-                            break;
-                        default:
-                            driveToSkystoneDist = 10.5;
-                            break;
+
+                    Position skystonePosition = Position.RIGHT;
+
+                    if (vuforiaTargetPoint != null) {
+                        telemetry.addData("Skystone y", vuforiaTargetPoint.y);
+                        if (vuforiaTargetPoint.y < 1.0) skystonePosition = Position.LEFT;
+                        else skystonePosition = Position.CENTER;
                     }
-                }
 
-                // Drive forwards or back to align with
-                drive(0, driveToSkystoneDist, 0.2);
-                sleep(2000);
-                // Rotate to face Skystone
-                imuPIRotate(-88.0);
-
-                // PI controller for lifting arm
-                doArmLift();
-
-                /*
-
-                IMPORTANT!!! (AKA REALLY IMPORTANT!!!)
-                Check location of these blocks in case below y value needs to be increased/decreased!!!
-
-                 */
-                double targetValue = 18.7;
-                double currentValue;
-                double P = 0.03;
-
-                while (!MathExtensionsKt.withinRange(currentValue = robot.distanceSensor_front.getDistance(DistanceUnit.CM), targetValue, 0.3)) {
-                    robot.holonomic.runWithoutEncoder(0,MathExtensionsKt.upperLimit(P * (currentValue-targetValue), 0.5),0);
-                    telemetry.addData("Target", targetValue);
-                    telemetry.addData("Current", currentValue);
+                    telemetry.addData("Skystone position", skystonePosition);
                     telemetry.update();
-                }
-
-//                drive(0, 16, 0.2);
-                sleep(750);
-                robot.intakeBlockManipulator.setPower(1);
-
-                robot.intakePivotMotor.setPower(0.0);
-                robot.holonomic.runWithoutEncoder(0,-0.12,0);
-                sleep(500);
-                robot.holonomic.stop();
-                sleep(1500);
-
-                doArmLift();
-
-                drive(0, -6, 0.4);
-
-                double intoBuildingZoneDist = 0.0;
-                if (menuController.getAllianceColor() == AllianceColor.RED) {
-                    switch (skystonePosition) {
-                        case LEFT: intoBuildingZoneDist+=8;
-                        case CENTER: intoBuildingZoneDist+=8;
-                        case RIGHT: intoBuildingZoneDist+=40;
+                    double driveToSkystoneDist;
+                    if (menuController.getAllianceColor()==AllianceColor.RED) {
+                        switch (skystonePosition) {
+                            case CENTER:
+                                driveToSkystoneDist = 2.0;
+                                break;
+                            case RIGHT:
+                                driveToSkystoneDist = -7.0;
+                                break;
+                            default:
+                                driveToSkystoneDist = 10.5;
+                                break;
+                        }
+                    } else {
+                        switch (skystonePosition) {
+                            case CENTER:
+                                driveToSkystoneDist = 2.75;
+                                break;
+                            case RIGHT:
+                                driveToSkystoneDist = -6.0;
+                                break;
+                            default:
+                                driveToSkystoneDist = 10.5;
+                                break;
+                        }
                     }
-                } else {
-                    switch (skystonePosition) {
-                        case RIGHT: intoBuildingZoneDist-=8;
-                        case CENTER: intoBuildingZoneDist-=8;
-                        case LEFT: intoBuildingZoneDist-=40;
 
+                    // Drive forwards or back to align with
+                    drive(0, driveToSkystoneDist, 0.2);
+                    sleep(2000);
+                    // Rotate to face Skystone
+                    imuPIRotate(-88.0);
+
+                    // PI controller for lifting arm
+                    doArmLift();
+
+                    /*
+
+                    IMPORTANT!!! (AKA REALLY IMPORTANT!!!)
+                    Check location of these blocks in case below y value needs to be increased/decreased!!!
+
+                     */
+                    double targetValue = 18.7;
+                    double currentValue;
+                    double P = 0.03;
+
+                    while (!MathExtensionsKt.withinRange(currentValue = robot.distanceSensor_front.getDistance(DistanceUnit.CM), targetValue, 0.3)) {
+                        robot.holonomic.runWithoutEncoder(0,MathExtensionsKt.upperLimit(P * (currentValue-targetValue), 0.5),0);
+                        telemetry.addData("Target", targetValue);
+                        telemetry.addData("Current", currentValue);
+                        telemetry.update();
                     }
+
+    //                drive(0, 16, 0.2);
+                    sleep(750);
+                    robot.intakeBlockManipulator.setPower(1);
+
+                    robot.intakePivotMotor.setPower(0.0);
+                    robot.holonomic.runWithoutEncoder(0,-0.12,0);
+                    sleep(500);
+                    robot.holonomic.stop();
+                    sleep(1500);
+
+                    doArmLift();
+
+                    drive(0, -6, 0.4);
+
+                    double intoBuildingZoneDist = 0.0;
+                    if (menuController.getAllianceColor() == AllianceColor.RED) {
+                        switch (skystonePosition) {
+                            case LEFT: intoBuildingZoneDist+=8;
+                            case CENTER: intoBuildingZoneDist+=8;
+                            case RIGHT: intoBuildingZoneDist+=40;
+                        }
+                    } else {
+                        switch (skystonePosition) {
+                            case RIGHT: intoBuildingZoneDist-=8;
+                            case CENTER: intoBuildingZoneDist-=8;
+                            case LEFT: intoBuildingZoneDist-=40;
+
+                        }
+                    }
+                    drive(intoBuildingZoneDist, 0, 0.3);
+
+                    robot.intakeBlockManipulator.setPower(-1.0);
+
+                    if (menuController.getAllianceColor() == AllianceColor.RED) drive(-20,0,0.2);
+                    else drive(20, 0, 0.2);
+
+                    if (menuController.getParkNearDS()) timeDrive(0, -0.7, 0, 750);
+                    else                                timeDrive(0, 0.4, 0, 750);
                 }
-                drive(intoBuildingZoneDist, 0, 0.3);
-
-                robot.intakeBlockManipulator.setPower(-1.0);
-
-                if (menuController.getAllianceColor() == AllianceColor.RED) drive(-20,0,0.2);
-                else drive(20, 0, 0.2);
-
-                if (menuController.getParkNearDS()) timeDrive(0, -0.7, 0, 750);
-                else                                timeDrive(0, 0.4, 0, 750);
             }
 
 

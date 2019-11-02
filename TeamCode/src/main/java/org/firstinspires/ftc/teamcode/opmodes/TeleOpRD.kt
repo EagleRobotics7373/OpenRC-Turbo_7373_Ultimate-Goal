@@ -17,7 +17,7 @@ open class TeleOpRD : OpMode() {
     var elapsedTime : ElapsedTime? = null
     var last = 0.0
     var current = 0.0
-
+    var reverse = false
     override fun init() {
         robot = BasicRobot(hardwareMap)
     }
@@ -42,7 +42,9 @@ open class TeleOpRD : OpMode() {
 
 
 //        robot.holonomic.runWithoutEncoderVectored(x, y, z, 0.0)
-        robot.holonomic.runWithoutEncoder(x, y, z)
+        robot.holonomic.runWithoutEncoder(if (reverse)-x else x, if (reverse) -y else y, z)
+        if (gamepad1.a) reverse = false
+        else if (gamepad1.b) reverse = true
     }
 
     private fun controlFoundationGrabbers() {

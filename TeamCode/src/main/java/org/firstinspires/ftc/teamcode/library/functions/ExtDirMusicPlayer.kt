@@ -52,6 +52,7 @@ enum class ExtMusicFile(@JvmField val fileName: String, @JvmField val beginSeekT
     CRABRAVE("crabrave.mp3", 59500),
     BRADTHECHEMIST("bradthechemist.mp3"),
     PACMAN("pacman.mp3"),
+    PIZZATIME("pizzatime.mp3"),
     MEGALOVANIA("megalovania.mp3", 16000),
     TETRIS("tetris.mp3"),
     NONE("none")

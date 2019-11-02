@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.library.sampling.roverruckus;
+package org.firstinspires.ftc.teamcode.library.vision.roverruckus;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 

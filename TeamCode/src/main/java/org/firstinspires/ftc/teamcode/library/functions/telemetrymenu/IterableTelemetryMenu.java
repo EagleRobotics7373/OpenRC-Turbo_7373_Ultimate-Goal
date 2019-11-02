@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IterableTelemetryMenu {
-    private List<org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItem> allMenuItems;
-    private org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItem currentItem;
+    private List<MenuItem> allMenuItems;
+    private MenuItem currentItem;
     private int position;
     private Telemetry telemetry;
 
@@ -38,7 +38,7 @@ public class IterableTelemetryMenu {
     }
 
     public boolean removeMenuItem(String key) {
-        for (org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItem menuItem : allMenuItems) {
+        for (MenuItem menuItem : allMenuItems) {
             if (menuItem.getKey().equals(key)) {
                 allMenuItems.remove(menuItem);
                 if (allMenuItems.isEmpty()) position = -1;
@@ -63,7 +63,7 @@ public class IterableTelemetryMenu {
     }*/
 
     private boolean keyAlreadyExists(String keyToCheck) {
-        for (org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItem menuItem : allMenuItems) {
+        for (MenuItem menuItem : allMenuItems) {
             if (menuItem.getKey().equals(keyToCheck)) return true;
         }
         return false;

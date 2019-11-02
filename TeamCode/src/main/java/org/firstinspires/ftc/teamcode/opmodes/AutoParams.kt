@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItemBo
 
 
 import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItemEnum
-import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItemInteger
 
 class AutoMenuControllerIterative(telemetry: Telemetry) {
     @JvmField val menu = IterableTelemetryMenu(telemetry)
@@ -17,10 +17,12 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
     private val i_startingPosition = MenuItemEnum("sp", "Position", FieldSide.LOADING_ZONE, FieldSide.WAFFLE_SIDE)
     private val i_allianceColor = MenuItemEnum("alliance", "Alliance", AllianceColor.RED, AllianceColor.BLUE)
     private val i_parkNearDS = MenuItemBoolean("parkneards", "Park closer to DS", false);
-    private val i_musicFile = MenuItemEnum("music", "Music", ExtMusicFile.NONE, ExtMusicFile.UNITY, ExtMusicFile.MEGALOUNITY, ExtMusicFile.CRABRAVE, ExtMusicFile.BRADTHECHEMIST, ExtMusicFile.TETRIS, ExtMusicFile.MEGALOVANIA, ExtMusicFile.PACMAN)
+    private val i_musicFile = MenuItemEnum("music", "Music", ExtMusicFile.NONE, ExtMusicFile.UNITY, ExtMusicFile.MEGALOUNITY, ExtMusicFile.CRABRAVE, ExtMusicFile.BRADTHECHEMIST, ExtMusicFile.TETRIS, ExtMusicFile.MEGALOVANIA, ExtMusicFile.PACMAN, ExtMusicFile.PIZZATIME)
+    private val i_parkOnly = MenuItemBoolean("parkonly", "Park ONLY", false)
+    private val i_delayBeforeParking = MenuItemInteger("delay", "Delay Before Parking", 0, 0, 20)
 
     init {
-        menu.add(i_musicFile, i_startingPosition, i_parkNearDS, i_allianceColor)
+        menu.add(i_musicFile, i_startingPosition, i_parkNearDS, i_allianceColor, i_parkOnly, i_delayBeforeParking)
     }
     val musicFile: ExtMusicFile
         get() = i_musicFile.value
@@ -30,6 +32,11 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
         get() = i_allianceColor.value
     val parkNearDS : Boolean
         get() = i_parkNearDS.value
+    val parkOnly : Boolean
+        get() = i_parkOnly.value
+    val delayBeforeParking : Int
+        get() = i_delayBeforeParking.value
+
 }
 //
 //class AutoMenuControllerReflectiveIterative(telemetry: Telemetry) {

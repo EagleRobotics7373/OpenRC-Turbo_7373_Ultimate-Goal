@@ -51,12 +51,12 @@ public class Holonomic extends Drivetrain {
         ((DcMotorEx)backLeftMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
         ((DcMotorEx)frontRightMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
         ((DcMotorEx)backRightMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
-        //        if (chassis == Chassis.SSGOBILDA) {
-//            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//            frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//            backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//            backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        }
+        if (chassis == Chassis.SSGOBILDA) {
+            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
     }
 
     /**
