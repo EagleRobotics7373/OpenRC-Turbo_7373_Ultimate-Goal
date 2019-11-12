@@ -14,7 +14,8 @@ public class Holonomic extends Drivetrain {
 
     private static final double WHEEL_DIAMETER = 4;
     private static final double WHEEL_CIRCUMFERENCE;
-    private static final double TICKS_PER_REVOLUTION = 1688.06;
+//    private static final double TICKS_PER_REVOLUTION = 291.2;
+    private static final double TICKS_PER_REVOLUTION = 450;
     private static final double TICKS_PER_INCH /* 134.4*/;
     private static final double DIAGONAL_BETWEEN_WHEELS = 23;
 
@@ -51,11 +52,17 @@ public class Holonomic extends Drivetrain {
         ((DcMotorEx)backLeftMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
         ((DcMotorEx)frontRightMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
         ((DcMotorEx)backRightMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
+
+        ((DcMotorEx)frontLeftMotor).setPositionPIDFCoefficients(1.5);
+        ((DcMotorEx)backLeftMotor).setPositionPIDFCoefficients(1.5);
+        ((DcMotorEx)frontRightMotor).setPositionPIDFCoefficients(1.8);
+        ((DcMotorEx)backRightMotor).setPositionPIDFCoefficients(1.5);
+
         if (chassis == Chassis.SSGOBILDA) {
-            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//            frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//            backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//            backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
     }
 

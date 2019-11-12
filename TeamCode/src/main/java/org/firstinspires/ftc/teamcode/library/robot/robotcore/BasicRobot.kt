@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.library.robot.robotcore
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.teamcode.library.robot.systems.FoundationGrabbers
 import org.firstinspires.ftc.teamcode.library.robot.systems.Holonomic
+import org.firstinspires.ftc.teamcode.library.robot.systems.IntakeBlockGrabber
 
 class BasicRobot(private val hardwareMap: HardwareMap) {
     // Drivetrain Variables
@@ -18,7 +20,7 @@ class BasicRobot(private val hardwareMap: HardwareMap) {
 
     // Servo Variables
      private   val foundationServo         : Servo                 = hwInit("foundationServo")
-//     private   val backRightFoundationServo: Servo                 = hwInit("backRightFoundationServo")
+     private   val intakeGrabberServo      : Servo                 = hwInit("intakeGrabberServo")
 
     // IMU Variables
 //     @JvmField val imuA                    : BNO055IMU             = hwInit("imuA")
@@ -30,13 +32,12 @@ class BasicRobot(private val hardwareMap: HardwareMap) {
     // Color/Distance Sensor Variables
      @JvmField val intakeBlockCSensor      : ColorSensor           = hwInit("intakeBlockSensor")
      @JvmField val intakeBlockDSensor      : DistanceSensor        = hwInit("intakeBlockSensor")
-     @JvmField val distanceSensor_rear     : Rev2mDistanceSensor   = hwInit("ds_rear")
-     @JvmField val distanceSensor_front    : Rev2mDistanceSensor   = hwInit("ds_front")
-     @JvmField val distanceSensor_side     : Rev2mDistanceSensor   = hwInit("ds_side")
+     @JvmField val frontDistanceSensor     : ModernRoboticsI2cRangeSensor = hwInit("frontDistanceSensor")
 
     // Robot Systems Variables
      @JvmField val holonomic               : Holonomic              = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
      @JvmField val foundationGrabbers      : FoundationGrabbers     = FoundationGrabbers(foundationServo)
+     @JvmField val intakeBlockGrabber      : IntakeBlockGrabber     = IntakeBlockGrabber(intakeGrabberServo)
     //     @JvmField val blinkin                 : RevBlinkinLedDriver   = hwInit("blinkin")
     private inline fun <reified T> hwInit(name:String): T = hardwareMap.get(T::class.java, name)
 }

@@ -18,6 +18,8 @@ fun Double.rangeClip(lowerBound: Double, upperBound: Double):Double {
     }
 }
 
+fun Double.reverseIf(conditional: Boolean) = if (conditional) -this else this
+
 fun Double.rangeBuffer(lowerBound: Double, upperBound: Double, defaultValue: Double):Double {
     return if (this in lowerBound..upperBound) defaultValue else this
 }

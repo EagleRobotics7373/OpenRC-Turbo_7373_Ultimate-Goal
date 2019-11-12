@@ -11,7 +11,7 @@ public class BasicEncoderDriveTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         BasicRobot robot = new BasicRobot(hardwareMap);
         waitForStart();
-        robot.holonomic.turnUsingEncoder(90, 0.6);
+        robot.holonomic.runUsingEncoder(0,24, 0.05);
         do {
             telemetry.addData("FL target", robot.frontLeftMotor.getTargetPosition());
             telemetry.addData("FL ticks", robot.frontLeftMotor.getCurrentPosition());
@@ -27,6 +27,26 @@ public class BasicEncoderDriveTest extends LinearOpMode {
             telemetry.addData("BR power", robot.backRightMotor.getPower());
             telemetry.update();
         } while (robot.holonomic.motorsAreBusy());
+        robot.holonomic.stop();
+        sleep(2000);
+//        robot.holonomic.runUsingEncoder(0,5, 0.2);
+//        do {
+//            telemetry.addData("FL target", robot.frontLeftMotor.getTargetPosition());
+//            telemetry.addData("FL ticks", robot.frontLeftMotor.getCurrentPosition());
+//            telemetry.addData("FL power", robot.frontLeftMotor.getPower());
+//            telemetry.addData("FR target", robot.frontRightMotor.getTargetPosition());
+//            telemetry.addData("FR ticks", robot.frontRightMotor.getCurrentPosition());
+//            telemetry.addData("FR power", robot.frontRightMotor.getPower());
+//            telemetry.addData("BL target", robot.backLeftMotor.getTargetPosition());
+//            telemetry.addData("BL ticks", robot.backLeftMotor.getCurrentPosition());
+//            telemetry.addData("BL power", robot.backLeftMotor.getPower());
+//            telemetry.addData("BR target", robot.backRightMotor.getTargetPosition());
+//            telemetry.addData("BR ticks", robot.backRightMotor.getCurrentPosition());
+//            telemetry.addData("BR power", robot.backRightMotor.getPower());
+//            telemetry.update();
+//        } while (robot.holonomic.motorsAreBusy());
+//        robot.holonomic.stop();
+//        sleep(2000);
     }
 }
 
