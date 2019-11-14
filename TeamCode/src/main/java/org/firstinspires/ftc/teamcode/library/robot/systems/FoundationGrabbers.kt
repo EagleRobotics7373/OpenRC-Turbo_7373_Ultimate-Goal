@@ -12,4 +12,6 @@ class FoundationGrabbers(
     fun lock() {
         grabberServo.position  = 0.60
     }
+
+    fun setPosition(pos: Double) { grabberServo.position = pos }
 }

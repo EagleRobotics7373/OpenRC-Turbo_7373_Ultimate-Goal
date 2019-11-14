@@ -30,9 +30,19 @@ class BasicRobot(private val hardwareMap: HardwareMap) {
      @JvmField val intakePivotPotentiometer: AnalogInput           = hwInit("potentiometer")
 
     // Color/Distance Sensor Variables
-     @JvmField val intakeBlockCSensor      : ColorSensor           = hwInit("intakeBlockSensor")
-     @JvmField val intakeBlockDSensor      : DistanceSensor        = hwInit("intakeBlockSensor")
+//     @JvmField val intakeBlockCSensor      : ColorSensor           = hwInit("intakeBlockSensor")
+//     @JvmField val intakeBlockDSensor      : DistanceSensor        = hwInit("intakeBlockSensor")
+
+     @JvmField val leftColorSensor         : ColorSensor           = hwInit("leftColorSensor")
+     @JvmField val rightColorSensor        : ColorSensor           = hwInit("rightColorSensor")
+
+     @JvmField val leftColorDistanceSensor : DistanceSensor        = hwInit("leftColorSensor")
+     @JvmField val rightColorDistanceSensor: DistanceSensor        = hwInit("rightColorSensor")
+
      @JvmField val frontDistanceSensor     : ModernRoboticsI2cRangeSensor = hwInit("frontDistanceSensor")
+     @JvmField val leftDistanceSensor      : ModernRoboticsI2cRangeSensor = hwInit("leftDistanceSensor")
+     @JvmField val rightDistanceSensor     : ModernRoboticsI2cRangeSensor = hwInit("rightDistanceSensor")
+
 
     // Robot Systems Variables
      @JvmField val holonomic               : Holonomic              = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)

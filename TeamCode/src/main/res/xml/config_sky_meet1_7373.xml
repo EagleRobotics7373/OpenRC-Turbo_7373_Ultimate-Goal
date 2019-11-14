@@ -6,6 +6,8 @@
             <Matrix12vMotor name="backLeftMotor" port="1" />
             <Matrix12vMotor name="frontRightMotor" port="2" />
             <Matrix12vMotor name="backRightMotor" port="3" />
+            <LynxColorSensor name="leftColorSensor" bus="1" port="0"/>
+            <LynxColorSensor name="rightColorSensor" bus="0" port="1"/>
 <!--            <REV_VL53L0X_RANGE_SENSOR name="ds_rear" port="1" bus="0" />-->
 <!--            <REV_VL53L0X_RANGE_SENSOR name="ds_front" port="1" bus="1" />-->
             <Servo name="foundationServo" port="0" />
@@ -18,7 +20,8 @@
             <Matrix12vMotor name="intakePivotMotor" port="1"/>
             <LynxEmbeddedIMU name="imuB" port="0" bus="0" />
             <ModernRoboticsI2cRangeSensor name="frontDistanceSensor" port="1" bus="0"/>
-            <RevColorSensorV3 name="intakeBlockSensor" port="1" bus="0"/>
+            <ModernRoboticsI2cRangeSensor name="rightDistanceSensor" port="0" bus="1"/>
+            <ModernRoboticsI2cRangeSensor name="leftDistanceSensor" port="0" bus="2"/>
 <!--            <REV_VL53L0X_RANGE_SENSOR name="ds_side" port="1" bus="1" />-->
             <AnalogInput name="potentiometer" port="0" />
         </LynxModule>
