@@ -8,6 +8,8 @@ fun Double.toDegrees() = this * 180 / Math.PI
 
 fun Double.toRadians() = this * Math.PI / 180
 
+fun Double.cmToIn() = this/2.54
+
 fun Double.truncate(decimals: Byte) = String.format("%.${decimals}f", this).toDouble()
 
 fun Double.rangeClip(lowerBound: Double, upperBound: Double):Double {

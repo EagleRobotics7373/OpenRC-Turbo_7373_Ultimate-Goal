@@ -36,7 +36,11 @@ public class Test extends LinearOpMode {
 
             telemetry.addData("voltage", robot.intakePivotPotentiometer.getVoltage());
             telemetry.addData("left", robot.leftDistanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("left CM ultrasonic", robot.leftDistanceSensor.cmUltrasonic());
+            telemetry.addData("left CM optical", robot.leftDistanceSensor.cmOptical());
             telemetry.addData("right", robot.rightDistanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("right CM ultrasonic", robot.rightDistanceSensor.cmUltrasonic());
+            telemetry.addData("right CM optical", robot.rightDistanceSensor.cmOptical());
             telemetry.addData("front", robot.frontDistanceSensor.getDistance(DistanceUnit.INCH));
             telemetry.addData("heading", MathExtensionsKt.toDegrees(imuController.getHeading()));
             telemetry.update();

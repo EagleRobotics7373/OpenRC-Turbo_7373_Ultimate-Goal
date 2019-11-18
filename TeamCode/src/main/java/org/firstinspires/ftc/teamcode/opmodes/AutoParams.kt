@@ -23,9 +23,10 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
     private val i_parkOnly = MenuItemBoolean("parkonly", "Park ONLY", false)
     private val i_delayBeforeParking = MenuItemInteger("delay", "Delay Before Parking", 0, 0, 20)
     private val i_skystoneRedundancy = MenuItemBoolean("sr", "Skystone Redundancy", false)
+    private val i_foundationRedundancy = MenuItemBoolean("fr", "Foundation Redundancy", true)
 
     init {
-        menu.add(i_musicFile, i_startingPosition, i_buildingSiteSlide, i_parkAfterTask, i_parkNearDS, i_allianceColor, i_parkOnly, i_delayBeforeParking, i_skystoneRedundancy)
+        menu.add(i_musicFile, i_startingPosition, i_buildingSiteSlide, i_parkAfterTask, i_parkNearDS, i_allianceColor, i_parkOnly, i_delayBeforeParking, i_skystoneRedundancy, i_foundationRedundancy)
     }
     val musicFile: ExtMusicFile
         get() = i_musicFile.value
@@ -45,6 +46,8 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
         get() = i_skystoneRedundancy.value
     val buildingSiteSlide: Boolean
         get() = i_buildingSiteSlide.value
+    val foundationRedundancy : Boolean
+        get() = i_foundationRedundancy.value
 }
 //
 //class AutoMenuControllerReflectiveIterative(telemetry: Telemetry) {
