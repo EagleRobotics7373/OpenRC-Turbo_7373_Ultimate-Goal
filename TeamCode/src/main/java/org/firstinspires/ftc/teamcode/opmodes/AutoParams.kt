@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItemIn
 class AutoMenuControllerIterative(telemetry: Telemetry) {
     @JvmField val menu = IterableTelemetryMenu(telemetry)
 
-    private val i_startingPosition = MenuItemEnum("sp", "Position", FieldSide.LOADING_ZONE, FieldSide.WAFFLE_SIDE)
+    private val i_startingPosition = MenuItemEnum("sp", "Position", FieldSide.LOADING_ZONE, FieldSide.WAFFLE_SIDE, FieldSide.LOADING_TO_WAFFLE)
     private val i_allianceColor = MenuItemEnum("alliance", "Alliance", AllianceColor.RED, AllianceColor.BLUE)
     private val i_buildingSiteSlide = MenuItemBoolean("bss", "Building Site Slide", true)
     private val i_parkAfterTask = MenuItemBoolean("pat", "Park After Task", true)
