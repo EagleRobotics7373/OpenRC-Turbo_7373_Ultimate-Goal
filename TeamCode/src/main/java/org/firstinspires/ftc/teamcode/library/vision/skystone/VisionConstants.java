@@ -13,7 +13,7 @@ public class VisionConstants {
     public static final String  TFOD_MODEL_ASSET_EXT     = "/sdcard/FIRST/Skystone.tflite";
 
     //OpenCV Hue Stats Pipeline Constants
-    public static       int     HS_STONE_WIDTH           = 87;
-    public static       int     HS_STONE_GAP             = 30;
-    public static       Point   HS_FIRST_STONE_PT        = new Point(150, 375);
+    public static       int     HS_STONE_WIDTH           = 80;
+    public static       int     HS_STONE_GAP             = 40;
+    public static       Point   HS_FIRST_STONE_PT        = new Point(270, 330);
 }

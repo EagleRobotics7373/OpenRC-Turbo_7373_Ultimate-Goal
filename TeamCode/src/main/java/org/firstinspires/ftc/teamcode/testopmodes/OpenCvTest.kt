@@ -38,6 +38,8 @@ class OpenCvTest : OpMode() {
 
     override fun start() {
         container = VisionFactory.createOpenCv(cameraType, hardwareMap, PixelStatsPipeline(PixelStatsPipeline.StatsDetector.DETECTOR_HUE_AVG))
+        container.pipeline.alwaysTrack = true
+        container.pipeline.tracking = true
     }
 
     override fun loop() {

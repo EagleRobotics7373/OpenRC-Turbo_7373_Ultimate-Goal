@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
 import org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory;
 import org.firstinspires.ftc.teamcode.library.vision.skystone.VuforiaController;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous", group = "Main")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous Legacy", group = "Main")
 public class Autonomous extends LinearOpMode {
     BasicRobot robot;
     IMUController imuController;

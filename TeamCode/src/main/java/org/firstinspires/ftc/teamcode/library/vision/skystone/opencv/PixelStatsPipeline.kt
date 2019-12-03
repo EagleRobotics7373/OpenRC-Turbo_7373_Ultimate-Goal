@@ -13,7 +13,7 @@ import org.opencv.imgproc.Imgproc.*
 import kotlin.math.pow
 
 class PixelStatsPipeline(var detector: StatsDetector) : OpenCvPipeline() {
-
+    var alwaysTrack = false
     var tracking : Boolean = false
 
     var skystonePos : Position? = null
@@ -26,7 +26,7 @@ class PixelStatsPipeline(var detector: StatsDetector) : OpenCvPipeline() {
     var resolution : ImageResolution = ImageResolution.R_720x480
 
     override fun processFrame(input: Mat): Mat {
-        if (true) {
+        if (tracking) {
             val startingRuntime = System.currentTimeMillis()
 
             rgbMat = input
@@ -68,7 +68,7 @@ class PixelStatsPipeline(var detector: StatsDetector) : OpenCvPipeline() {
                     Point(10.0 * resolution.scale, hueMat.rows()*0.98), FONT_HERSHEY_DUPLEX, 0.6*resolution.scale, Scalar(0.0), 1)
 
 //            Imgcodecs.imwrite("/sdcard/FIRST/cvtrials/cvtrial_${resolution}_${System.currentTimeMillis()}_", hueMat)
-            tracking = false
+            if (!alwaysTrack) tracking = false
             return hueMat
 
         } else return input

@@ -25,9 +25,11 @@ class IMUPIDStrafer (
     private var beginningSpeedLimit          = 1.0
     private var msBeforeSpeedLimit  : Long   = 0
 
+    var yPower = 0.0
+
     private var lastRuntime         : Long   = 0
 
-    private val startingRuntime = System.currentTimeMillis()
+            val startingRuntime = System.currentTimeMillis()
 
     fun setStartingLimit(msTime: Long, limit: Double) {
         beginningSpeedLimit = limit.absoluteValue
@@ -55,7 +57,7 @@ class IMUPIDStrafer (
 
         holonomic.runWithoutEncoder(
                 if(System.currentTimeMillis()-startingRuntime < msBeforeSpeedLimit) strafeOutput.coerceIn(-beginningSpeedLimit, beginningSpeedLimit) else strafeOutput,
-                0.0,
+                yPower,
                 angularOutput)
 
         lastRuntime = System.currentTimeMillis()

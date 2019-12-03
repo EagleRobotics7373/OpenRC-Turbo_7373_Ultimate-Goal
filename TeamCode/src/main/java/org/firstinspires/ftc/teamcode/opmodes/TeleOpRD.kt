@@ -170,7 +170,7 @@ open class TeleOpRD : OpMode() {
     private fun controlTelemetry() {
         telemetry.addData("Intake manipulator power", robot.intakeBlockManipulator.power)
         telemetry.addData("Intake pivot power", robot.intakePivotMotor.power)
-//        telemetry.addData("Potentiometer voltage", robot.intakePivotPotentiometer.voltage)
+        telemetry.addData("Potentiometer voltage", robot.intakePivotPotentiometer.voltage)
 //        telemetry.addData("Potentiometer max v", robot.intakePivotPotentiometer.maxVoltage)
 //        telemetry.addData("Front dist gD()", robot.frontDistanceSensor.getDistance(DistanceUnit.CM))
 //        telemetry.addData("Front dist cU()", robot.frontDistanceSensor.cmUltrasonic())

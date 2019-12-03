@@ -22,6 +22,7 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
     private val i_buildingSiteSlide = MenuItemBoolean("bss", "Building Site Slide", true)
     private val i_parkAfterTask = MenuItemBoolean("pat", "Park After Task", true)
     private val i_parkNearDS = MenuItemBoolean("parkneards", "Park closer to DS", false)
+    private val i_pushAlliancePartner = MenuItemBoolean("pap", "Gracious Professionalism", true)
     private val i_musicFile = MenuItemEnum("music", "Music", ExtMusicFile.NONE, ExtMusicFile.UNITY, ExtMusicFile.MEGALOUNITY, ExtMusicFile.CRABRAVE, ExtMusicFile.BRADTHECHEMIST, ExtMusicFile.TETRIS, ExtMusicFile.MEGALOVANIA, ExtMusicFile.PACMAN, ExtMusicFile.PIZZATIME)
     private val i_parkOnly = MenuItemBoolean("parkonly", "Park ONLY", false)
     private val i_delayBeforeParking = MenuItemInteger("delay", "Delay Before Parking", 0, 0, 20)
@@ -29,7 +30,7 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
     private val i_foundationRedundancy = MenuItemBoolean("fr", "Foundation Redundancy", true)
 
     init {
-        menu.add(i_musicFile, i_startingPosition, i_allianceColor, i_visionDetector, i_buildingSiteSlide, i_parkAfterTask, i_parkNearDS, i_parkOnly, i_delayBeforeParking, i_skystoneRedundancy, i_foundationRedundancy)
+        menu.add(i_musicFile, i_startingPosition, i_allianceColor, i_visionDetector, i_pushAlliancePartner, i_buildingSiteSlide, i_parkAfterTask, i_parkNearDS, i_parkOnly, i_delayBeforeParking, i_skystoneRedundancy, i_foundationRedundancy)
     }
 
     val musicFile: ExtMusicFile
@@ -52,6 +53,8 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
         get() = i_skystoneRedundancy.value
     val buildingSiteSlide: Boolean
         get() = i_buildingSiteSlide.value
+    val pushAlliancePartner: Boolean
+        get() = i_pushAlliancePartner.value
     val foundationRedundancy : Boolean
         get() = i_foundationRedundancy.value
 }

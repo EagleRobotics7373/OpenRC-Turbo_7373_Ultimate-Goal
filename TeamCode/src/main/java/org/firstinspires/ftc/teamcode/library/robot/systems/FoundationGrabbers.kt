@@ -14,7 +14,7 @@ class FoundationGrabbers(
     }
 
     fun lock() {
-        setPosition(1.0)
+        setPosition(0.95)
     }
 
     fun setPosition(pos: Double) {
