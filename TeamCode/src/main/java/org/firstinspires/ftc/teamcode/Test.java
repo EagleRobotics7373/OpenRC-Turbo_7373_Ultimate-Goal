@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.library.functions.MathExtensionsKt;
+import org.firstinspires.ftc.teamcode.library.functions.FunctionalExtensionsKt;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
-import org.firstinspires.ftc.teamcode.library.functions.Position;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
 
 @TeleOp(name = "Test", group = "Sensor")
@@ -42,7 +40,7 @@ public class Test extends LinearOpMode {
             telemetry.addData("right CM ultrasonic", robot.rightDistanceSensor.cmUltrasonic());
             telemetry.addData("right CM optical", robot.rightDistanceSensor.cmOptical());
             telemetry.addData("front", robot.frontDistanceSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("heading", MathExtensionsKt.toDegrees(imuController.getHeading()));
+            telemetry.addData("heading", FunctionalExtensionsKt.toDegrees(imuController.getHeading()));
             telemetry.update();
 
         }
@@ -74,7 +72,7 @@ public class Test extends LinearOpMode {
     }
 
     public void imuPIRotate(double angle) {
-        double currentValue = MathExtensionsKt.toDegrees(imuController.getHeading());
+        double currentValue = FunctionalExtensionsKt.toDegrees(imuController.getHeading());
         double targetValue = currentValue + angle;
 
         // Try Kp constant of .008
@@ -87,7 +85,7 @@ public class Test extends LinearOpMode {
         double errorSum = 0;
         double originalRuntime = getRuntime();
         while (currentValue != targetValue && opModeIsActive() && (getRuntime()-originalRuntime)<4) {
-            currentValue = MathExtensionsKt.toDegrees(imuController.getHeading());
+            currentValue = FunctionalExtensionsKt.toDegrees(imuController.getHeading());
             telemetry.addData("Current value", currentValue);
             telemetry.addData("Target value", targetValue);
 

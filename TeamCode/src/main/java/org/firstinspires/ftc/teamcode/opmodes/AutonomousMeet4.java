@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory;
 import org.firstinspires.ftc.teamcode.library.vision.skystone.VuforiaController;
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous", group = "Main")
-public class Autonomous extends LinearOpMode {
+public class AutonomousMeet4 extends LinearOpMode {
     BasicRobot robot;
     IMUController imuController;
     boolean goingRight = false;
@@ -96,7 +96,7 @@ public class Autonomous extends LinearOpMode {
             } else {
                 if (menuController.getStartingPosition() == FieldSide.WAFFLE_SIDE) {
                     if (menuController.getAllianceColor() == AllianceColor.RED) {
-                        if (menuController.getBuildingSiteSlide()) drive(-24, 0, 0.8);
+                        if (menuController.getBuildingSiteSlide()) drive(24, 0, 0.8);
                         // Drive forward to clear the wall
                         //                drive(0, 5, 0.7);
                         //                sleep(500);
@@ -108,6 +108,7 @@ public class Autonomous extends LinearOpMode {
 
                         // Drive to the foundation
                         drive(0, 29, 0.4);
+
                         sleep(250);
 
                         // Deploy the foundation grabber, grabbing the foundation
@@ -154,9 +155,9 @@ public class Autonomous extends LinearOpMode {
                                 drive(-16, 0, 0.5);
                                 drive(0, 8, 0.4);
                             }
-                            if (menuController.getParkNearDS()) drive(0, -24, 0.2);
+                            if (menuController.getParkNearDS()) drive(0, 24, 0.2);
                             else {
-                                timeDrive(0, 0.4, 0, 500);
+                                timeDrive(0, -0.4, 0, 500);
                                 sleep(500);
                                 robot.holonomic.stop();
                             }

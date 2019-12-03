@@ -2,8 +2,12 @@ package org.firstinspires.ftc.teamcode.library.functions
 
 import android.graphics.Color
 import com.qualcomm.robotcore.hardware.ColorSensor
+import java.util.function.Supplier
 
 
+/*
+    Double extension functions
+ */
 fun Double.toDegrees() = this * 180 / Math.PI
 
 fun Double.toRadians() = this * Math.PI / 180
@@ -30,6 +34,10 @@ fun Double.upperLimit(limitAt: Double) = if (this > limitAt) limitAt else this
 
 fun Double.withinRange(target: Double, range: Double) = this in target-range..target+range
 
+
+/*
+    ColorSensor extension functions
+ */
 val ColorSensor.rhue : Double
     get() {
         return this.hsv[0].toDouble()
@@ -53,3 +61,7 @@ val ColorSensor.hsv : FloatArray
         return hsvValues
     }
 
+
+/*
+    Supplier extension functions
+ */

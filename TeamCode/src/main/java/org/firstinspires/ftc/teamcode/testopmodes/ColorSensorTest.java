@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.testopmodes;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.library.functions.MathExtensionsKt;
+import org.firstinspires.ftc.teamcode.library.functions.FunctionalExtensionsKt;
 
 @TeleOp(group="Test")
 public class ColorSensorTest extends OpMode {
@@ -30,9 +28,9 @@ public class ColorSensorTest extends OpMode {
         telemetry.addData("left red", left.red());
         telemetry.addData("left green", left.green());
         telemetry.addData("left blue", left.blue());
-        telemetry.addData("left hue", MathExtensionsKt.getRhue(left));
-        telemetry.addData("left saturation", MathExtensionsKt.getRsaturation(left));
-        telemetry.addData("left value", MathExtensionsKt.getRvalue(left));
+        telemetry.addData("left hue", FunctionalExtensionsKt.getRhue(left));
+        telemetry.addData("left saturation", FunctionalExtensionsKt.getRsaturation(left));
+        telemetry.addData("left value", FunctionalExtensionsKt.getRvalue(left));
         telemetry.addData("left distance (cm)", leftDs.getDistance(DistanceUnit.CM));
 
 

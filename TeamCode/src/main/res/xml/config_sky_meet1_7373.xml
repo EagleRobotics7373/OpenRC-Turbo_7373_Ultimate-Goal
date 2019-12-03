@@ -10,14 +10,16 @@
             <LynxColorSensor name="rightColorSensor" bus="0" port="1"/>
 <!--            <REV_VL53L0X_RANGE_SENSOR name="ds_rear" port="1" bus="0" />-->
 <!--            <REV_VL53L0X_RANGE_SENSOR name="ds_front" port="1" bus="1" />-->
-            <Servo name="foundationServo" port="0" />
-            <Servo name="intakeGrabberServo" port="1"/>
+            <Servo name="leftFoundationServo" port="0" />
+            <Servo name="rightFoundationServo" port="1" />
+            <Servo name="intakeGrabberServo" port="2"/>
             <!--<Servo name="backRightFoundationServo" port="1" />-->
             <LynxEmbeddedIMU name="imuA" port="0" bus="0" />
         </LynxModule>
         <LynxModule name="Expansion Hub 2" port="2">
             <Matrix12vMotor name="intakeBlockManipulator" port="0"/>
             <Matrix12vMotor name="intakePivotMotor" port="1"/>
+            <Motor name="odometryXAxis" port="3"/>
             <LynxEmbeddedIMU name="imuB" port="0" bus="0" />
             <ModernRoboticsI2cRangeSensor name="frontDistanceSensor" port="1" bus="0"/>
             <ModernRoboticsI2cRangeSensor name="rightDistanceSensor" port="0" bus="1"/>
@@ -26,5 +28,7 @@
             <AnalogInput name="potentiometer" port="0" />
         </LynxModule>
     </LynxUsbDevice>
-    <Webcam name="Webcam 1" serialNumber="63A4BA9F"/>
+    <Webcam name="Webcam 1080p" serialNumber="63A4BA9F"/>
+    <Webcam name="Webcam 720p" serialNumber="B7EDC3E0"/>
+
 </Robot>
