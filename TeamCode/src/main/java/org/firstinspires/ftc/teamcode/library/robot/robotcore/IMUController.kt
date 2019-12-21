@@ -5,7 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.navigation.*
 
-class IMUController(hardwareMap: HardwareMap, private val axesOrder: AxesOrder = AxesOrder.ZYX) {
+class IMUController @JvmOverloads constructor(hardwareMap: HardwareMap, private val axesOrder: AxesOrder = AxesOrder.ZYX) {
     @JvmField val imuA          : BNO055IMU = hardwareMap.get(BNO055IMU::class.java, "imuA")
 
     init {
