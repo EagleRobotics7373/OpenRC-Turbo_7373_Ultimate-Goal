@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+//import com.acmerobotics.dashboard.FtcDashboard;
+//import com.acmerobotics.dashboard.config.Config;
+//import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -25,25 +26,26 @@ import org.firstinspires.ftc.teamcode.opmodes.control.IMUPIDStrafer;
 
 import kotlin.jvm.functions.Function0;
 
-@Config
+//@Config
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous", group = "Main")
 public class AutonomousMeet4 extends LinearOpMode {
     BasicRobot robot;
     IMUController imuController;
-    MultipleTelemetry telem;
+    //    MultipleTelemetry telem;
     boolean goingRight = false;
-    public static double distanceToDriveCrossField = 77;
-    public static double distanceAddPerSkystone = 7.5;
+    public static double distanceToDriveCrossField = 71;
+    public static double distanceAddPerSkystone = 7;
     public static double centerStrafeTarget = 2.5;
     public static double yPowerForRobotPush = -0.25;
-    public static double shoveDist = 32;
+    public static double shoveDist = 27;
     public static double parkDist = 26;
+    ElapsedTime elapsedTime;
     public static PIDCoefficients rotationalStoneStrafePID = new PIDCoefficients(1, 0, 0);
     public static int TIMEMS = 1500;
     public static int posNum = 0;
     @Override
     public void runOpMode() throws InterruptedException {
-        telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+//        telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         /*
                 Initialize main autonomous variables
          */
@@ -76,6 +78,7 @@ public class AutonomousMeet4 extends LinearOpMode {
             }
         }
         waitForStart();
+        elapsedTime = new ElapsedTime();
         container.getPipeline().setDetector(menuController.getVisionDetector());
         double startLeftDist = robot.leftDistanceSensor.getDistance(DistanceUnit.INCH);
         if (!isStopRequested()) {
@@ -270,12 +273,12 @@ public class AutonomousMeet4 extends LinearOpMode {
                         }
                     }
 
-                    telem.addData("Skystone position", skystonePosition);
-                    telem.addData("Skystone original", originalSkystonePos);
-                    telem.addData("Odometry error", robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH));
-                    telem.addData("Strafe target", stoneStrafeTarget);
-                    telem.addData("CrossField Target", crossFieldStrafeTarget);
-                    telem.update();
+                    telemetry.addData("Skystone position", skystonePosition);
+                    telemetry.addData("Skystone original", originalSkystonePos);
+                    telemetry.addData("Odometry error", robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH));
+                    telemetry.addData("Strafe target", stoneStrafeTarget);
+                    telemetry.addData("CrossField Target", crossFieldStrafeTarget);
+                    telemetry.update();
                     sleep(1000);
                     robot.odometryXAxis.resetHWCounter();
                     IMUPIDStrafer stoneStrafer = new IMUPIDStrafer(
@@ -291,8 +294,8 @@ public class AutonomousMeet4 extends LinearOpMode {
                             }
                     );
                     stoneStrafer.setStartingLimit(19000, 0.2);
-
-                    while(Math.abs(stoneStrafer.getStrafeErrorFun().invoke()) > 0 & opModeIsActive() & (System.currentTimeMillis()-stoneStrafer.getStartingRuntime()<3000)) stoneStrafer.run();
+                    double millis = elapsedTime.milliseconds();
+                    while(Math.abs(stoneStrafer.getStrafeErrorFun().invoke()) > 0 & opModeIsActive() & (elapsedTime.milliseconds()-millis<3000)) stoneStrafer.run();
 
 //                    while (Math.abs(stoneStrafeTarget) - Math.abs(robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)) > 0.5 & opModeIsActive()) {
 //                        robot.holonomic.runWithoutEncoder(0.3 * ((stoneStrafeTarget<0)?-1:1), 0, 0);
@@ -373,22 +376,28 @@ public class AutonomousMeet4 extends LinearOpMode {
                     straferPID.p = 0.4;
                     {
                         final double strafeTarget = (menuController.getPushAlliancePartner())?(shoveDist * (menuController.getAllianceColor()==AllianceColor.RED?-1:1)):(parkDist * (menuController.getAllianceColor()==AllianceColor.RED?-1:1));
-                    IMUPIDStrafer parkingStrafer = new IMUPIDStrafer(
-                            robot.holonomic,
-                            imuController,
-                            new PIDCoefficients(0.005, 0.0000022,0),
-                            new PIDCoefficients(1.75, 0, 0),
-                            new Function0<Double>() {
-                                @Override
-                                public Double invoke() {
-                                    return strafeTarget - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                        IMUPIDStrafer parkingStrafer = new IMUPIDStrafer(
+                                robot.holonomic,
+                                imuController,
+                                new PIDCoefficients(0.005, 0.0000022,0),
+                                new PIDCoefficients(1.75, 0, 0),
+                                new Function0<Double>() {
+                                    @Override
+                                    public Double invoke() {
+                                        return strafeTarget - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                                    }
                                 }
-                            }
-                    );
-
-                    while (Math.abs(parkingStrafer.getStrafeErrorFun().invoke())>1 & opModeIsActive()) {
-                        parkingStrafer.run();
-                    }}
+                        );
+                        double lastError = 0;
+                        double error;
+                        while ((error=Math.abs(parkingStrafer.getStrafeErrorFun().invoke()))>1 & opModeIsActive()) {
+                            parkingStrafer.run();
+//                        if (Math.abs(error)-Math.abs(lastError)<0.1) break;
+//                        sleep(500);
+//                        lastError = error;
+                            telemetry.addData("i", parkingStrafer.getStrafeErrorSum()*parkingStrafer.getStrafePIDCoefficients().i);
+                            telemetry.update();
+                        }}
                     robot.holonomic.stop();
                     sleep(500);
 //                    drive(5 * ((menuController.getAllianceColor()==AllianceColor.RED)?1.0:-1.0),0,0.4);
@@ -396,16 +405,16 @@ public class AutonomousMeet4 extends LinearOpMode {
                     straferPID.p = 0.25;
                     if (menuController.getPushAlliancePartner()) {
                         IMUPIDStrafer odometryAwayFromParkedBotStrafer = new IMUPIDStrafer(
-                            robot.holonomic,
-                            imuController,
-                            straferPID,
-                            new PIDCoefficients(1.75, 0, 0),
-                            new Function0<Double>() {
-                                @Override
-                                public Double invoke() {
-                                    return (menuController.getAllianceColor()==AllianceColor.RED)?1.0:-1.0;
+                                robot.holonomic,
+                                imuController,
+                                straferPID,
+                                new PIDCoefficients(1.75, 0, 0),
+                                new Function0<Double>() {
+                                    @Override
+                                    public Double invoke() {
+                                        return (menuController.getAllianceColor()==AllianceColor.RED)?1.0:-1.0;
+                                    }
                                 }
-                            }
                         );
                         odometryAwayFromParkedBotStrafer.setYPower(yPowerForRobotPush);
 
@@ -421,8 +430,9 @@ public class AutonomousMeet4 extends LinearOpMode {
         /*
                 End of OpMode - close resources
          */
-        while (opModeIsActive());
-        player.stop();
+            while (opModeIsActive());
+            container.stop();
+            player.stop();
         }
     }
 
