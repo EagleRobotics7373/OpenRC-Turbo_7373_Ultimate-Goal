@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.OpenCvContainer;
+import org.jetbrains.annotations.NotNull;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -45,7 +46,7 @@ public class VisionFactory {
         return tfod;
     }
 
-    public static <Pipeline extends OpenCvPipeline> OpenCvContainer<Pipeline> createOpenCv(CameraType cameraType, HardwareMap hardwareMap, Pipeline pipeline) {
+    public static <Pipeline extends OpenCvPipeline> OpenCvContainer<Pipeline> createOpenCv(CameraType cameraType, HardwareMap hardwareMap, @NotNull Pipeline pipeline) {
         OpenCvCamera camera;
         ImageResolution resolution = ImageResolution.R_1280x720;
         OpenCvCameraRotation rotation = OpenCvCameraRotation.UPRIGHT;

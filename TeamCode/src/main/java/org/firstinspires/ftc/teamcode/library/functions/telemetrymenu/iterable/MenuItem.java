@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu;
+package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable;
 
 public abstract class MenuItem<T> {
 

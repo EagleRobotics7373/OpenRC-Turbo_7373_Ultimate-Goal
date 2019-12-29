@@ -192,18 +192,6 @@ open class TeleOpRD : OpMode() {
     // functionality is explained throughout opmode; allows for encapsulation of button presses
     //   that toggle changes in variables
     // constructor parameter is a function (no parameters, returns Boolean)
-    protected class ToggleButtonWatcher(private val getMethod: ()->Boolean) {
-        private var lastState : Boolean = getMethod()
-        fun call(): Boolean {
-            if (getMethod()) {
-                if (!lastState) {
-                    lastState = true
-                    return true
-                }
-            } else lastState = false
-            return false
-        }
-    }
 }
 
 

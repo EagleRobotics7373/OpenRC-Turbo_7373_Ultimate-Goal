@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu;
-
-import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItem;
+package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable;
 
 public class MenuItemBoolean extends MenuItem<Boolean> {
     private String key;

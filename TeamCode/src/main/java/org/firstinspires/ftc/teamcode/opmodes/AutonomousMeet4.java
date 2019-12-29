@@ -108,15 +108,6 @@ public class AutonomousMeet4 extends LinearOpMode {
                 if (menuController.getStartingPosition() == FieldSide.WAFFLE_SIDE) {
                     if (menuController.getAllianceColor() == AllianceColor.RED) {
                         if (menuController.getBuildingSiteSlide()) drive(24, 0, 0.8);
-                        // Drive forward to clear the wall
-                        //                drive(0, 5, 0.7);
-                        //                sleep(500);
-                        //                // Rotate 180 degrees using IMU PI controller
-                        //                imuPIRotate(180);
-
-                        // Find distance away from the wall (REMOVED)
-//                        double distWall = 42 - robot.distanceSensor_side.getDistance(DistanceUnit.INCH);
-
                         // Drive to the foundation
                         drive(0, 29, 0.4);
 
@@ -135,25 +126,6 @@ public class AutonomousMeet4 extends LinearOpMode {
 
 
                         if (menuController.getParkAfterTask()) {
-//                            // Drive toward the alliance bridge to start moving around the foundation
-//                            drive(30, 0, 0.2);
-//                            // Drive parallel to the bridges to move to the other side of the foundation
-//                            drive(0, -18, 0.2);
-//                            drive(-10, 0, 0.2);
-//
-//                            drive(60, 14, .7);
-//
-//                            imuPIRotate(90);
-//                            telemetry.addData("heading", MathExtensionsKt.toDegrees(imuController.getHeading()));
-//                            telemetry.update();
-//                            sleep(2000);
-
-//                            // Park under the bridge
-//                            drive(23, 0, 0.6);
-//                            if (menuController.getParkNearDS()) timeDrive(0,0.3, 0, 1000);
-//                            else timeDrive(0, -0.3, 0, 500);
-
-                            drive(-35, 0, 0.2);
                             // Drive parallel to the bridges to move to the other side of the foundation
                             if (menuController.getFoundationRedundancy()) {
                                 drive(0, 17, 0.2);
@@ -177,13 +149,7 @@ public class AutonomousMeet4 extends LinearOpMode {
                     } else { // Blue side waffle
                         double startingRuntime = getRuntime();
                         if (menuController.getBuildingSiteSlide()) drive(-24, 0, 0.7);
-                        // Drive forward to clear the wall
-                        //                drive(0, 5, 0.4);
-                        //                sleep(500);
-                        // Find distance away from the wall
-                        //                double distWall = 44 - robot.distanceSensor_side.getDistance(DistanceUnit.INCH);
-
-                        // Drive to the foundation
+                       // Drive to the foundation
                         drive(0, 29, 0.4);
 
                         sleep(250);

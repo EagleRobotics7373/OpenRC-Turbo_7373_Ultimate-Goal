@@ -1,23 +1,25 @@
 package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.kotlin
 
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.TelemetryMenu
 import kotlin.properties.Delegates
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-class DelegatedTelemetryMenu constructor(private val telemetry: Telemetry) {
+class DelegatedTelemetryMenu constructor(private val telemetry: Telemetry) : TelemetryMenu {
     private val list = emptyList<MenuItemDelegate<*>>().toMutableList()
     private var current : Int by Delegates.vetoable(0) {
         _, _, newValue ->
-            newValue in 0 until list.size
+        newValue in 0 until list.size
     }
     private fun refresh() {
         list.forEach {
-            telemetry.addData(if (it === list[current]) "-> " else "" + it.description,
-                    if (it.canIterateBackward()) " << " else ""
+            telemetry.addData((if (it === list[current]) "-> " else "") + it.description,
+                    (if (it.canIterateBackward()) " << " else "")
                             + it
-                            + if (it.canIterateForward()) " >> " else "")
+                            + (if (it.canIterateForward()) " >> " else ""))
         }
+        telemetry.update()
     }
 
     fun add(menuItem: MenuItemDelegate<*>) {
@@ -25,19 +27,21 @@ class DelegatedTelemetryMenu constructor(private val telemetry: Telemetry) {
         refresh()
     }
 
-    fun nextItem() {
+    override fun nextItem() {
         current++
         refresh()
     }
-    fun previousItem() {
+    override fun previousItem() {
         current--
         refresh()
     }
-    fun iterateCurrentItemForward() {
+    override fun iterateForward() {
         list[current].iterateForward()
+        refresh()
     }
-    fun iterateCurrentItemBackward() {
+    override fun iterateBackward() {
         list[current].iterateBackward()
+        refresh()
     }
 
 }

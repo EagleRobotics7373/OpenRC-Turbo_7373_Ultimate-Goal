@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu;
-
-import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItem;
+package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable;
 
 public class MenuItemInteger extends MenuItem<Integer> {
     private String key;

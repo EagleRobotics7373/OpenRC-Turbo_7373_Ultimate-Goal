@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu;
+package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItem;
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.TelemetryMenu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class IterableTelemetryMenu {
+public class IterableTelemetryMenu implements TelemetryMenu {
     private List<MenuItem> allMenuItems;
     private MenuItem currentItem;
     private int position;

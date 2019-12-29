@@ -1,45 +1,51 @@
 package org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.kotlin
 
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.TelemetryMenu
 import kotlin.reflect.KMutableProperty
 
-class IterableReflectiveTelemetryMenu constructor(val telemetry: Telemetry, vararg items: MenuItem) {
+class ReflectiveTelemetryMenu constructor(val telemetry: Telemetry, vararg items: ReflectiveMenuItem) : TelemetryMenu {
     private val list = items.toList()
     var current = list[0]
+
+    init {
+        refresh()
+    }
+
     fun refresh() {
         list.forEach {
-            telemetry.addData(if (it === current) "-> " else "" + it.description,
-                    if (it.canIterateBackward()) " << " else ""
+            telemetry.addData((if (it === current) "-> " else "") + it.description,
+                    (if (it.canIterateBackward()) " << " else "")
                             + it
-                            + if (it.canIterateForward()) " >> " else "")
+                            + (if (it.canIterateForward()) " >> " else ""))
         }
         telemetry.update()
 
     }
 
-    fun nextItem() {
+    override fun nextItem() {
         val currentNum = list.indexOf(current)
         if (currentNum < list.size-1) current = list[currentNum+1]
         refresh()
     }
-    fun previousItem() {
+    override fun previousItem() {
         val currentNum = list.indexOf(current)
         if (currentNum > 0) current = list[currentNum-1]
         refresh()
     }
-    fun iterateCurrentItemForward() {
+    override fun iterateForward() {
         if (current.canIterateForward())
             current.iterateForward()
         refresh()
     }
-    fun iterateCurrentItemBackward() {
+    override fun iterateBackward() {
         if (current.canIterateBackward())
             current.iterateBackward()
         refresh()
     }
 }
 
-abstract class MenuItem
+abstract class ReflectiveMenuItem
 constructor(val description: String) {
     abstract override fun toString(): String
     abstract fun iterateForward()
@@ -48,14 +54,14 @@ constructor(val description: String) {
     abstract fun canIterateBackward(): Boolean
 }
 
-class MenuItemInteger
+class ReflectiveMenuItemInteger
 constructor(description: String,
             private val property: KMutableProperty<Int>,
             private val lowerLimit: Int,
             private val upperLimit: Int,
             private val incrementBy: Int)
-    : MenuItem(description) {
-    override fun toString(): String = property.toString()
+    : ReflectiveMenuItem(description) {
+    override fun toString(): String = property.getter.call().toString()
     override fun iterateForward() {
         if (canIterateForward())
             property.setter.call(property.getter.call() + incrementBy)
@@ -74,10 +80,10 @@ constructor(description: String,
 
 }
 
-class MenuItemBoolean
+class ReflectiveMenuItemBoolean
 constructor(description: String,
             private val property: KMutableProperty<Boolean>
-) : MenuItem(description) {
+) : ReflectiveMenuItem(description) {
     override fun toString(): String = property.getter.call().toString()
     override fun iterateForward() {
         if (canIterateForward())
@@ -96,31 +102,33 @@ constructor(description: String,
             property.getter.call()
 }
 
-class MenuItemEnum<T>
+class ReflectiveMenuItemEnum<T>
 constructor(description: String,
             private val property: KMutableProperty<T>,
-            vararg allowedElements: T)
-    : MenuItem(description) {
-    val iterator = allowedElements
-            .toList()
-            .listIterator()
+            vararg val allowedElements: T)
+    : ReflectiveMenuItem(description) {
+
+    var num = allowedElements.indexOf(property.getter.call())
+
+    init {
+        if (num == -1) num = 0
+    }
 
     override fun toString(): String =
             property.getter.call().toString()
 
     override fun iterateForward() {
-        if (canIterateForward()) property.setter.call(iterator.next())
+        if (canIterateForward()) property.setter.call(allowedElements[++num])
     }
 
     override fun iterateBackward() {
-        if (canIterateBackward()) property.setter.call(iterator.previous())
+        if (canIterateBackward()) property.setter.call(allowedElements[--num])
     }
 
     override fun canIterateForward(): Boolean =
-            iterator.hasNext()
+            num < allowedElements.size-1
 
 
     override fun canIterateBackward(): Boolean =
-            iterator.hasPrevious()
+            num > 0
 }
-

@@ -4,12 +4,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.library.functions.AllianceColor
 import org.firstinspires.ftc.teamcode.library.functions.ExtMusicFile
 import org.firstinspires.ftc.teamcode.library.functions.FieldSide
-import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.IterableTelemetryMenu
-import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItemBoolean
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable.IterableTelemetryMenu
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable.MenuItemBoolean
 
 
-import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItemEnum
-import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.MenuItemInteger
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable.MenuItemEnum
+import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.iterable.MenuItemInteger
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.PixelStatsPipeline
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.PixelStatsPipeline.StatsDetector.*
 
@@ -62,7 +62,7 @@ class AutoMenuControllerIterative(telemetry: Telemetry) {
 //class AutoMenuControllerReflectiveIterative(telemetry: Telemetry) {
 //    @JvmField var musicFile : ExtMusicFile = ExtMusicFile.NONE
 //    @JvmField var driveTime : Int = 1000
-//    @JvmField val menu = IterableReflectiveTelemetryMenu(telemetry,
+//    @JvmField val menu = ReflectiveTelemetryMenu(telemetry,
 //            MenuItemEnum("Music",::musicFile, ExtMusicFile.NONE, ExtMusicFile.UNITY, ExtMusicFile.MEGALOUNITY, ExtMusicFile.BRADTHECHEMIST),
 //            MenuItemInteger("Driving Time", ::driveTime, 0, 5000, 500))
 //
