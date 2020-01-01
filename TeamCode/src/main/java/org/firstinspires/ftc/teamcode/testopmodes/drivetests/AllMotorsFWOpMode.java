@@ -17,6 +17,7 @@ public class AllMotorsFWOpMode extends OpMode {
     public void init() {
         robot = new BasicRobot(hardwareMap);
         player = new ExtDirMusicPlayer(ExtMusicFile.MEGALOUNITY);
+        player.play();
     }
 
     @Override

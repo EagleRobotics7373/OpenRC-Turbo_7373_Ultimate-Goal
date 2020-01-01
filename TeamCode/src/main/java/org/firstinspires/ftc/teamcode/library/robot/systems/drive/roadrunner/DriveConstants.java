@@ -18,7 +18,7 @@ public class DriveConstants {
     public static double kStatic = 0.0;
 
     public static boolean RUN_USING_ENCODER = true;
-    public static PIDCoefficients MOTOR_VELO_PID = null;
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0, 0.0, 0.0);
 
     public static DriveConstraints BASE_CONSTRAINTS =
             new DriveConstraints(

@@ -84,7 +84,7 @@ constructor (hardwareMap: HardwareMap,
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-            MOTOR_VELO_PID ?: setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID)
+            if (MOTOR_VELO_PID != null) setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID)
         }
 
         // TODO: Need to set localizer here to odometry system...
@@ -216,7 +216,7 @@ constructor (hardwareMap: HardwareMap,
     fun setPIDCoefficients(runMode: DcMotor.RunMode, coefficients: PIDCoefficients) {
         motorsExt.forEach {
             it.setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, 0.0))
-            TODO("set kF to motor velocity F coefficient, look at RR quickstart DriveConstants")
+            // TODO : "set kF to motor velocity F coefficient, look at RR quickstart DriveConstants"
         }
     }
 
@@ -230,7 +230,7 @@ constructor (hardwareMap: HardwareMap,
 
         motorsExt.forEach {
             wheelPositions.add(encoderTicksToInches(bulkData.getMotorCurrentPosition(it).toDouble()))
-            TODO("define encoder ticks to inches method")
+            // TODO: "define encoder ticks to inches method"
         }
 
         return wheelPositions
@@ -246,7 +246,7 @@ constructor (hardwareMap: HardwareMap,
 
         motorsExt.forEach {
             wheelVelocities.add(encoderTicksToInches(bulkData.getMotorVelocity(it).toDouble()))
-            TODO("define encoder ticks to inches method")
+            // TODO: "define encoder ticks to inches method"
         }
 
         return wheelVelocities
