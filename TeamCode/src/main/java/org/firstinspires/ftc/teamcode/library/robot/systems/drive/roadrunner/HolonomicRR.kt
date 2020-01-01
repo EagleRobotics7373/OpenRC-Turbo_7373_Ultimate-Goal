@@ -84,6 +84,7 @@ constructor (hardwareMap: HardwareMap,
             it.mode = DcMotor.RunMode.RUN_USING_ENCODER
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
+            MOTOR_VELO_PID ?: setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID)
         }
 
         // TODO: Need to set localizer here to odometry system...
