@@ -205,7 +205,7 @@ public class AutonomousMeet4 extends LinearOpMode {
 //                        default: skystonePosition = Position.NULL; break;
 //                    }
 
-                    robot.odometryXAxis.resetHWCounter();
+                    robot.rearOdometry.resetHWCounter();
 
                     drive(0, 26, 0.4);
 
@@ -216,37 +216,37 @@ public class AutonomousMeet4 extends LinearOpMode {
                     if (menuController.getAllianceColor() == AllianceColor.RED) {
                         if (skystonePosition == Position.LEFT) {
                             skystonePosition = Position.CENTER;
-                            stoneStrafeTarget = -1 - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                            stoneStrafeTarget = -1 - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                             crossFieldStrafeTarget += distanceAddPerSkystone*1;
                         } else if (skystonePosition == Position.RIGHT) {
-                            stoneStrafeTarget = distanceAddPerSkystone - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                            stoneStrafeTarget = distanceAddPerSkystone - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                         } else {
                             skystonePosition = Position.LEFT;
-                            stoneStrafeTarget = -distanceAddPerSkystone - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                            stoneStrafeTarget = -distanceAddPerSkystone - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                             crossFieldStrafeTarget += distanceAddPerSkystone*2;
                         }
                     } else {
                         if (skystonePosition == Position.LEFT) {
                             skystonePosition = Position.CENTER;
                             crossFieldStrafeTarget += distanceAddPerSkystone;
-                            stoneStrafeTarget = -1 - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                            stoneStrafeTarget = -1 - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                         } else if (skystonePosition == Position.RIGHT) {
-                            stoneStrafeTarget = distanceAddPerSkystone - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                            stoneStrafeTarget = distanceAddPerSkystone - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                             crossFieldStrafeTarget += distanceAddPerSkystone*2;
                         } else {
                             skystonePosition = Position.LEFT;
-                            stoneStrafeTarget = -distanceAddPerSkystone - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                            stoneStrafeTarget = -distanceAddPerSkystone - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                         }
                     }
 
                     telemetry.addData("Skystone position", skystonePosition);
                     telemetry.addData("Skystone original", originalSkystonePos);
-                    telemetry.addData("Odometry error", robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH));
+                    telemetry.addData("Odometry error", robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH));
                     telemetry.addData("Strafe target", stoneStrafeTarget);
                     telemetry.addData("CrossField Target", crossFieldStrafeTarget);
                     telemetry.update();
                     sleep(1000);
-                    robot.odometryXAxis.resetHWCounter();
+                    robot.rearOdometry.resetHWCounter();
                     IMUPIDStrafer stoneStrafer = new IMUPIDStrafer(
                             robot.holonomic,
                             imuController,
@@ -255,7 +255,7 @@ public class AutonomousMeet4 extends LinearOpMode {
                             new Function0<Double>() {
                                 @Override
                                 public Double invoke() {
-                                    return stoneStrafeTarget - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                                    return stoneStrafeTarget - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                                 }
                             }
                     );
@@ -282,7 +282,7 @@ public class AutonomousMeet4 extends LinearOpMode {
 
                     drive(0, -8.5, 0.3);
 
-                    robot.odometryXAxis.resetHWCounter();
+                    robot.rearOdometry.resetHWCounter();
 
 
                     final double finalCrossFieldStrafeTarget = crossFieldStrafeTarget;
@@ -300,8 +300,8 @@ public class AutonomousMeet4 extends LinearOpMode {
                             }
                     );
 //                    crossFieldStrafer.setStartingLimit(19000, 0.4);
-                    robot.odometryXAxis.resetSWCounter();
-                    while (Math.abs(finalCrossFieldStrafeTarget)-Math.abs(robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)) > 5 && opModeIsActive()) crossFieldStrafer.run();
+                    robot.rearOdometry.resetSWCounter();
+                    while (Math.abs(finalCrossFieldStrafeTarget)-Math.abs(robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)) > 5 && opModeIsActive()) crossFieldStrafer.run();
                     straferPID.p = 0.2;
                     Thread armLiftPostStrafe = new Thread(new Runnable() {
                         @Override
@@ -315,7 +315,7 @@ public class AutonomousMeet4 extends LinearOpMode {
                         }
                     });
                     armLiftPostStrafe.start();
-                    while (Math.abs(finalCrossFieldStrafeTarget)-Math.abs(robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)) > 1 && opModeIsActive()) crossFieldStrafer.run();
+                    while (Math.abs(finalCrossFieldStrafeTarget)-Math.abs(robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)) > 1 && opModeIsActive()) crossFieldStrafer.run();
                     robot.holonomic.stop();
                     drive(0, 11, 0.5);
                     robot.holonomic.stop();
@@ -337,7 +337,7 @@ public class AutonomousMeet4 extends LinearOpMode {
 
                     robot.foundationGrabbers.unlock();
 
-                    robot.odometryXAxis.resetHWCounter();
+                    robot.rearOdometry.resetHWCounter();
 
                     straferPID.p = 0.4;
                     {
@@ -350,7 +350,7 @@ public class AutonomousMeet4 extends LinearOpMode {
                                 new Function0<Double>() {
                                     @Override
                                     public Double invoke() {
-                                        return strafeTarget - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH);
+                                        return strafeTarget - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
                                     }
                                 }
                         );
@@ -367,7 +367,7 @@ public class AutonomousMeet4 extends LinearOpMode {
                     robot.holonomic.stop();
                     sleep(500);
 //                    drive(5 * ((menuController.getAllianceColor()==AllianceColor.RED)?1.0:-1.0),0,0.4);
-                    robot.odometryXAxis.resetHWCounter();
+                    robot.rearOdometry.resetHWCounter();
                     straferPID.p = 0.25;
                     if (menuController.getPushAlliancePartner()) {
                         IMUPIDStrafer odometryAwayFromParkedBotStrafer = new IMUPIDStrafer(
@@ -384,7 +384,7 @@ public class AutonomousMeet4 extends LinearOpMode {
                         );
                         odometryAwayFromParkedBotStrafer.setYPower(yPowerForRobotPush);
 
-                        while (1.35-Math.abs(robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)) > 0 && opModeIsActive()) odometryAwayFromParkedBotStrafer.run();
+                        while (1.35-Math.abs(robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)) > 0 && opModeIsActive()) odometryAwayFromParkedBotStrafer.run();
                         robot.holonomic.stop();
                     }
                     robot.intakePivotMotor.setPower(0.0);

@@ -1,18 +1,16 @@
 package org.firstinspires.ftc.teamcode.opmodes.control
 
 import com.qualcomm.robotcore.hardware.PIDCoefficients
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
-import org.firstinspires.ftc.teamcode.library.robot.systems.Holonomic
-import kotlin.math.abs
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.Holonomic
 import kotlin.math.absoluteValue
 
 class IMUPIDStrafer (
-                    var holonomic: Holonomic,
-                    var imu: IMUController,
-                    var strafePIDCoefficients: PIDCoefficients,
-                    var angularPIDCoefficients: PIDCoefficients,
-                    val strafeErrorFun: ()->Double) {
+        var holonomic: Holonomic,
+        var imu: IMUController,
+        var strafePIDCoefficients: PIDCoefficients,
+        var angularPIDCoefficients: PIDCoefficients,
+        val strafeErrorFun: ()->Double) {
 
     private val angleTarget = imu.getHeading()
 

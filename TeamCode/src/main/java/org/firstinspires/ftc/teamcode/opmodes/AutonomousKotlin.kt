@@ -73,7 +73,7 @@ class AutonomousKotlin : LinearOpMode() {
         /*
             Prepare music and setup additional components.
          */
-        val player = ExtDirMusicPlayer(musicFile)
+        val player = ExtDirMusicPlayer(musicFile, true)
         player.play()
 
         elapsedTime = ElapsedTime()
@@ -157,7 +157,7 @@ class AutonomousKotlin : LinearOpMode() {
         val skystonePosition = cvContainer.pipeline.skystonePos
 
         // Reset the x-axis odometry counter, then drive towards the stones
-        robot.odometryXAxis.resetHWCounter()
+        robot.rearOdometry.resetHWCounter()
         drive(0.0, 26.0, 0.4)
         sleep(500)
 
@@ -178,41 +178,41 @@ class AutonomousKotlin : LinearOpMode() {
                 when (translatedSkystonePosition) {
                     LEFT   -> {
                         crossFieldStrafeTarget +=  2 * distanceBetweenSkystones
-                        stoneStrafeTarget      =  -distanceBetweenSkystones - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)
+                        stoneStrafeTarget      =  -distanceBetweenSkystones - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)
                     }
                     CENTER -> {
                         crossFieldStrafeTarget +=  1 * distanceBetweenSkystones
-                        stoneStrafeTarget      =  -1                        - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)
+                        stoneStrafeTarget      =  -1                        - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)
                     }
                     else  -> {
                         crossFieldStrafeTarget +=  0 * distanceBetweenSkystones
-                        stoneStrafeTarget      =   distanceBetweenSkystones - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)
+                        stoneStrafeTarget      =   distanceBetweenSkystones - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)
                     }
                 }
             BLUE ->
                 when (translatedSkystonePosition) {
                     LEFT   -> {
                         crossFieldStrafeTarget +=  0 * distanceBetweenSkystones
-                        stoneStrafeTarget      =  -distanceBetweenSkystones - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)
+                        stoneStrafeTarget      =  -distanceBetweenSkystones - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)
                     }
                     CENTER -> {
                         crossFieldStrafeTarget +=  1 * distanceBetweenSkystones
-                        stoneStrafeTarget      =  -1                        - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)
+                        stoneStrafeTarget      =  -1                        - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)
                     }
                     else  -> {
                         crossFieldStrafeTarget +=  2 * distanceBetweenSkystones
-                        stoneStrafeTarget      =   distanceBetweenSkystones - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH)
+                        stoneStrafeTarget      =   distanceBetweenSkystones - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH)
                     }
                 }
         }
 
-        robot.odometryXAxis.resetHWCounter()
+        robot.rearOdometry.resetHWCounter()
 
         // Strafe toward SKYSTONE
         IMUPIDStrafer(
                 robot.holonomic, imuController,
                 PIDCoefficients(0.2, 0.0000013, 0.0), PIDCoefficients(1.0, 0.0, 0.0))
-                { stoneStrafeTarget - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH) }
+                { stoneStrafeTarget - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH) }
 
                 .run {
                     // Force max power of 0.2
@@ -239,7 +239,7 @@ class AutonomousKotlin : LinearOpMode() {
         drive(0.0, -8.5, 0.3)
 
         // Strafe with SKYSTONE across the field, towards foundation
-        robot.odometryXAxis.resetHWCounter()
+        robot.rearOdometry.resetHWCounter()
         IMUPIDStrafer(
                 robot.holonomic, imuController,
                 PIDCoefficients(0.55, 0.0, 0.0), PIDCoefficients(1.75, 0.0, 0.0))
@@ -247,7 +247,7 @@ class AutonomousKotlin : LinearOpMode() {
 
                 .run {
                     // Use strafer while more than 5 inches away from target
-                    while (crossFieldStrafeTarget.absoluteValue - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH) > 5 && opModeIsActive())
+                    while (crossFieldStrafeTarget.absoluteValue - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH) > 5 && opModeIsActive())
                         run()
 
                     // Once robot is 5 inches away from target, raise/lower intake arm to desired position
@@ -262,7 +262,7 @@ class AutonomousKotlin : LinearOpMode() {
 
                     // Lower strafe power to 0.2 and continue strafing until robot is 1 inch away from target
                     strafePIDCoefficients.p = 0.2
-                    while (crossFieldStrafeTarget.absoluteValue - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH) > 5 && opModeIsActive())
+                    while (crossFieldStrafeTarget.absoluteValue - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH) > 5 && opModeIsActive())
                         run()
 
                     // Stop robot once target has been reached
@@ -288,12 +288,12 @@ class AutonomousKotlin : LinearOpMode() {
         robot.foundationGrabbers.unlock()
 
         // Strafe toward bridge for parking and/or push alliance partner under bridge
-        robot.odometryXAxis.resetHWCounter()
+        robot.rearOdometry.resetHWCounter()
         val parkingStrafeTarget = (if (pushAlliancePartner) 27.0 else 26.0) reverseIf RED
         IMUPIDStrafer(
                 robot.holonomic, imuController,
                 PIDCoefficients(0.005, 0.0000022, 0.0), PIDCoefficients(1.75, 0.0, 0.0))
-                { parkingStrafeTarget - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH) }
+                { parkingStrafeTarget - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH) }
 
                 .run {
                     // Use strafer while more than 1 inch away from target
@@ -317,7 +317,7 @@ class AutonomousKotlin : LinearOpMode() {
                         yPower = -0.25
 
                         // Use strafer while away from target
-                        while (1.35 - robot.odometryXAxis.getDistanceNormalized(DistanceUnit.INCH).absoluteValue > 0 && opModeIsActive())
+                        while (1.35 - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH).absoluteValue > 0 && opModeIsActive())
                             run()
 
                         // Stop robot once target has been reached

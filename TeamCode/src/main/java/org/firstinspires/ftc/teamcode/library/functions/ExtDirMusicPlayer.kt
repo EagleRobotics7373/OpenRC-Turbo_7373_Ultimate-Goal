@@ -46,7 +46,8 @@ class ExtDirMusicPlayer(extMusicFile: ExtMusicFile, seekAtBeginning: Boolean = f
     fun isPlaying() = mediaPlayer.isPlaying
 }
 
-enum class ExtMusicFile(@JvmField val fileName: String, @JvmField val beginSeekTo: Int = 0) {
+enum class ExtMusicFile
+constructor (@JvmField val fileName: String, @JvmField val beginSeekTo: Int = 0) {
     UNITY("unity.mp3"),
     MEGALOUNITY("megalounity.mp3"),
     CRABRAVE("crabrave.mp3", 59500),
@@ -55,5 +56,9 @@ enum class ExtMusicFile(@JvmField val fileName: String, @JvmField val beginSeekT
     PIZZATIME("pizzatime.mp3"),
     MEGALOVANIA("megalovania.mp3", 16000),
     TETRIS("tetris.mp3"),
+    ANGRYBIRDS("angrybirds.mp3"),
+    BADPIGGIES("badpiggies.mp3"),
+    IMPERIALMARCH("imperialmarch.mp3"),
+    MARCHOFTHERESISTANCE("marchoftheresistance.mp3", 15750),
     NONE("none")
 }

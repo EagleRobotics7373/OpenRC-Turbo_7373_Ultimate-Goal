@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.library.robot.robotcore
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.hardware.*
-import org.firstinspires.ftc.teamcode.library.robot.systems.FoundationGrabbers
-import org.firstinspires.ftc.teamcode.library.robot.systems.Holonomic
-import org.firstinspires.ftc.teamcode.library.robot.systems.IntakeBlockGrabber
-import org.firstinspires.ftc.teamcode.library.robot.systems.OdometryModule
+import org.firstinspires.ftc.teamcode.library.robot.systems.foundation.FoundationGrabbers
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.Holonomic
+import org.firstinspires.ftc.teamcode.library.robot.systems.intake.IntakeBlockGrabber
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
 
-class BasicRobot(private val hardwareMap: HardwareMap) {
+open class BasicRobot(protected val hardwareMap: HardwareMap) {
     // Drivetrain Variables
      @JvmField val frontLeftMotor          : DcMotor               = hwInit("frontLeftMotor")
      @JvmField val backLeftMotor           : DcMotor               = hwInit("backLeftMotor")
@@ -18,7 +17,9 @@ class BasicRobot(private val hardwareMap: HardwareMap) {
      @JvmField val intakeBlockManipulator  : DcMotor               = hwInit("intakeBlockManipulator")
      @JvmField val intakePivotMotor        : DcMotor               = hwInit("intakePivotMotor")
 
-     private   val odometryXAxisAsMotor    : DcMotor               = hwInit("odometryXAxis")
+     protected val rearOdometryAsMotor     : DcMotor               = hwInit("rearOdometryModule")
+     protected val leftOdometryAsMotor     : DcMotor               = hwInit("leftOdometryModule")
+     protected val rightOdometryAsMotor    : DcMotor               = intakePivotMotor
 
     // Servo Variables
      private   val leftFoundationServo     : Servo                 = hwInit("leftFoundationServo")
@@ -48,10 +49,13 @@ class BasicRobot(private val hardwareMap: HardwareMap) {
 
 
     // Robot Systems Variables
-     @JvmField val holonomic               : Holonomic              = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
-     @JvmField val foundationGrabbers      : FoundationGrabbers     = FoundationGrabbers(leftFoundationServo, rightFoundationServo)
-     @JvmField val intakeBlockGrabber      : IntakeBlockGrabber     = IntakeBlockGrabber(intakeGrabberServo)
-     @JvmField val odometryXAxis           : OdometryModule         = OdometryModule(odometryXAxisAsMotor)
+     @JvmField val holonomic               : Holonomic = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
+     @JvmField val foundationGrabbers      : FoundationGrabbers    = FoundationGrabbers(leftFoundationServo, rightFoundationServo)
+     @JvmField val intakeBlockGrabber      : IntakeBlockGrabber    = IntakeBlockGrabber(intakeGrabberServo)
+     @JvmField val rearOdometry            : OdometryModule        = OdometryModule(rearOdometryAsMotor, true)
+     @JvmField val leftOdometry            : OdometryModule        = OdometryModule(leftOdometryAsMotor, true)
+     @JvmField val rightOdometry           : OdometryModule        = OdometryModule(rightOdometryAsMotor, true)
     //     @JvmField val blinkin                 : RevBlinkinLedDriver   = hwInit("blinkin")
-    private inline fun <reified T> hwInit(name:String): T = hardwareMap.get(T::class.java, name)
+
+    protected inline fun <reified T> hwInit(name:String): T = hardwareMap.get(T::class.java, name)
 }
