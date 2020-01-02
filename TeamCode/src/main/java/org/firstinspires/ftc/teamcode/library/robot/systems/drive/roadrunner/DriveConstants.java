@@ -12,13 +12,14 @@ public class DriveConstants {
     public static double TRACK_WIDTH = 1;
 
     public static double MAX_RPM = 1150;
+    public static double TICKS_PER_REV = 145.6;
 
     public static double kV = 1.0 / rpmToVelocity(getMaxRpm());
     public static double kA = 0.0;
     public static double kStatic = 0.0;
 
     public static boolean RUN_USING_ENCODER = true;
-    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0.0, 0.0, 0.0);
+    public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(18, 0.1, 0.0);
 
     public static DriveConstraints BASE_CONSTRAINTS =
             new DriveConstraints(
@@ -30,7 +31,7 @@ public class DriveConstants {
             new PIDCoefficients(0, 0, 0);
 
     public static PIDCoefficients HEADING_PID =
-            new PIDCoefficients(0, 0, 0);
+            new PIDCoefficients(10, 0, 0);
 
     public static double rpmToVelocity(double rpm) {
         return rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;
@@ -43,8 +44,4 @@ public class DriveConstants {
     public static double encoderTicksToInches(double ticks) {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / 145.6;
     }
-
-
-
-
 }

@@ -34,7 +34,7 @@ import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrun
 @Autonomous(group = "rr_cfg")
 public class DriveFeedforwardTuner extends LinearOpMode {
     public static final double MAX_POWER = 0.7;
-    public static final double DISTANCE = 100;
+    public static final double DISTANCE = 50;
 
     @Override
     public void runOpMode() throws InterruptedException {

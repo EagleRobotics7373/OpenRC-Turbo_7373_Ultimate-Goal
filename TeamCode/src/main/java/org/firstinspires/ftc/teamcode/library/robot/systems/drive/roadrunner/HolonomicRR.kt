@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
 import com.acmerobotics.roadrunner.profile.MotionState
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -21,6 +22,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import org.firstinspires.ftc.teamcode.library.functions.toDegrees
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot
 import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.*
@@ -57,6 +59,8 @@ constructor (hardwareMap: HardwareMap,
 
     enum class Mode { IDLE, TURN, FOLLOW_TRAJECTORY }
     var mode = Mode.IDLE
+
+    val constraints = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
 
     val clock = NanoClock.system()
     val dashboard = FtcDashboard.getInstance()
@@ -180,6 +184,10 @@ constructor (hardwareMap: HardwareMap,
         waitForIdle()
     }
 
+    fun trajectoryBuilder(): TrajectoryBuilder {
+        return TrajectoryBuilder(poseEstimate, constraints)
+    }
+
     fun turn(angle: Double) {
         val heading = poseEstimate.heading
 
@@ -215,7 +223,7 @@ constructor (hardwareMap: HardwareMap,
 
     fun setPIDCoefficients(runMode: DcMotor.RunMode, coefficients: PIDCoefficients) {
         motorsExt.forEach {
-            it.setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, 0.0))
+            it.setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, getMotorVelocityF()))
             // TODO : "set kF to motor velocity F coefficient, look at RR quickstart DriveConstants"
         }
     }
@@ -260,5 +268,15 @@ constructor (hardwareMap: HardwareMap,
         backLeftExt  .power =  rearLeft
         backRightExt .power = -rearRight
         frontRightExt.power = -frontRight
+    }
+
+    fun getTicksPerSec(): Double {
+        // note: MotorConfigurationType#getAchieveableMaxTicksPerSecond() isn't quite what we want
+        return MAX_RPM * TICKS_PER_REV / 60.0
+    }
+
+    fun getMotorVelocityF(): Double {
+        // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
+        return 32767 / getTicksPerSec()
     }
 }

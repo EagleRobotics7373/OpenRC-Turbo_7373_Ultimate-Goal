@@ -13,6 +13,7 @@ open class BasicRobot(protected val hardwareMap: HardwareMap) {
      @JvmField val backLeftMotor           : DcMotor               = hwInit("backLeftMotor")
      @JvmField val frontRightMotor         : DcMotor               = hwInit("frontRightMotor")
      @JvmField val backRightMotor          : DcMotor               = hwInit("backRightMotor")
+     @JvmField val testMotor               : DcMotorEx             = hwInit("frontRightMotor")
 
      @JvmField val intakeBlockManipulator  : DcMotor               = hwInit("intakeBlockManipulator")
      @JvmField val intakePivotMotor        : DcMotor               = hwInit("intakePivotMotor")

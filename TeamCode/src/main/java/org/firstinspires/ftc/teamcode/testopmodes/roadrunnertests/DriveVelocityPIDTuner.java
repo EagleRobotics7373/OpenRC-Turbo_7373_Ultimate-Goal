@@ -40,7 +40,7 @@ import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrun
 @Config
 @Autonomous(group = "rr_cfg")
 public class DriveVelocityPIDTuner extends LinearOpMode {
-    public static double DISTANCE = 72;
+    public static double DISTANCE = 20;
 
     private static final String PID_VAR_NAME = "VELO_PID";
 
