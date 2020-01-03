@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.OdometryConstants.*
 import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH
+import org.firstinspires.ftc.teamcode.library.functions.toRadians
+
 
 class ThreeWheelOdometryLocalizer(
         private val leftModule : ExpansionHubMotor,
@@ -16,11 +19,14 @@ class ThreeWheelOdometryLocalizer(
 )
     : ThreeTrackingWheelLocalizer(
         listOf(
-                Pose2d(-0.39, -7.32, 0.0),
-                Pose2d(-0.39, 7.32, 0.0),
-                Pose2d(-6.93, 0.0, Math.PI / 2)
+//                Pose2d(INCH.fromCm(-2.2), INCH.fromCm(18.25), 0.0),
+//                Pose2d(INCH.fromCm(-2.2), INCH.fromCm(-19.5), 0.0),
+//                Pose2d(INCH.fromCm(-17.6), INCH.fromCm(0.0), Math.PI / 2)
+                Pose2d(INCH.fromCm(leftXcm), INCH.fromCm(leftYcm), leftAngleDeg.toRadians()),
+                Pose2d(INCH.fromCm(rightXcm), INCH.fromCm(rightYcm), rightAngleDeg.toRadians()),
+                Pose2d(INCH.fromCm(rearXcm), INCH.fromCm(rearYcm), rearAngleDeg.toRadians())
         )
-    )
+)
 {
     val modulesExt = listOf(leftModule, rightModule, rearModule)
 
@@ -39,7 +45,7 @@ class ThreeWheelOdometryLocalizer(
         val wheelPositions = emptyList<Double>().toMutableList()
 
         modulesExt.forEach {
-            wheelPositions.add(-(bulkData.getMotorCurrentPosition(it).toDouble() / TICKS_PER_REVOLUTION) * WHEEL_DIAMETER_mm * Math.PI)
+            wheelPositions.add((if (reverseOutput) -1.0 else 1.0) * (bulkData.getMotorCurrentPosition(it).toDouble() / TICKS_PER_REVOLUTION) * WHEEL_DIAMETER_mm * Math.PI)
         }
 
         return wheelPositions

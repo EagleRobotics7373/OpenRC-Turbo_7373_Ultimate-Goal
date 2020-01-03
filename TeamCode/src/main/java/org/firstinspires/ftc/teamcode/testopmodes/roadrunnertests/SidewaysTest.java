@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.testopmodes.roadrunnertests;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,8 +13,7 @@ import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.Hol
  */
 @TeleOp(group = "rr_cfg")
 @Config
-public class SplineTest extends LinearOpMode {
-    public static double distX = 10;
+public class SidewaysTest extends LinearOpMode {
     public static double distY = 10;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -27,7 +25,7 @@ public class SplineTest extends LinearOpMode {
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(distX, distY, 0))
+                        .strafeRight(distY)
                         .build()
         );
 

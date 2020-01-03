@@ -20,6 +20,7 @@ import com.acmerobotics.roadrunner.util.NanoClock
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
+import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.DashboardUtil
 import org.firstinspires.ftc.teamcode.library.functions.toDegrees
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot
@@ -85,10 +86,13 @@ constructor (hardwareMap: HardwareMap,
         turnController.setInputBounds(0.0, 2.0 * Math.PI)
 
         motorsExt.forEach {
-            it.mode = DcMotor.RunMode.RUN_USING_ENCODER
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-            if (MOTOR_VELO_PID != null) setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID)
+            if (RUN_USING_ENCODER) {
+                it.mode = DcMotor.RunMode.RUN_USING_ENCODER
+                if (MOTOR_VELO_PID != null) setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID)
+
+            }
         }
 
         // TODO: Need to set localizer here to odometry system...
@@ -117,14 +121,23 @@ constructor (hardwareMap: HardwareMap,
 
         packet.put("mode", mode)
 
+        val currentHeading = currentPose.heading
+
         packet.put("x", currentPose.x)
         packet.put("y", currentPose.y)
-        packet.put("heading", currentPose.heading)
-        packet.put("heading (deg)", currentPose.heading.toDegrees())
+        packet.put("heading", currentHeading)
+        packet.put("heading (deg)", currentHeading.toDegrees())
 
         packet.put("xError", lastError.x)
         packet.put("yError", lastError.y)
         packet.put("headingError", lastError.heading)
+
+        val imuHeading = rawExternalHeading
+
+        packet.put("imu heading", imuHeading)
+        packet.put("imu heading (deg)", imuHeading.toDegrees())
+
+        packet.put("heading diff (deg)", currentHeading.toDegrees() - imuHeading.toDegrees())
 
         when (mode) {
             Mode.TURN -> {
@@ -156,9 +169,14 @@ constructor (hardwareMap: HardwareMap,
                 val trajectory = follower.trajectory
 
                 fieldOverlay.setStrokeWidth(1)
-                fieldOverlay.setStroke("4CAF50")
+                fieldOverlay.setStroke("#4CAF50")
+                DashboardUtil.drawSampledPath(fieldOverlay, trajectory.path)
 
-                fieldOverlay.setStroke("3F51B5")
+                fieldOverlay.setStroke("#F44336")
+                val time = follower.elapsedTime()
+                DashboardUtil.drawRobot(fieldOverlay, trajectory[time])
+
+                fieldOverlay.setStroke("#3F51B5")
                 fieldOverlay.fillCircle(currentPose.x, currentPose.y, 3.0)
 
                 if (!follower.isFollowing()) {

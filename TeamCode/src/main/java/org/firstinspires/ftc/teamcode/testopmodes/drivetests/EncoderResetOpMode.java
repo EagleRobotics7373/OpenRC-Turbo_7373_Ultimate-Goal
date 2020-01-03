@@ -18,7 +18,7 @@ public class EncoderResetOpMode extends LinearOpMode {
 
         robot.rearOdometry.resetHWCounter();
         robot.leftOdometry.resetHWCounter();
-        robot.rearOdometry.resetHWCounter();
+        robot.rightOdometry.resetHWCounter();
 
 //        telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }

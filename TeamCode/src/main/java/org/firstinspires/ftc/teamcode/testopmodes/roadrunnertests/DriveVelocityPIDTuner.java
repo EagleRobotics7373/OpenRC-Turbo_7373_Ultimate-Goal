@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.ValueProvider;
 import com.acmerobotics.dashboard.config.variable.BasicVariable;
 import com.acmerobotics.dashboard.config.variable.CustomVariable;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
@@ -14,6 +15,7 @@ import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -38,7 +40,7 @@ import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrun
  * ctor.
  */
 @Config
-@Autonomous(group = "rr_cfg")
+@TeleOp(group = "rr_cfg")
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 20;
 
@@ -170,12 +172,15 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
             List<Double> velocities = drive.getWheelVelocities();
 
             // update telemetry
-            telemetry.addData("targetVelocity", motionState.getV());
+            TelemetryPacket packet = new TelemetryPacket();
+            packet.put("targetVelocity", motionState.getV());
             for (int i = 0; i < velocities.size(); i++) {
-                telemetry.addData("velocity" + i, velocities.get(i));
-                telemetry.addData("error" + i, motionState.getV() - velocities.get(i));
+                double velocity = velocities.get(i);
+                if (i > 1) velocity *= -1;
+                packet.put("velocity" + i, velocity);
+                packet.put("error" + i, motionState.getV() - velocity);
             }
-            telemetry.update();
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
         }
 
         removePidVariable();
