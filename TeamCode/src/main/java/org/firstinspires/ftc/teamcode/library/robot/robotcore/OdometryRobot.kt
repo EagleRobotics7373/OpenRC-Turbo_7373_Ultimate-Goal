@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.library.robot.robotcore
 
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.positional.PositionalHolonomicController
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR
 
 class OdometryRobot(hardwareMap: HardwareMap) : BasicRobot(hardwareMap) {
@@ -18,4 +19,7 @@ class OdometryRobot(hardwareMap: HardwareMap) : BasicRobot(hardwareMap) {
                     frontLeftMotor, backLeftMotor, backRightMotor, frontRightMotor,
                     leftOdometryModule, rightOdometryModule, rearOdometryModule,
                     imuController)
+
+    @JvmField val positionalHolonomic
+          = PositionalHolonomicController(holonomic, holonomicRoadRunner)
 }

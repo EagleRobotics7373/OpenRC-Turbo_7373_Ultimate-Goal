@@ -187,7 +187,7 @@ constructor (hardwareMap: HardwareMap,
 
         }
 
-        dashboard.sendTelemetryPacket(packet)
+//        dashboard.sendTelemetryPacket(packet)
 
 
     }
