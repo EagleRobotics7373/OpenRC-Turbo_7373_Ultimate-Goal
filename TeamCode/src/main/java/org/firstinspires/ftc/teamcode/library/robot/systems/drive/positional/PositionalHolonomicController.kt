@@ -2,13 +2,22 @@ package org.firstinspires.ftc.teamcode.library.robot.systems.drive.positional
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.hardware.DcMotor
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Position
+import org.firstinspires.ftc.teamcode.library.functions.toRadians
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.Holonomic
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR
 import kotlin.math.absoluteValue
 
-class PositionalHolonomicController(val holonomic: Holonomic, val holonomicRR: HolonomicRR) {
+class PositionalHolonomicController(
+        val holonomic: Holonomic,
+        val holonomicRR: HolonomicRR,
+        val leftModule: OdometryModule,
+        val rightModule: OdometryModule,
+        val rearModule: OdometryModule) {
 
     var mode = Mode.INACTIVE
     val dashboard: FtcDashboard = FtcDashboard.getInstance()
@@ -23,12 +32,14 @@ class PositionalHolonomicController(val holonomic: Holonomic, val holonomicRR: H
         holonomicRR.update()
 
         if (mode == Mode.TARGETING) {
-            val output = positionTarget.recieveOutput()
+
+
+            val output = positionTarget.recieveOutput(getPoseEstimate())
             holonomic.runWithoutEncoder(-output.y, output.x, output.heading)
 
-            if (positionTarget.lastError.x.absoluteValue < 0.5
-                    && positionTarget.lastError.y.absoluteValue < 0.5
-                    && positionTarget.lastError.heading.absoluteValue < 1) {
+            if ((if (positionTarget.ignoreX) true else positionTarget.lastError.x.absoluteValue < 0.5)
+                    && (if (positionTarget.ignoreY) true else positionTarget.lastError.y.absoluteValue < 0.5)
+                    && (if (positionTarget.ignoreHeading) true else positionTarget.lastError.heading.absoluteValue < 0.1)) {
                 mode = Mode.INACTIVE
                 holonomic.stop()
                 holonomic.setMotorsMode(DcMotor.RunMode.RUN_USING_ENCODER)
@@ -38,10 +49,15 @@ class PositionalHolonomicController(val holonomic: Holonomic, val holonomicRR: H
             packet.put("x error", positionTarget.lastError.x)
             packet.put("y error", positionTarget.lastError.y)
             packet.put("heading error", positionTarget.lastError.heading)
+            packet.put("heading error (deg)", positionTarget.lastError.heading)
 
             packet.put("x output (rcv)", output.x)
             packet.put("y output (rcv)", output.y)
             packet.put("heading output (rcv)", output.heading)
+
+            packet.put("x error sum", positionTarget.errorSum.x)
+            packet.put("y error sum", positionTarget.errorSum.y)
+            packet.put("heading error sum", positionTarget.errorSum.heading)
 
             dashboard.sendTelemetryPacket(packet)
 
@@ -58,8 +74,23 @@ class PositionalHolonomicController(val holonomic: Holonomic, val holonomicRR: H
         while (!Thread.currentThread().isInterrupted && mode!=Mode.INACTIVE) update()
     }
 
+    private fun getPoseEstimate() : Pose2d {
+        return Pose2d(
+                (leftModule.getDistanceNormalized(DistanceUnit.INCH) + rightModule.getDistanceNormalized(DistanceUnit.INCH)) / 2,
+                -rearModule.getDistanceNormalized(DistanceUnit.INCH),
+                holonomicRR.externalHeading
+        )
+    }
+
+    fun resetOdometry() {
+        leftModule.resetSWCounter()
+        rightModule.resetSWCounter()
+        rearModule.resetSWCounter()
+    }
+
     fun positionConstructor(): PositionConstructor {
-        val currentPose = holonomicRR.poseEstimate
-        return PositionConstructor(holonomicRR, currentPose.x, currentPose.y, currentPose.heading)
+        resetOdometry()
+        val currentPose = getPoseEstimate()
+        return PositionConstructor(currentPose.x, currentPose.y, currentPose.heading)
     }
 }

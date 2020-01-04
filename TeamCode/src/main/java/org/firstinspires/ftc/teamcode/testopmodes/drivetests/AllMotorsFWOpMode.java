@@ -73,10 +73,4 @@ public class AllMotorsFWOpMode extends OpMode {
         super.stop();
         player.stop();
     }
-
-
-    /*
-    We would greatly appreciate your reviewal of our business plan and any
-    level of sponsorship or support you would be willing to provide us.
-     */
 }

@@ -35,7 +35,7 @@ class AutonomousKotlin : LinearOpMode() {
     /*
         VARIABLES: Menu Options
      */
-                     var allianceColor                       = RED
+                     var allianceColor             = RED
                      var startingPosition                    = FieldSide.WAFFLE_SIDE
                      var musicFile                           = ExtMusicFile.NONE
                      var parkOnly                            = false
