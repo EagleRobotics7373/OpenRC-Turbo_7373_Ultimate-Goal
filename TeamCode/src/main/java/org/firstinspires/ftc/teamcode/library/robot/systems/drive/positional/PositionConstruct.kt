@@ -154,6 +154,13 @@ class PositionConstructor(
                 PIDCoefficients(1.5, 0.0, 0.0),
                 Pose2d(0.6, 0.6, 0.6),
                 Pose2d(5.0, 5.0, Math.PI / 2)
+        ),
+        DEFAULT(
+                PIDCoefficients(0.02, 0.18,0.0),
+                PIDCoefficients(0.05, 0.22, 0.0),
+                PIDCoefficients(2.0, 0.0, 1.0),
+                Pose2d(0.30, 0.35, 0.6),
+                Pose2d(5.0, 5.0, Math.PI / 2)
         )
     }
 
@@ -198,8 +205,8 @@ class PositionConstruct(
         )
 
         errorSum = Pose2d(
-                errorSum.x + if (error.x.absoluteValue < errorSumRestrictOutOf.x) error.x/timeDiff else 0.0,
-                errorSum.y + if (error.y.absoluteValue < errorSumRestrictOutOf.y) error.y/timeDiff else 0.0,
+                (if (lastError.x * error.x > 0) (errorSum.x + if (error.x.absoluteValue < errorSumRestrictOutOf.x) error.x/timeDiff else 0.0) else 0.0),
+                (if (lastError.y * error.y > 0) (errorSum.y + if (error.y.absoluteValue < errorSumRestrictOutOf.y) error.y/timeDiff else 0.0) else 0.0),
                 errorSum.heading + if (error.heading.absoluteValue < errorSumRestrictOutOf.heading) error.heading/timeDiff else 0.0
         )
 

@@ -19,7 +19,7 @@ public class DriveConstants {
     public static double MAX_RPM = 1150;
     public static double TICKS_PER_REV = 145.6;
 
-    public static double kV = 0.0035 /*.00772*/   /*1.0 / rpmToVelocity(getMaxRpm())*/ ;
+    public static double kV = /*0.0035 .00772*/   1.0 / rpmToVelocity(getMaxRpm()) ;
     public static double kA = 0.0;
     public static double kStatic = .014;
 
@@ -50,5 +50,3 @@ public class DriveConstants {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / 145.6;
     }
 }
-
-

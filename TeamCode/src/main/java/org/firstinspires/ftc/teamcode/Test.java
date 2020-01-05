@@ -1,17 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.library.functions.FunctionalExtensionsKt;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
 
+@Config
 @TeleOp(name = "Test", group = "Sensor")
 public class Test extends LinearOpMode {
+
+    public static double PPower = 0;
+    public static double constPower = .12;
 
     BasicRobot robot;
     IMUController imuController;
@@ -20,6 +28,7 @@ public class Test extends LinearOpMode {
 
         robot = new BasicRobot(hardwareMap);
         imuController = new IMUController(hardwareMap, AxesOrder.ZYX);
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // wait for the start button to be pressed
         waitForStart();
@@ -30,32 +39,24 @@ public class Test extends LinearOpMode {
 //            sleep(500);
 //        }
 
+        doArmLift();
 
         while (opModeIsActive()) {
-
             telemetry.addData("voltage", robot.intakePivotPotentiometer.getVoltage());
-            telemetry.addData("left", robot.leftDistanceSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("left CM ultrasonic", robot.leftDistanceSensor.cmUltrasonic());
-            telemetry.addData("left CM optical", robot.leftDistanceSensor.cmOptical());
-            telemetry.addData("right", robot.rightDistanceSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("right CM ultrasonic", robot.rightDistanceSensor.cmUltrasonic());
-            telemetry.addData("right CM optical", robot.rightDistanceSensor.cmOptical());
-            telemetry.addData("front", robot.frontDistanceSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("heading", FunctionalExtensionsKt.toDegrees(imuController.getHeading()));
             telemetry.update();
 
         }
     }
 
     private void doArmLift() {
-        double currentValue = 2.0;
-        double targetValue = 1.257;
-        double PPower = 4.0;
+        double currentValue = robot.intakePivotPotentiometer.getVoltage();
+        double targetValue = 1.3;
+        double kP = PPower;
         double originalRuntime = getRuntime();
         while ((currentValue=robot.intakePivotPotentiometer.getVoltage()) > targetValue && opModeIsActive() && (getRuntime()-originalRuntime)<1) {
-            robot.intakePivotMotor.setPower(-PPower * (targetValue-robot.intakePivotPotentiometer.getVoltage()));
+            robot.intakePivotMotor.setPower(-kP * (targetValue-robot.intakePivotPotentiometer.getVoltage()));
         }
-        robot.intakePivotMotor.setPower(0.12);
+        robot.intakePivotMotor.setPower(constPower);
     }
 
     private void drive(double x, double y, double power) {

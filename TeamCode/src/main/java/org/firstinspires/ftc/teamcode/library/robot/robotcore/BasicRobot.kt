@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.library.robot.systems.foundation.Foundatio
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.Holonomic
 import org.firstinspires.ftc.teamcode.library.robot.systems.intake.IntakeBlockGrabber
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
+import org.firstinspires.ftc.teamcode.library.robot.systems.intake.AutoBlockIntake
 
 open class BasicRobot(protected val hardwareMap: HardwareMap) {
     // Drivetrain Variables
@@ -26,7 +27,8 @@ open class BasicRobot(protected val hardwareMap: HardwareMap) {
      private   val leftFoundationServo     : Servo                 = hwInit("leftFoundationServo")
      private   val rightFoundationServo    : Servo                 = hwInit("rightFoundationServo")
      private   val intakeGrabberServo      : Servo                 = hwInit("intakeGrabberServo")
-
+     private   val autoBlockGrabber        : Servo                 = hwInit("autoBlockGrabber")
+     private   val autoBlockPivot          : Servo                 = hwInit("autoBlockPivot")
     // IMU Variables
 //     @JvmField val imuA                    : BNO055IMU             = hwInit("imuA")
 //     @JvmField val imuB                    : BNO055IMU             = hwInit("imuB")
@@ -53,6 +55,7 @@ open class BasicRobot(protected val hardwareMap: HardwareMap) {
      @JvmField val holonomic               : Holonomic = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
      @JvmField val foundationGrabbers      : FoundationGrabbers    = FoundationGrabbers(leftFoundationServo, rightFoundationServo)
      @JvmField val intakeBlockGrabber      : IntakeBlockGrabber    = IntakeBlockGrabber(intakeGrabberServo)
+     @JvmField val autoBlockIntake         : AutoBlockIntake       = AutoBlockIntake(autoBlockPivot, autoBlockGrabber)
      @JvmField val rearOdometry            : OdometryModule        = OdometryModule(rearOdometryAsMotor, true)
      @JvmField val leftOdometry            : OdometryModule        = OdometryModule(leftOdometryAsMotor, true)
      @JvmField val rightOdometry           : OdometryModule        = OdometryModule(rightOdometryAsMotor, true)

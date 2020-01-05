@@ -7,14 +7,14 @@ class OdometryModule(private val encoder: DcMotor,
                      private val reverse: Boolean = false) {
 
     init {
-        encoder.mode = DcMotor.RunMode.RUN_USING_ENCODER
+//        encoder.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     private var currentPositionOffset = 0
 
     fun resetHWCounter() {
         encoder.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        encoder.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        encoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     fun resetSWCounter() { currentPositionOffset = encoder.currentPosition }

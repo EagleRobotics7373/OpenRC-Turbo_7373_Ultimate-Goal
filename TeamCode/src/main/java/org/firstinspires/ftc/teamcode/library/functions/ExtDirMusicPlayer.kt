@@ -61,5 +61,7 @@ constructor (@JvmField val fileName: String, @JvmField val beginSeekTo: Int = 0)
     IMPERIALMARCH("imperialmarch.mp3"),
     MARCHOFTHERESISTANCE("marchoftheresistance.mp3", 15750),
     CANTINABAND("cantinaband.mp3"),
+    CREEPER_AWMAN("creeperawman.mp3",38000),
+    RIDEOFTHEVALKRIES("rideofthevalkries.mp3"),
     NONE("none")
 }

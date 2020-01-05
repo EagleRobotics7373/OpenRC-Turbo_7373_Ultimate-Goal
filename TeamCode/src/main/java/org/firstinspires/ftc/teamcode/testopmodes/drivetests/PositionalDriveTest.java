@@ -14,13 +14,13 @@ public class PositionalDriveTest extends LinearOpMode {
     public static double yDist = -10;
     public static double headingDegrees = 0;
 
-    public static PIDCoefficients xCoeffs       = new PIDCoefficients(0.03, 1.5, 0);
-    public static PIDCoefficients yCoeffs       = new PIDCoefficients(0.3, 0.01, 0);
+    public static PIDCoefficients xCoeffs       = new PIDCoefficients(0.17, 0.02, 0);
+    public static PIDCoefficients yCoeffs       = new PIDCoefficients(0.025, 0.13, 0);
     public static PIDCoefficients headingCoeffs = new PIDCoefficients(1.5, 0, 0);
 
-    public static double xMax = 0.2;
-    public static double yMax = 0.2;
-    public static double headingMax = 0.2;
+    public static double xMax = 0.6;
+    public static double yMax = 0.6;
+    public static double headingMax = 0.6;
 
     public static double xRestrict = 5;
     public static double yRestrict = 5;
@@ -39,6 +39,11 @@ public class PositionalDriveTest extends LinearOpMode {
         if (servosLocked) robot.foundationGrabbers.lock();
         else robot.foundationGrabbers.unlock();
 
+        robot.autoBlockIntake.grabBlock();
+        sleep(200);
+        robot.autoBlockIntake.pivotMid();
+        sleep(500);
+
         robot.positionalHolonomic.runPositionSync(
                 robot.positionalHolonomic.positionConstructor()
                         .vectorRelative(xDist, yDist, headingDegrees)
@@ -49,5 +54,7 @@ public class PositionalDriveTest extends LinearOpMode {
                         .setSumRestrict(xRestrict, yRestrict, headingRestrict)
                         .build()
         );
+
+
     }
 }

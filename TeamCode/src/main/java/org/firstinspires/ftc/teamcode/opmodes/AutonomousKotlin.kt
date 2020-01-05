@@ -149,7 +149,7 @@ class AutonomousKotlin : LinearOpMode() {
 
     fun doLoadingZoneAuto() {
         // Lift intake arm so camera has open view, then enable SKYSTONE detection
-        doArmLift(1.153)
+        doArmLift(1.3)
         cvContainer.pipeline.tracking = true
         while (cvContainer.pipeline.tracking) sleep(50)
 
@@ -397,9 +397,8 @@ class AutonomousKotlin : LinearOpMode() {
      */
     private fun doArmLift(target: Double) {
         var currentValue = robot.intakePivotPotentiometer.voltage
-        val kP = 3.5
+        val kP = 4
         val originalRuntime = runtime
-
         while (currentValue > target && opModeIsActive() && runtime - originalRuntime < 1) {
             robot.intakePivotMotor.power = -kP * target - currentValue
             telem.update()
