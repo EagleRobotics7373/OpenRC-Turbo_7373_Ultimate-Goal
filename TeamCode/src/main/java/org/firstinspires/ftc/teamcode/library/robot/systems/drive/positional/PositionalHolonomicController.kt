@@ -21,6 +21,7 @@ class PositionalHolonomicController(
 
     var mode = Mode.INACTIVE
     val dashboard: FtcDashboard = FtcDashboard.getInstance()
+    var globalHeading = holonomicRR.externalHeading
 
     private lateinit var positionTarget : PositionConstruct
 
@@ -88,9 +89,9 @@ class PositionalHolonomicController(
         rearModule.resetSWCounter()
     }
 
-    fun positionConstructor(): PositionConstructor {
+    @JvmOverloads fun positionConstructor(resetHeadingTarget: Boolean = false): PositionConstructor {
         resetOdometry()
         val currentPose = getPoseEstimate()
-        return PositionConstructor(currentPose.x, currentPose.y, currentPose.heading)
+        return PositionConstructor(currentPose.x, currentPose.y, holonomicRR.externalHeading, resetHeadingTarget)
     }
 }

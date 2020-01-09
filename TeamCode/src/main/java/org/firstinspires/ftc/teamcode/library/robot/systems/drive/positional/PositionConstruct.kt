@@ -1,21 +1,19 @@
 package org.firstinspires.ftc.teamcode.library.robot.systems.drive.positional
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients
-import com.acmerobotics.roadrunner.drive.Drive
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import org.firstinspires.ftc.robotcore.external.navigation.Position
 import org.firstinspires.ftc.teamcode.library.functions.toRadians
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR
 import kotlin.math.absoluteValue
-
+private var relativeHeadingTarget: Double? = null
 class PositionConstructor(
-        val xStarting: Double,
-        val yStarting: Double,
-        var headingStarting: Double)
+         xStarting: Double,
+         yStarting: Double,
+         headingStarting: Double,
+         resetRelativeTarget: Boolean)
 {
     private var xTarget: Double = xStarting
     private var yTarget: Double = yStarting
-    private var headingTarget: Double = headingStarting
+    private var headingTarget: Double = relativeHeadingTarget ?: headingStarting
 
     private var xAxisPID   = PIDCoefficients(1.0, 0.0, 0.0)
     private var yAxisPID   = PIDCoefficients(1.0, 0.0, 0.0)
@@ -28,6 +26,13 @@ class PositionConstructor(
     private var ignoreX = false
     private var ignoreY = false
     private var ignoreHeading = false
+
+    init {
+        if (resetRelativeTarget) {
+            relativeHeadingTarget = headingStarting
+            headingTarget = headingStarting
+        }
+    }
 
     fun setXAxisPID(pid : PIDCoefficients): PositionConstructor  {
         xAxisPID = pid
@@ -118,6 +123,7 @@ class PositionConstructor(
     }
 
     fun build() : PositionConstruct {
+        relativeHeadingTarget = headingTarget
         return PositionConstruct(
                 Pose2d(xTarget, yTarget, headingTarget),
                 xAxisPID, yAxisPID, headingPID,
@@ -156,10 +162,10 @@ class PositionConstructor(
                 Pose2d(5.0, 5.0, Math.PI / 2)
         ),
         DEFAULT(
-                PIDCoefficients(0.02, 0.18,0.0),
-                PIDCoefficients(0.05, 0.22, 0.0),
-                PIDCoefficients(2.0, 0.0, 1.0),
-                Pose2d(0.30, 0.35, 0.6),
+                PIDCoefficients(0.010, 0.22,0.0),
+                PIDCoefficients(0.030, 0.28, 0.0),
+                PIDCoefficients(1.25, 0.0, 0.5),
+                Pose2d(0.45, 0.40, 0.6),
                 Pose2d(5.0, 5.0, Math.PI / 2)
         )
     }

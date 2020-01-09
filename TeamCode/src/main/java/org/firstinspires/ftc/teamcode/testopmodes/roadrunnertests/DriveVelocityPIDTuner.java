@@ -158,7 +158,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
             // calculate and set the motor power
             double profileTime = clock.seconds() - profileStart;
 
-            if (profileTime > activeProfile.duration()) {
+            if (profileTime > activeProfile.duration() && gamepad1.y) {
                 // generate a new profile
                 movingForwards = !movingForwards;
                 activeProfile = generateProfile(movingForwards);

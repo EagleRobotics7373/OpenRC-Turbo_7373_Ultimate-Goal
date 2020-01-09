@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.acmerobotics.roadrunner.control.PIDCoefficients
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.library.functions.*
@@ -15,8 +17,8 @@ import org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.OpenCvContainer
 import org.firstinspires.ftc.teamcode.opmodes.AutonomousConstants.*
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous LT (Kotlin)", group = "Main")
-class AutonomousKotlinLT : LinearOpMode() {
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous LT (Kotlin + RR)", group = "Main")
+class AutonomousKotlinLT_RR : LinearOpMode() {
 
     /*
         VARIABLES: Hardware and Control
@@ -135,131 +137,29 @@ class AutonomousKotlinLT : LinearOpMode() {
     }
 
     fun doLoadingZoneAuto() {
-
-
-        val translatedSkystonePosition = Position.CENTER
-
-        telem.addData("position", translatedSkystonePosition)
-        telem.update()
-
         robot.autoBlockIntake.releaseBlock()
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor(true)
-                        .setDriveProfile(DEFAULT)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                            Position.RIGHT-> 2.5
-                            Position.CENTER-> 9.5
-                            else-> 19.0
-                        }, -26.0)
+        robot.autoBlockIntake.pivotMid()
+        robot.holonomicRoadRunner.followTrajectorySync(
+                robot.holonomicRoadRunner.trajectoryBuilder()
+                        .strafeTo(Vector2d(10.0, -26.0))
                         .build()
         )
         robot.autoBlockIntake.pivotDown()
+        sleep(800)
+        robot.autoBlockIntake.grabBlock()
+        sleep(700)
+
+        robot.holonomicRoadRunner.followTrajectorySync(
+                robot.holonomicRoadRunner.trajectoryBuilder()
+                        .splineTo(Pose2d(42.0, -22.0, 0.0))
+                        .splineTo(Pose2d(93.0, -26.0, 0.0))
+                        .build()
+        )
+
+        robot.autoBlockIntake.pivotDown()
+        sleep(300)
+        robot.autoBlockIntake.releaseBlock()
         sleep(750)
-        robot.autoBlockIntake.grabBlock()
-        sleep(700)
-        robot.autoBlockIntake.pivotMid()
-        sleep(300)
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(DEFAULT)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                                    Position.RIGHT-> 93.0
-                                    Position.CENTER-> 85.0
-                                    else-> 77.0
-                                }, 4.5)
-                        .build()
-        )
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(DEFAULT)
-                        .vectorRelative(0.0, -7.5,0.0)
-                        .build()
-        )
-
-        robot.autoBlockIntake.pivotDown()
-        sleep(500)
-        robot.autoBlockIntake.releaseBlock()
-        sleep(200)
-        robot.autoBlockIntake.pivotUp()
-        sleep(200)
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(DEFAULT)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                                    Position.RIGHT-> -101.0
-                                    Position.CENTER-> -108.5
-                                    else-> -117.0
-                                }, 0.5,0.0)
-                        .build()
-        )
-
-        robot.autoBlockIntake.pivotDown()
-        sleep(700)
-        robot.autoBlockIntake.grabBlock()
-        sleep(700)
-        robot.autoBlockIntake.pivotMid()
-        sleep(300)
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(DEFAULT)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                                    Position.RIGHT-> 90.0
-                                    Position.CENTER-> 98.0
-                                    else-> 116.0
-                                }, 5.0,0.0)
-                        .build()
-        )
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(DEFAULT)
-                        .vectorRelative(0.0, -6.5,0.0)
-                        .build()
-        )
-
-        robot.autoBlockIntake.pivotDown()
-        sleep(500)
-        robot.autoBlockIntake.releaseBlock()
-        sleep(200)
-        robot.autoBlockIntake.pivotUp()
-        sleep(200)
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(DEFAULT)
-                        .setXAxisPID(DEFAULT.xAxisPID.copy(kP = 0.04, kI = 0.10))
-                        .vectorRelative(6.75, 5.0,0.0)
-                        .build()
-        )
-
-        imuPIRotate(-90.0)
-
-        robot.foundationGrabbers.setPosition(0.75)
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor(true)
-                        .setDriveProfile(DEFAULT)
-                        .setXAxisPID(PIDCoefficients(0.04, DEFAULT.xAxisPID.kI, DEFAULT.xAxisPID.kD))
-                        .vectorRelative(6.25, 0.0,0.0)
-                        .build()
-        )
-
-        robot.foundationGrabbers.lock()
-
-        sleep(500)
-
-        timeDrive(0.0, -0.5, 0.0, 1500)
-
-        robot.foundationGrabbers.unlock()
     }
 
     fun doLoadingZoneAutoSpeedy() {
@@ -524,7 +424,7 @@ class AutonomousKotlinLT : LinearOpMode() {
         var power: Double
         var errorSum = 0.0
         val originalRuntime = runtime
-        while (currentValue != targetValue && opModeIsActive() && runtime - originalRuntime < 1.5) {
+        while (currentValue != targetValue && opModeIsActive() && runtime - originalRuntime < 4) {
             currentValue = imuController.getHeading().toDegrees()
             telemetry.addData("Current value", currentValue)
             telemetry.addData("Target value", targetValue)
@@ -560,5 +460,5 @@ class AutonomousKotlinLT : LinearOpMode() {
         robot.holonomic.stop()
     }
 
-    private inline fun positionalConstructor(reset: Boolean = false) = robot.positionalHolonomic.positionConstructor(reset)
+    private inline fun positionalConstructor() = robot.positionalHolonomic.positionConstructor()
 }

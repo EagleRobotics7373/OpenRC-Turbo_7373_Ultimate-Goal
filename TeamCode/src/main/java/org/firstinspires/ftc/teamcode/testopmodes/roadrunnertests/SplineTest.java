@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.Hol
 public class SplineTest extends LinearOpMode {
     public static double distX = 10;
     public static double distY = 10;
+    public static boolean reverse = false;
     @Override
     public void runOpMode() throws InterruptedException {
         HolonomicRR drive = new OdometryRobot(hardwareMap).holonomicRoadRunner;
@@ -27,6 +28,7 @@ public class SplineTest extends LinearOpMode {
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
+                        .setReversed(reverse)
                         .splineTo(new Pose2d(distX, distY, 0))
                         .build()
         );

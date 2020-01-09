@@ -56,7 +56,7 @@ open class BasicRobot(protected val hardwareMap: HardwareMap) {
      @JvmField val foundationGrabbers      : FoundationGrabbers    = FoundationGrabbers(leftFoundationServo, rightFoundationServo)
      @JvmField val intakeBlockGrabber      : IntakeBlockGrabber    = IntakeBlockGrabber(intakeGrabberServo)
      @JvmField val autoBlockIntake         : AutoBlockIntake       = AutoBlockIntake(autoBlockPivot, autoBlockGrabber)
-     @JvmField val rearOdometry            : OdometryModule        = OdometryModule(rearOdometryAsMotor, true)
+     @JvmField val rearOdometry            : OdometryModule        = OdometryModule(rearOdometryAsMotor, false)
      @JvmField val leftOdometry            : OdometryModule        = OdometryModule(leftOdometryAsMotor, true)
      @JvmField val rightOdometry           : OdometryModule        = OdometryModule(rightOdometryAsMotor, true)
     //     @JvmField val blinkin                 : RevBlinkinLedDriver   = hwInit("blinkin")

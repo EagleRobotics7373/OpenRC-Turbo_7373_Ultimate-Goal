@@ -37,5 +37,7 @@ public class SidewaysTest extends LinearOpMode {
 //                        .splineTo(new Pose2d(0, 0, 0))
 //                        .build()
 //        );
+
+        while (!isStopRequested()) drive.update();
     }
 }

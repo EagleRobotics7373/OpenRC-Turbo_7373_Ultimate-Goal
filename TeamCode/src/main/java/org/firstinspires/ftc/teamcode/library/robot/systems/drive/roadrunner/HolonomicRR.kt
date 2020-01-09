@@ -75,7 +75,7 @@ constructor (hardwareMap: HardwareMap,
     // TODO: set BASE_CONSTRAINTS, TRACK_WIDTH, and the other stuff
     // UPDATE: completed
     val driveConstraints = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
-    val follower = HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID)
+    val follower = HolonomicPIDVAFollower(TRANSLATIONAL_X_PID, TRANSLATIONAL_Y_PID, HEADING_PID)
 
     lateinit var lastWheelPositions : List<Double>
     var lastTimestamp = 0.0
@@ -189,7 +189,6 @@ constructor (hardwareMap: HardwareMap,
 
 //        dashboard.sendTelemetryPacket(packet)
 
-
     }
 
     fun followTrajectory(trajectory: Trajectory) {
@@ -241,7 +240,7 @@ constructor (hardwareMap: HardwareMap,
 
     fun setPIDCoefficients(runMode: DcMotor.RunMode, coefficients: PIDCoefficients) {
         motorsExt.forEach {
-            it.setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, getMotorVelocityF()))
+            it.setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, kF))
             // TODO : "set kF to motor velocity F coefficient, look at RR quickstart DriveConstants"
         }
     }
@@ -288,13 +287,4 @@ constructor (hardwareMap: HardwareMap,
         frontRightExt.power = -frontRight
     }
 
-    fun getTicksPerSec(): Double {
-        // note: MotorConfigurationType#getAchieveableMaxTicksPerSecond() isn't quite what we want
-        return MAX_RPM * TICKS_PER_REV / 60.0
-    }
-
-    fun getMotorVelocityF(): Double {
-        // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
-        return 32767 / getTicksPerSec()
-    }
 }
