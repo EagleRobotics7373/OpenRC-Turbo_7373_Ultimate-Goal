@@ -52,10 +52,10 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
          */
         robot = OdometryRobot(hardwareMap)
         imuController = robot.imuController
-        cvContainer = VisionFactory.createOpenCv(
-                VisionFactory.CameraType.WEBCAM,
-                hardwareMap,
-                PixelStatsPipeline(PixelStatsPipeline.StatsDetector.DETECTOR_VALUE_STDDEV))
+//        cvContainer = VisionFactory.createOpenCv(
+//                VisionFactory.CameraType.WEBCAM,
+//                hardwareMap,
+//                PixelStatsPipeline(PixelStatsPipeline.StatsDetector.DETECTOR_VALUE_STDDEV))
 
 
         /*
@@ -78,7 +78,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
 
         elapsedTime = ElapsedTime()
 
-        cvContainer.pipeline.detector = visionDetector
+//        cvContainer.pipeline.detector = visionDetector
 
 
         /*
@@ -94,7 +94,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
         /*
             OpMode actions have finished. Wait until OpMode is stopped, then close resources.
          */
-        while (opModeIsActive());
+        while (opModeIsActive()) robot.holonomicRoadRunner.update()
 
 //        cvContainer.stop()
         player.stop()
@@ -139,198 +139,61 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
     fun doLoadingZoneAuto() {
         robot.autoBlockIntake.releaseBlock()
         robot.autoBlockIntake.pivotMid()
+
         robot.holonomicRoadRunner.followTrajectorySync(
                 robot.holonomicRoadRunner.trajectoryBuilder()
-                        .strafeTo(Vector2d(10.0, -26.0))
+                        .strafeTo(Vector2d(12.0, -28.0))
                         .build()
         )
         robot.autoBlockIntake.pivotDown()
+        sleep(550)
+        robot.autoBlockIntake.grabBlock()
+        sleep(550)
+        robot.autoBlockIntake.pivotUp()
+        sleep(700)
+        robot.holonomicRoadRunner.followTrajectorySync(
+                robot.holonomicRoadRunner.trajectoryBuilder()
+                        .strafeTo(Vector2d(42.0, -22.0))
+                        .strafeTo(Vector2d(96.0, -30.0))
+                        .build()
+        )
+
+        robot.autoBlockIntake.pivotDown()
+        sleep(400)
+        robot.autoBlockIntake.releaseBlock()
         sleep(800)
-        robot.autoBlockIntake.grabBlock()
-        sleep(700)
 
+        robot.autoBlockIntake.pivotUp()
         robot.holonomicRoadRunner.followTrajectorySync(
                 robot.holonomicRoadRunner.trajectoryBuilder()
-                        .splineTo(Pose2d(42.0, -22.0, 0.0))
-                        .splineTo(Pose2d(93.0, -26.0, 0.0))
+                        .strafeTo(Vector2d(42.0, -22.0))
+                        .strafeTo(Vector2d(-12.0, -28.75))
                         .build()
         )
 
         robot.autoBlockIntake.pivotDown()
-        sleep(300)
-        robot.autoBlockIntake.releaseBlock()
-        sleep(750)
-    }
-
-    fun doLoadingZoneAutoSpeedy() {
-        robot.autoBlockIntake.pivotDown()
-        /*cvContainer.pipeline.tracking = true
-        while (cvContainer.pipeline.tracking) sleep(50)
-
-        // Obtain SKYSTONE position after tracking has finished
-        val skystonePosition = cvContainer.pipeline.skystonePos
-
-        // Translate LEFT/RIGHT detector result to field-oriented stone position
-        val translatedSkystonePosition =
-                when (skystonePosition) {
-                    Position.LEFT -> Position.CENTER
-                    Position.RIGHT -> Position.RIGHT
-                    else  -> Position.LEFT
-                }*/
-
-        val translatedSkystonePosition = Position.CENTER
-
-        telemetry.addData("position", translatedSkystonePosition)
-        telemetry.update()
-
-        robot.autoBlockIntake.releaseBlock()
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(STRAFE_Y)
-                        .setSumRestrict(x = 2.0, y = 2.0)
-                        .setXAxisPID(
-                                when(translatedSkystonePosition) {
-                                    Position.RIGHT ->   PIDCoefficients(0.02, 0.12, 0.0)
-                                    Position.CENTER->   PIDCoefficients(0.02, 0.37, 0.0)
-                                    else  ->            PIDCoefficients(.018, 0.14, 0.0)
-                                }
-                        )
-                        .setYAxisPID(PIDCoefficients(0.032, 0.4, 0.0))
-                        .setMaxPowers(0.6, 0.6, 0.6)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                                    Position.RIGHT-> 2.5
-                                    Position.CENTER-> 11.5
-                                    else-> 19.0
-                                }, -27.0, 0.0)
-                        .setIgnoreAxes(x = false, y = false, heading = false)
-                        .build()
-        )
-
+        sleep(550)
         robot.autoBlockIntake.grabBlock()
-        sleep(700)
-        robot.autoBlockIntake.pivotMid()
-        sleep(300)
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(STRAFE_Y)
-                        .setSumRestrict(x = 5.0, y = 2.0)
-                        .setXAxisPID(PIDCoefficients(.008, 0.4, 0.0))
-                        .setYAxisPID(PIDCoefficients(0.13, 0.2, 5.0))
-                        .setMaxPowers(0.6, 0.15, 0.6)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                                    Position.RIGHT-> 93.0
-                                    Position.CENTER-> 85.0
-                                    else-> 77.0
-                                }, 5.5,0.0)
-                        .setIgnoreAxes(x = false, y = false, heading = false)
-                        .build()
-        )
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(STRAFE_Y)
-                        .setSumRestrict(x = 5.0, y = 5.0)
-                        .setXAxisPID(PIDCoefficients(.17, 0.02, 0.0))
-                        .setYAxisPID(PIDCoefficients(0.06, 0.13, 0.0))
-                        .setMaxPowers(0.3, 0.3, 0.3)
-                        .vectorRelative(0.0, -7.0,0.0)
-                        .setIgnoreAxes(x = false, y = false, heading = false)
-                        .build()
-        )
-
-        robot.autoBlockIntake.pivotDown()
-        sleep(500)
-        robot.autoBlockIntake.releaseBlock()
-        sleep(200)
+        sleep(550)
         robot.autoBlockIntake.pivotUp()
-        sleep(200)
-
-//        robot.positionalHolonomic.runPositionSync(
-//                positionalConstructor()
-//                        .setDriveProfile(STRAFE_Y)
-//                        .setSumRestrict(x = 5.0, y = 5.0)
-//                        .setXAxisPID(PIDCoefficients(.17, 0.02, 0.0))
-//                        .setYAxisPID(PIDCoefficients(0.05, 0.13, 0.0))
-//                        .setMaxPowers(0.6, 0.6, 0.6)
-//                        .vectorRelative(0.0, 7.0,0.0)
-//                        .setIgnoreAxes(x = false, y = false, heading = false)
-//                        .build()
-//        )
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(STRAFE_Y)
-                        .setSumRestrict(x = 2.0, y = 2.0)
-                        .setXAxisPID(PIDCoefficients(.0065, 0.5, 0.0))
-                        .setYAxisPID(PIDCoefficients(0.05, 0.13, 5.0))
-                        .setMaxPowers(0.3, 0.15, 0.6)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                                    Position.RIGHT-> -101.0
-                                    Position.CENTER-> -115.0
-                                    else-> -117.0
-                                }, 7.0,0.0)
-                        .setIgnoreAxes(x = false, y = false, heading = false)
-                        .build()
-        )
-
-        robot.autoBlockIntake.pivotDown()
-
-//        robot.positionalHolonomic.runPositionSync(
-//                positionalConstructor()
-//                        .setDriveProfile(STRAFE_Y)
-//                        .setSumRestrict(x = 5.0, y = 5.0)
-//                        .setXAxisPID(PIDCoefficients(.17, 0.02, 0.0))
-//                        .setYAxisPID(PIDCoefficients(0.05, 0.13, 0.0))
-//                        .setMaxPowers(0.6, 0.6, 0.6)
-//                        .vectorRelative(0.0, -12.0,0.0)
-//                        .setIgnoreAxes(x = false, y = false, heading = false)
-//                        .build()
-//        )
-
-        robot.autoBlockIntake.grabBlock()
         sleep(700)
-        robot.autoBlockIntake.pivotMid()
-        sleep(300)
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(STRAFE_Y)
-                        .setSumRestrict(x = 2.0, y = 2.0)
-                        .setXAxisPID(PIDCoefficients(.0071, 0.5, 0.0))
-                        .setYAxisPID(PIDCoefficients(0.05, 0.13, 5.0))
-                        .setMaxPowers(0.6, 0.15, 0.6)
-                        .vectorRelative(
-                                when (translatedSkystonePosition) {
-                                    Position.RIGHT-> 90.0
-                                    Position.CENTER-> 98.0
-                                    else-> 116.0
-                                }, 8.0,0.0)
-                        .setIgnoreAxes(x = false, y = false, heading = false)
-                        .build()
-        )
-
-        robot.positionalHolonomic.runPositionSync(
-                positionalConstructor()
-                        .setDriveProfile(STRAFE_Y)
-                        .setSumRestrict(x = 2.0, y = 2.0)
-                        .setXAxisPID(PIDCoefficients(.17, 0.02, 0.0))
-                        .setYAxisPID(PIDCoefficients(0.05, 0.13, 0.0))
-                        .setMaxPowers(0.6, 0.6, 0.6)
-                        .vectorRelative(0.0, -7.0,0.0)
-                        .setIgnoreAxes(x = false, y = false, heading = false)
+        robot.holonomicRoadRunner.followTrajectorySync(
+                robot.holonomicRoadRunner.trajectoryBuilder()
+                        .strafeTo(Vector2d(42.0, -22.0))
+                        .strafeTo(Vector2d(87.0, -31.5))
                         .build()
         )
 
         robot.autoBlockIntake.pivotDown()
-        sleep(500)
+        sleep(400)
         robot.autoBlockIntake.releaseBlock()
-        sleep(200)
+        sleep(600)
         robot.autoBlockIntake.pivotUp()
-        sleep(200)
+        robot.holonomicRoadRunner.followTrajectorySync(
+                robot.holonomicRoadRunner.trajectoryBuilder()
+                        .strafeTo(Vector2d(41.0, -24.5))
+                        .build()
+        )
 
     }
 

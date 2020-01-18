@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Robot type="FirstInspires-FTC">
-    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ2D63TT" parentModuleAddress="2">
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ2F6EDC" parentModuleAddress="1">
         <LynxModule name="Expansion Hub 1" port="1">
             <Matrix12vMotor name="frontLeftMotor" port="0" />
             <Matrix12vMotor name="backLeftMotor" port="1" />
@@ -8,8 +8,8 @@
             <Matrix12vMotor name="backRightMotor" port="3" />
             <LynxColorSensor name="leftColorSensor" bus="1" port="0"/>
             <LynxColorSensor name="rightColorSensor" bus="0" port="1"/>
-<!--            <REV_VL53L0X_RANGE_SENSOR name="ds_rear" port="1" bus="0" />-->
-<!--            <REV_VL53L0X_RANGE_SENSOR name="ds_front" port="1" bus="1" />-->
+            <!--            <REV_VL53L0X_RANGE_SENSOR name="ds_rear" port="1" bus="0" />-->
+            <!--            <REV_VL53L0X_RANGE_SENSOR name="ds_front" port="1" bus="1" />-->
             <Servo name="leftFoundationServo" port="0" />
             <Servo name="rightFoundationServo" port="1" />
             <Servo name="autoBlockPivot" port="2"/>
@@ -17,6 +17,8 @@
             <!--<Servo name="backRightFoundationServo" port="1" />-->
             <LynxEmbeddedIMU name="imuA" port="0" bus="0" />
         </LynxModule>
+    </LynxUsbDevice>
+    <LynxUsbDevice name="Expansion Hub Portal 2" serialNumber="DQ2D63TT" parentModuleAddress="2">
         <LynxModule name="Expansion Hub 2" port="2">
             <Matrix12vMotor name="intakeBlockManipulator" port="0"/>
             <Matrix12vMotor name="intakePivotMotor" port="1"/>

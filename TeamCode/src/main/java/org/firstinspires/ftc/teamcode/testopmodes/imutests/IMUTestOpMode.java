@@ -12,19 +12,25 @@ import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
 
 @TeleOp (name= "IMU Test OpMode", group="Test")
 public class IMUTestOpMode extends OpMode {
-    IMUController imuController;
+    IMUController imuControllerA;
+    IMUController imuControllerB;
 
     @Override
     public void init() {
-        imuController = new IMUController(hardwareMap, AxesOrder.ZYX);
+        imuControllerA = new IMUController(hardwareMap, AxesOrder.ZYX);
+        imuControllerB = new IMUController(hardwareMap, AxesOrder.ZYX, "imuB");
     }
 
     @Override
     public void loop() {
-        Orientation ao = imuController.imuA.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        telemetry.addData("first", ao.firstAngle);
-        telemetry.addData("second", ao.secondAngle);
-        telemetry.addData("third", ao.thirdAngle);
+        Orientation aoA = imuControllerA.imuA.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation aoB = imuControllerB.imuA.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("A_first", aoA.firstAngle);
+        telemetry.addData("A_second", aoA.secondAngle);
+        telemetry.addData("A_third", aoA.thirdAngle);
+        telemetry.addData("B_first", aoB.firstAngle);
+        telemetry.addData("B_second", aoB.secondAngle);
+        telemetry.addData("B_third", aoB.thirdAngle);
         telemetry.update();
 
     }

@@ -18,7 +18,7 @@ class OdometryRobot(hardwareMap: HardwareMap) : BasicRobot(hardwareMap) {
                     hardwareMap,
                     frontLeftMotor, backLeftMotor, backRightMotor, frontRightMotor,
                     leftOdometryModule, rightOdometryModule, rearOdometryModule,
-                    imuController)
+                    imuController, rearOdometry, this)
 
     @JvmField val positionalHolonomic
           = PositionalHolonomicController(holonomic, holonomicRoadRunner, leftOdometry, rightOdometry, rearOdometry)

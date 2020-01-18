@@ -32,6 +32,7 @@ public class EncoderWatchOpMode extends OpMode {
         addOdometryData(robot.rearOdometry, "Rear");
         addOdometryData(robot.leftOdometry, "Left");
         addOdometryData(robot.rightOdometry, "Right");
+        addOdometryData(robot.extraOdometry, "Extra");
 
         telem.update();
 

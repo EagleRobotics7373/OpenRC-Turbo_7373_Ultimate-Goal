@@ -25,12 +25,15 @@ public class DriveConstants {
 
     public static double kF = getMotorVelocityF();
 
+    public static boolean useTwoWheelLocalizer = true;
+
     public static boolean RUN_USING_ENCODER = true;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(40, 0, 20);
 
     public static DriveConstraints BASE_CONSTRAINTS =
             new DriveConstraints(
-                    50.0, 30.0, 40.0,
+//                    50.0, 30.0, 40.0,
+                    80.0, 55.0, 40.0,
                     Math.PI, Math.PI, 0.0
             );
 

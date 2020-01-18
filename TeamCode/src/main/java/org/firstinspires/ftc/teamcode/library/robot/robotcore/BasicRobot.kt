@@ -59,6 +59,7 @@ open class BasicRobot(protected val hardwareMap: HardwareMap) {
      @JvmField val rearOdometry            : OdometryModule        = OdometryModule(rearOdometryAsMotor, false)
      @JvmField val leftOdometry            : OdometryModule        = OdometryModule(leftOdometryAsMotor, true)
      @JvmField val rightOdometry           : OdometryModule        = OdometryModule(rightOdometryAsMotor, true)
+     @JvmField val extraOdometry           : OdometryModule        = OdometryModule(intakeBlockManipulator, false)
     //     @JvmField val blinkin                 : RevBlinkinLedDriver   = hwInit("blinkin")
 
     protected inline fun <reified T> hwInit(name:String): T = hardwareMap.get(T::class.java, name)

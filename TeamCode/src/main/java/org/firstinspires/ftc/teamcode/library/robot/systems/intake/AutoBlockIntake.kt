@@ -7,7 +7,7 @@ class AutoBlockIntake (
         private val grabberServo: Servo)
 {
     private val pivotLowerBound = 0.0
-    private val pivotUpperBound = 0.7
+    private val pivotUpperBound = 0.6
 
     private val grabLowerBound = 0.3
     private val grabUpperBound = 1.0
@@ -20,8 +20,8 @@ class AutoBlockIntake (
         grabberServo.position = grabLowerBound + pos*(grabUpperBound-grabLowerBound)
     }
 
-    fun grabBlock() = grabTo(0.0)
-    fun releaseBlock() = grabTo(1.0)
+    fun grabBlock() = grabTo(1.0)
+    fun releaseBlock() = grabTo(0.5)
 
     fun pivotDown() = pivotTo(0.0)
     fun pivotMid() = pivotTo(.32)

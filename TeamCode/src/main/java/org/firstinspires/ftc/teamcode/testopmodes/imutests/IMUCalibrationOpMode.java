@@ -107,6 +107,7 @@ public class IMUCalibrationOpMode extends LinearOpMode
 
     // Our sensors, motors, and other devices go here, along with other long term state
     BNO055IMU imu;
+    BNO055IMU imuB;
 
     // State used for updating telemetry
     Orientation angles;
@@ -132,9 +133,15 @@ public class IMUCalibrationOpMode extends LinearOpMode
         // We are expecting the IMU to be attached to an I2C port on a Core Device Interface Module and named "imuA".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
-        parameters.loggingTag     = "IMU";
+        parameters.loggingTag     = "imuA";
         imu = hardwareMap.get(BNO055IMU.class, "imuA");
         imu.initialize(parameters);
+
+        BNO055IMU.Parameters parametersB = new BNO055IMU.Parameters();
+        parametersB.loggingEnabled = true;
+        parametersB.loggingTag     = "imuB";
+        imuB = hardwareMap.get(BNO055IMU.class, "imuB");
+        imuB.initialize(parametersB);
 
         composeTelemetry();
         telemetry.log().add("Waiting for start...");
@@ -166,6 +173,27 @@ public class IMUCalibrationOpMode extends LinearOpMode
 
                 // Wait for the button to be released
                 while (gamepad1.a) {
+                    telemetry.update();
+                    idle();
+                }
+            }
+            if (gamepad1.b) {
+
+                // Get the calibration data
+                BNO055IMU.CalibrationData calibrationData = imuB.readCalibrationData();
+
+                // Save the calibration data to a file. You can choose whatever file
+                // name you wish here, but you'll want to indicate the same file name
+                // when you initialize the IMU in an opmode in which it is used. If you
+                // have more than one IMU on your robot, you'll of course want to use
+                // different configuration file names for each.
+                String filename = "IMU_B_CalibrationData.json";
+                File file = AppUtil.getInstance().getSettingsFile(filename);
+                ReadWriteFile.writeFile(file, calibrationData.serialize());
+                telemetry.log().add("saved to '%s'", filename);
+
+                // Wait for the button to be released
+                while (gamepad1.b) {
                     telemetry.update();
                     idle();
                 }

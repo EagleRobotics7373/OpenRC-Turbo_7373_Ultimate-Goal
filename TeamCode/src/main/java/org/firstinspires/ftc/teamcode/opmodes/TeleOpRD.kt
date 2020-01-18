@@ -6,12 +6,13 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.library.functions.*
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot
 import kotlin.math.absoluteValue
 
 @TeleOp(name="TeleOp RD", group="basic")
 open class TeleOpRD : OpMode() {
     // robot hardware declaration; assignment occures during init()
-    lateinit var robot : BasicRobot
+    lateinit var robot : OdometryRobot
 
     // gamepad toggle button watchers, instantiated after opmode init
     protected lateinit var watch_gamepad1_buttonY : ToggleButtonWatcher
@@ -29,7 +30,7 @@ open class TeleOpRD : OpMode() {
 
     override fun init() {
         // instantiate robot variables
-        robot = BasicRobot(hardwareMap)
+        robot = OdometryRobot(hardwareMap)
 
         // Instantiate toggle button watchers. Each statement below is calling a constructor with a single
         //   parameter, in this case being a function for calling the gamepad button. This does not set the
@@ -48,6 +49,7 @@ open class TeleOpRD : OpMode() {
         controlIntakeMechanism()
         controlTelemetry()
         controlMusic()
+        robot.holonomicRoadRunner.update()
     }
 
     override fun stop() {

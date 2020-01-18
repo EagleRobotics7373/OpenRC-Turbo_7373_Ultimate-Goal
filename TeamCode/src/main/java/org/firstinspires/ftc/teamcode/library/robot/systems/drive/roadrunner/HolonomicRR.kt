@@ -9,24 +9,27 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.drive.MecanumDrive
 import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer
 import com.acmerobotics.roadrunner.profile.MotionProfile
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
 import com.acmerobotics.roadrunner.profile.MotionState
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.DashboardUtil
 import org.firstinspires.ftc.teamcode.library.functions.toDegrees
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
 import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.*
+
 
 class HolonomicRR
 
@@ -38,7 +41,9 @@ constructor (hardwareMap: HardwareMap,
              leftOdometryModule: DcMotor,
              rightOdometryModule: DcMotor,
              rearOdometryModule: DcMotor,
-             val imuController: IMUController)
+             val imuController: IMUController,
+             val rearOdometryContainer : OdometryModule? = null,
+             val robot: OdometryRobot)
 
     : MecanumDrive(kV, kA, kStatic, TRACK_WIDTH) // TODO: Define these variables
 {
@@ -77,13 +82,29 @@ constructor (hardwareMap: HardwareMap,
     val driveConstraints = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
     val follower = HolonomicPIDVAFollower(TRANSLATIONAL_X_PID, TRANSLATIONAL_Y_PID, HEADING_PID)
 
-    lateinit var lastWheelPositions : List<Double>
-    var lastTimestamp = 0.0
+    private lateinit var lastWheelPositions : List<Double>
+    private var lastTimestamp = 0.0
+    private var lastReadTime : Long = 0
+
+    private var currentDriveSignal = DriveSignal()
+//    private val driveSignalUpdateRunnable = {
+//        try {
+//            while (isBusy()) {
+//                setDriveSignal(currentDriveSignal)
+//                print("CURRENT SIGNAL = $currentDriveSignal")
+//            }
+//        } catch (e: InterruptedException) {
+//            e.printStackTrace()
+//        }
+//    }
+//    private var driveSignalUpdateThread = Thread(driveSignalUpdateRunnable)
+
 
     init {
         dashboard.telemetryTransmissionInterval = 25
-
         turnController.setInputBounds(0.0, 2.0 * Math.PI)
+
+//        Thread { while (!Thread.interrupted()) updatePoseEstimate() }.start()
 
         motorsExt.forEach {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -91,14 +112,16 @@ constructor (hardwareMap: HardwareMap,
             if (RUN_USING_ENCODER) {
                 it.mode = DcMotor.RunMode.RUN_USING_ENCODER
                 if (MOTOR_VELO_PID != null) setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID)
-
             }
         }
 
         // TODO: Need to set localizer here to odometry system...
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        localizer = ThreeWheelOdometryLocalizer(odometryLeftExt, odometryRightExt, odometryRearExt, odometryHubExt)
+        localizer =
+                if (useTwoWheelLocalizer)  TwoWheelOdometryLocalizer(odometryLeftExt, odometryRearExt, odometryHubExt, robot)
+                else ThreeWheelOdometryLocalizer(odometryLeftExt, odometryRightExt, odometryRearExt, odometryHubExt, robot)
     }
+
 
     val trajectoryBuilder : TrajectoryBuilder
         get() = TrajectoryBuilder(poseEstimate, driveConstraints)
@@ -111,9 +134,15 @@ constructor (hardwareMap: HardwareMap,
         }
 
     fun update() {
+        val beforePoseUpdate = System.currentTimeMillis()
         updatePoseEstimate()
+        val afterPoseUpdate = System.currentTimeMillis()
 
         val currentPose = poseEstimate
+
+        val afterGetPose = System.currentTimeMillis()
+        var beforeGetDriveSignal = Long.MIN_VALUE
+        var afterGetDriveSignal = Long.MIN_VALUE
         val lastError = this.lastError
 
         val packet = TelemetryPacket()
@@ -131,6 +160,8 @@ constructor (hardwareMap: HardwareMap,
         packet.put("xError", lastError.x)
         packet.put("yError", lastError.y)
         packet.put("headingError", lastError.heading)
+
+        packet.put("center module", rearOdometryContainer?.getDistanceNormalized(DistanceUnit.INCH)?.times(-1))
 
         val imuHeading = rawExternalHeading
 
@@ -161,10 +192,14 @@ constructor (hardwareMap: HardwareMap,
                 if (t >= turnProfile.duration()) {
                     mode = Mode.IDLE
                     setDriveSignal(DriveSignal())
+
                 }
             }
             Mode.FOLLOW_TRAJECTORY -> {
-                setDriveSignal(follower.update(currentPose))
+                val toSet = follower.update(currentPose)
+                beforeGetDriveSignal = System.currentTimeMillis()
+                setDriveSignal(toSet)
+                afterGetDriveSignal = System.currentTimeMillis()
 
                 val trajectory = follower.trajectory
 
@@ -187,12 +222,25 @@ constructor (hardwareMap: HardwareMap,
 
         }
 
-//        dashboard.sendTelemetryPacket(packet)
+        val endReadTime = System.currentTimeMillis()
+        println()
+        print("%% HolonomicRR_updates\tREAD GAP = ${beforePoseUpdate - lastReadTime}")
+        lastReadTime = endReadTime
+        print("\tAFTER POSE UPDATE = ${afterPoseUpdate - beforePoseUpdate}")
+        print("\tAFTER GET POSE = ${afterGetPose - beforePoseUpdate}")
+        print("\tAFTER UPDATE FOLLOWER = ${beforeGetDriveSignal - beforePoseUpdate}")
+        print("\tAFTER GET DRIVE SIGNAL = ${afterGetDriveSignal - beforePoseUpdate}")
+        print("\tUPDATE TIME = ${endReadTime - beforePoseUpdate}\t")
+        print("\t %% HolonomicRR_pose\t X=${poseEstimate.x}\t Y=${poseEstimate.y}\t HEADING=${currentHeading}\t IMU_HEADING=${imuHeading}\t   XERROR=${lastError.x}\t YERROR=${lastError.y}\t HEADINGERROR=${lastError.heading}")
+        dashboard.sendTelemetryPacket(packet)
 
     }
 
     fun followTrajectory(trajectory: Trajectory) {
         follower.followTrajectory(trajectory)
+        lastReadTime = System.currentTimeMillis()
+//        driveSignalUpdateThread = Thread(driveSignalUpdateRunnable)
+//        driveSignalUpdateThread.start()
         mode = Mode.FOLLOW_TRAJECTORY
     }
 
@@ -217,6 +265,9 @@ constructor (hardwareMap: HardwareMap,
         )
 
         turnStart = clock.seconds()
+        lastReadTime = System.currentTimeMillis()
+//        driveSignalUpdateThread = Thread(driveSignalUpdateRunnable)
+//        driveSignalUpdateThread.start()
         mode = Mode.TURN
     }
 
@@ -286,5 +337,6 @@ constructor (hardwareMap: HardwareMap,
         backRightExt .power = -rearRight
         frontRightExt.power = -frontRight
     }
+
 
 }
