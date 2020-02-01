@@ -6,7 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR;
 
 /**
@@ -22,7 +22,7 @@ public class LocalizationTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        HolonomicRR drive = new OdometryRobot(hardwareMap).holonomicRoadRunner;
+        HolonomicRR drive = new MisumiRobot(hardwareMap).holonomicRR;
 
         waitForStart();
 

@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode.testopmodes.gen2tests
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.Gen2Robot
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot
 
 @TeleOp(group="Test")
 class Gen2GamepadControl : OpMode() {
-    lateinit var robot :Gen2Robot
+    lateinit var robot : MisumiRobot
     override fun init() {
-        robot = Gen2Robot(hardwareMap)
+        robot = MisumiRobot(hardwareMap)
     }
 
     override fun loop() {

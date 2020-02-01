@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner
 
-import com.acmerobotics.dashboard.FtcDashboard
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer
 import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -12,15 +9,15 @@ import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH
 import org.firstinspires.ftc.teamcode.library.functions.toRadians
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot
-import org.openftc.revextensions2.RevBulkData
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
 
 
-class TwoWheelOdometryLocalizer(
+class TwoWheelOdometryLocalizer
+ constructor (
         private val leftModule : ExpansionHubMotor,
         private val rearModule : ExpansionHubMotor,
         private val expansionHub: ExpansionHubEx,
-        private val robot : OdometryRobot
+        private val imuController: IMUController
 )
     : TwoTrackingWheelLocalizer(
         listOf(
@@ -32,6 +29,7 @@ class TwoWheelOdometryLocalizer(
         )
 )
 {
+
     val modulesExt = listOf(leftModule, rearModule)
 
     val TICKS_PER_REVOLUTION = 8192
@@ -54,7 +52,7 @@ class TwoWheelOdometryLocalizer(
         modulesExt.forEach {
             wheelPositions.add((if (reverseOutput) -1.0 else 1.0) * (bulkData.getMotorCurrentPosition(it).toDouble() / TICKS_PER_REVOLUTION) * WHEEL_DIAMETER_mm * Math.PI)
         }
-        print("%% @OdometryLocalizer_REVExt   LEFT=${wheelPositions[0]}, RIGHT=${robot.rightOdometry.getDistanceNormalized(INCH)}, REAR=${wheelPositions[1]}, EXTRA=${robot.extraOdometry.getDistanceNormalized(INCH)}")
+        print("%% @OdometryLocalizer_REVExt   LEFT=${wheelPositions[0]}, REAR=${wheelPositions[1]}")
 //        print("%% @OdometryLocalizer_REVNorm  LEFT=${robot.leftOdometry.getDistanceNormalized(INCH)}    RIGHT=${robot.rightOdometry.getDistanceNormalized(INCH)}    REAR=${robot.rearOdometry.getDistanceNormalized(INCH)}")
 //        val packet = TelemetryPacket()
 //        packet.put("left read", wheelPositions[0])
@@ -66,6 +64,6 @@ class TwoWheelOdometryLocalizer(
     }
 
     override fun getHeading(): Double {
-        return robot.imuController.getHeading()
+        return imuController.getHeading()
     }
 }

@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
-
 @TeleOp(group="Test")
 public class SwitchAndEncoderTest extends OpMode {
     DigitalChannel limitSwitch;

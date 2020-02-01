@@ -13,20 +13,19 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot;
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR;
 
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.kV;
 
 /*
  * This routine is designed to tune the PID coefficients used by the REV Expansion Hubs for closed-
@@ -56,9 +55,9 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
         MotionState start = new MotionState(movingForward ? 0 : DISTANCE, 0, 0, 0);
         MotionState goal = new MotionState(movingForward ? DISTANCE : 0, 0, 0, 0);
         return MotionProfileGenerator.generateSimpleMotionProfile(start, goal,
-                DriveConstants.BASE_CONSTRAINTS.maxVel,
-                DriveConstants.BASE_CONSTRAINTS.maxAccel,
-                DriveConstants.BASE_CONSTRAINTS.maxJerk);
+                DriveConstantsNew.BASE_CONSTRAINTS.maxVel,
+                DriveConstantsNew.BASE_CONSTRAINTS.maxAccel,
+                DriveConstantsNew.BASE_CONSTRAINTS.maxJerk);
     }
 
     private void addPidVariable() {
@@ -135,7 +134,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        drive = new OdometryRobot(hardwareMap).holonomicRoadRunner;
+        drive = new MisumiRobot(hardwareMap).holonomicRR;
 
         addPidVariable();
 

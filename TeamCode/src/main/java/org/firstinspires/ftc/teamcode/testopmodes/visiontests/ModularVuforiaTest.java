@@ -4,17 +4,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory;
 import org.firstinspires.ftc.teamcode.library.vision.skystone.VuforiaController;
 
 import static org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory.createVuforia;
 @Autonomous(name="Modular Vuforia Test", group="Test")
 public class ModularVuforiaTest extends LinearOpMode {
-    BasicRobot robot;
+    MisumiRobot robot;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new BasicRobot(hardwareMap);
+        robot = new MisumiRobot(hardwareMap);
         VuforiaLocalizer vuforia = createVuforia(VisionFactory.CameraType.PHONE_REAR, hardwareMap);
         VuforiaController vuforiaController = new VuforiaController(vuforia,telemetry);
 

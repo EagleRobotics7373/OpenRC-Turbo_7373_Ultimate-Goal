@@ -13,7 +13,7 @@ class IMUController @JvmOverloads constructor(hardwareMap: HardwareMap, private 
             val parameters = BNO055IMU.Parameters()
             parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS
             parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC
-            parameters.calibrationDataFile = "IMU_${id}_CalibrationData.json" // see the calibration sample opmode
+            parameters.calibrationDataFile = "IMU_${id}-_CalibrationData.json" // see the calibration sample opmode
             parameters.loggingEnabled = true
             parameters.loggingTag = "IMU_${id}"
             parameters.accelerationIntegrationAlgorithm = JustLoggingAccelerationIntegrator()

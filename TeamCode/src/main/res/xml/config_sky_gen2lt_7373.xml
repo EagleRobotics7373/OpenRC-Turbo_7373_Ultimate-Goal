@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ1O33NE" parentModuleAddress="2">
+        <LynxModule name="Expansion Hub B" port="2">
+            <Matrix12vMotor name="backRightMotor" port="0" />
+            <Matrix12vMotor name="frontRightMotor" port="1" />
+            <Matrix12vMotor name="intakePivot" port="2"/>
+            <Matrix12vMotor name="intakeLiftRight" port="3"/>
+
+            <Servo name="foundationGrabSideRear" port="0"/>
+            <Servo name="foundationGrabSideFront" port="1"/>
+            <Servo name="foundationGrabFrontRight" port="2"/>
+            <Servo name="autoBlockGrabRear" port="3"/>
+            <Servo name="autoBlockPivotRear" port="4"/>
+            <Servo name="intakeBlockGrabber" port="5"/>
+
+            <LynxEmbeddedIMU name="imuA" port="0" bus="0" />
+        </LynxModule>
+        <LynxModule name="Expansion Hub A" port="1">
+            <Matrix12vMotor name="backLeftMotor" port="3" />
+            <Matrix12vMotor name="frontLeftMotor" port="2" />
+            <Matrix12vMotor name="odometryRearAsMotor" port="0"/> <!--RIGHT ODOMETRY-->
+            <Matrix12vMotor name="intakeLiftLeft" port="1"/> <!--LEFT ODOMETRY-->
+
+            <Servo name="foundationGrabFrontLeft" port="0"/>
+            <Servo name="capstonePlacement" port="1"/>
+            <Servo name="autoBlockPivotFront" port="2"/>
+            <Servo name="autoBlockGrabFront" port="3"/>
+            <RevBlinkinLedDriver name="blinkin" port="4"/>
+
+            <LynxEmbeddedIMU name="imuB" port="0" bus="0" />
+        </LynxModule>
+    </LynxUsbDevice>
+</Robot>

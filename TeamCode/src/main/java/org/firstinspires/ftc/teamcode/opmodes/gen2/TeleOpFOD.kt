@@ -1,15 +1,13 @@
-package org.firstinspires.ftc.teamcode.opmodes
+package org.firstinspires.ftc.teamcode.opmodes.gen2
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.robotcore.external.navigation.*
 import org.firstinspires.ftc.teamcode.library.functions.rangeBuffer
-import org.firstinspires.ftc.teamcode.library.functions.reverseIf
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
 
 /**
  * Driver-operated opmode for field-oriented drive, as an extension of base TeleOp functions
  */
-@TeleOp(name="TeleOp FOD", group="basic")
+@TeleOp(name="TeleOp FOD Gen2", group="Gen2 Basic")
 class TeleOpFOD : TeleOpRD() {
     // when this is true, field-oriented drive is enabled
     var fod = false
@@ -18,14 +16,9 @@ class TeleOpFOD : TeleOpRD() {
     var zeroAngle = 0.0
 
     // imu controller; uses lateinit keyword to signify instantiation after opmode init
-    lateinit var imuController:IMUController
 
     override fun init() {
         super.init()
-        imuController = IMUController(hardwareMap)
-
-
-
     }
 
     /**
@@ -43,7 +36,7 @@ class TeleOpFOD : TeleOpRD() {
         if (fod)
         {
             // reset IMU baseline if left stick button is pressed
-            if (gamepad1.left_stick_button) zeroAngle = imuController.getHeading()
+            if (gamepad1.left_stick_button) zeroAngle = robot.imuControllerA.getHeading()
 
             // Set x, y, and z inputs:
             //    Use Double.rangeBuffer to set motor power dead-band
@@ -53,7 +46,7 @@ class TeleOpFOD : TeleOpRD() {
             val z = gamepad1.right_stick_x.toDouble().rangeBuffer(-0.15, 0.15, 0.0).times(0.33*speed)
 
             // Set drivetrain values, including an offset angle for FOD
-            robot.holonomic.runWithoutEncoderVectored(x, y, z, zeroAngle - imuController.getHeading())
+            robot.holonomic.runWithoutEncoderVectored(x, y, z, zeroAngle - robot.imuControllerA.getHeading())
         }
         // if FOD is not enabled, call superclass relative driving method instead
         else super.controlDrivetrain()
@@ -68,6 +61,3 @@ class TeleOpFOD : TeleOpRD() {
     }
 
 }
-
-
-

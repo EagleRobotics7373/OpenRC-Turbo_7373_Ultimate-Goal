@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.drive.MecanumDrive
 import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer
+import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.profile.MotionProfile
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
 import com.acmerobotics.roadrunner.profile.MotionState
@@ -18,50 +18,50 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.DashboardUtil
 import org.firstinspires.ftc.teamcode.library.functions.toDegrees
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
 import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.*
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.*
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsOld.globalPoseEstimate
 
 
 class HolonomicRR
 
 constructor (hardwareMap: HardwareMap,
-             frontLeftMotor: DcMotor,
-             backLeftMotor:  DcMotor,
-             backRightMotor: DcMotor,
-             frontRightMotor:DcMotor,
-             leftOdometryModule: DcMotor,
-             rightOdometryModule: DcMotor,
-             rearOdometryModule: DcMotor,
-             val imuController: IMUController,
-             val rearOdometryContainer : OdometryModule? = null,
-             val robot: OdometryRobot)
+             private val imuController: IMUController,
+             private val frontLeftExt: ExpansionHubMotor,
+             private val backLeftExt:  ExpansionHubMotor,
+             private val backRightExt: ExpansionHubMotor,
+             private val frontRightExt:ExpansionHubMotor,
+             localizer: Localizer)
 
     : MecanumDrive(kV, kA, kStatic, TRACK_WIDTH) // TODO: Define these variables
 {
+    constructor(_hardwareMap: HardwareMap,
+                _imuController: IMUController,
+                _frontLeftMotor: DcMotor,
+                _backLeftMotor: DcMotor,
+                _backRightMotor: DcMotor,
+                _frontRightMotor: DcMotor,
+                _localizer: Localizer) : this(
+            hardwareMap =  _hardwareMap,
+            imuController = _imuController,
+            frontLeftExt = (_frontLeftMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_frontLeftMotor).first())) as ExpansionHubMotor,
+            backLeftExt =  (_backLeftMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_backLeftMotor).first())) as ExpansionHubMotor,
+            backRightExt =  (_backRightMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_backRightMotor).first())) as ExpansionHubMotor,
+            frontRightExt = (_frontRightMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_frontRightMotor).first())) as ExpansionHubMotor,
+            localizer = _localizer
+    )
 
-    private val frontLeftExt = hardwareMap.get(ExpansionHubMotor::class.java, hardwareMap.getNamesOf(frontLeftMotor).first())
-    private val backLeftExt = hardwareMap.get(ExpansionHubMotor::class.java, hardwareMap.getNamesOf(backLeftMotor).first())
-    private val backRightExt = hardwareMap.get(ExpansionHubMotor::class.java, hardwareMap.getNamesOf(backRightMotor).first())
-    private val frontRightExt = hardwareMap.get(ExpansionHubMotor::class.java, hardwareMap.getNamesOf(frontRightMotor).first())
-
-    private val motorsHubExt = hardwareMap.get(ExpansionHubEx::class.java, "Expansion Hub 1")
-    private val odometryHubExt = hardwareMap.get(ExpansionHubEx::class.java, "Expansion Hub 2")
-
-    private val odometryLeftExt = hardwareMap.get(ExpansionHubMotor::class.java, hardwareMap.getNamesOf(leftOdometryModule).first())
-    private val odometryRightExt = hardwareMap.get(ExpansionHubMotor::class.java, hardwareMap.getNamesOf(rightOdometryModule).first())
-    private val odometryRearExt = hardwareMap.get(ExpansionHubMotor::class.java, hardwareMap.getNamesOf(rearOdometryModule).first())
-
-    val motors    = listOf(frontLeftMotor, backLeftMotor, backRightMotor, frontRightMotor)
     val motorsExt = listOf(frontLeftExt, backLeftExt, backRightExt, frontRightExt)
+    val hubA = hardwareMap.get(ExpansionHubEx::class.java,"Expansion Hub A")
+    val hubB = hardwareMap.get(ExpansionHubEx::class.java, "Expansion Hub B")
 
     enum class Mode { IDLE, TURN, FOLLOW_TRAJECTORY }
     var mode = Mode.IDLE
@@ -104,6 +104,8 @@ constructor (hardwareMap: HardwareMap,
         dashboard.telemetryTransmissionInterval = 25
         turnController.setInputBounds(0.0, 2.0 * Math.PI)
 
+        if (globalPoseEstimate != null) poseEstimate = globalPoseEstimate
+
 //        Thread { while (!Thread.interrupted()) updatePoseEstimate() }.start()
 
         motorsExt.forEach {
@@ -117,9 +119,7 @@ constructor (hardwareMap: HardwareMap,
 
         // TODO: Need to set localizer here to odometry system...
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        localizer =
-                if (useTwoWheelLocalizer)  TwoWheelOdometryLocalizer(odometryLeftExt, odometryRearExt, odometryHubExt, robot)
-                else ThreeWheelOdometryLocalizer(odometryLeftExt, odometryRightExt, odometryRearExt, odometryHubExt, robot)
+        super.localizer = localizer
     }
 
 
@@ -161,14 +161,15 @@ constructor (hardwareMap: HardwareMap,
         packet.put("yError", lastError.y)
         packet.put("headingError", lastError.heading)
 
-        packet.put("center module", rearOdometryContainer?.getDistanceNormalized(DistanceUnit.INCH)?.times(-1))
-
         val imuHeading = rawExternalHeading
 
         packet.put("imu heading", imuHeading)
         packet.put("imu heading (deg)", imuHeading.toDegrees())
 
         packet.put("heading diff (deg)", currentHeading.toDegrees() - imuHeading.toDegrees())
+
+        fieldOverlay.setStroke("#3F51B5")
+        fieldOverlay.fillCircle(currentPose.x, currentPose.y, 3.0)
 
         when (mode) {
             Mode.TURN -> {
@@ -211,9 +212,6 @@ constructor (hardwareMap: HardwareMap,
                 val time = follower.elapsedTime()
                 DashboardUtil.drawRobot(fieldOverlay, trajectory[time])
 
-                fieldOverlay.setStroke("#3F51B5")
-                fieldOverlay.fillCircle(currentPose.x, currentPose.y, 3.0)
-
                 if (!follower.isFollowing()) {
                     mode = Mode.IDLE
                     setDriveSignal(DriveSignal())
@@ -234,6 +232,7 @@ constructor (hardwareMap: HardwareMap,
         print("\t %% HolonomicRR_pose\t X=${poseEstimate.x}\t Y=${poseEstimate.y}\t HEADING=${currentHeading}\t IMU_HEADING=${imuHeading}\t   XERROR=${lastError.x}\t YERROR=${lastError.y}\t HEADINGERROR=${lastError.heading}")
         dashboard.sendTelemetryPacket(packet)
 
+        globalPoseEstimate = poseEstimate
     }
 
     fun followTrajectory(trajectory: Trajectory) {
@@ -285,45 +284,47 @@ constructor (hardwareMap: HardwareMap,
     }
 
     fun getPIDCoefficients(runMode: DcMotor.RunMode) : PIDCoefficients {
-        val pidfCoefficients = frontLeftExt.getPIDFCoefficients(runMode)
+        val pidfCoefficients = (frontLeftExt as DcMotorEx).getPIDFCoefficients(runMode)
         return PIDCoefficients(pidfCoefficients.p, pidfCoefficients.i, pidfCoefficients.d)
     }
 
     fun setPIDCoefficients(runMode: DcMotor.RunMode, coefficients: PIDCoefficients) {
         motorsExt.forEach {
-            it.setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, kF))
-            // TODO : "set kF to motor velocity F coefficient, look at RR quickstart DriveConstants"
+            (it as DcMotorEx).setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, kF))
+            // TODO : "set kF to motor velocity F coefficient, look at RR quickstart DriveConstantsNew"
         }
     }
 
     @NonNull
     override fun getWheelPositions() : List<Double> {
-        val bulkData = motorsHubExt.bulkInputData
+        val bulkDataA = hubA.bulkInputData
+        val bulkDataB = hubB.bulkInputData
 
-        bulkData ?: return listOf(0.0, 0.0, 0.0, 0.0)
+        bulkDataA ?: return listOf(0.0, 0.0, 0.0, 0.0)
 
         val wheelPositions = emptyList<Double>().toMutableList()
 
-        motorsExt.forEach {
-            wheelPositions.add(encoderTicksToInches(bulkData.getMotorCurrentPosition(it).toDouble()))
-            // TODO: "define encoder ticks to inches method"
-        }
+        wheelPositions.add(encoderTicksToInches(bulkDataA.getMotorCurrentPosition(frontLeftExt).toDouble()))
+        wheelPositions.add(encoderTicksToInches(bulkDataA.getMotorCurrentPosition(backLeftExt).toDouble()))
+        wheelPositions.add(encoderTicksToInches(bulkDataB.getMotorCurrentPosition(backRightExt).toDouble()))
+        wheelPositions.add(encoderTicksToInches(bulkDataB.getMotorCurrentPosition(frontRightExt).toDouble()))
 
         return wheelPositions
     }
 
     @NonNull
     fun getWheelVelocities() : List<Double> {
-        val bulkData = motorsHubExt.bulkInputData
+        val bulkDataA = hubA.bulkInputData
+        val bulkDataB = hubB.bulkInputData
 
-        bulkData ?: return listOf(0.0, 0.0, 0.0, 0.0)
+        bulkDataA ?: return listOf(0.0, 0.0, 0.0, 0.0)
 
         val wheelVelocities = emptyList<Double>().toMutableList()
 
-        motorsExt.forEach {
-            wheelVelocities.add(encoderTicksToInches(bulkData.getMotorVelocity(it).toDouble()))
-            // TODO: "define encoder ticks to inches method"
-        }
+        wheelVelocities.add(encoderTicksToInches(bulkDataA.getMotorVelocity(frontLeftExt).toDouble()))
+        wheelVelocities.add(encoderTicksToInches(bulkDataA.getMotorVelocity(backLeftExt).toDouble()))
+        wheelVelocities.add(encoderTicksToInches(bulkDataB.getMotorVelocity(backRightExt).toDouble()))
+        wheelVelocities.add(encoderTicksToInches(bulkDataB.getMotorVelocity(frontRightExt).toDouble()))
 
         return wheelVelocities
     }

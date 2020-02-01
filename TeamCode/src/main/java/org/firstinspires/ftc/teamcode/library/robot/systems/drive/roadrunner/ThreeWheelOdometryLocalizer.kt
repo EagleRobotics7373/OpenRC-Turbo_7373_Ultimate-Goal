@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner
 
-import com.acmerobotics.dashboard.FtcDashboard
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -11,7 +9,7 @@ import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH
 import org.firstinspires.ftc.teamcode.library.functions.toRadians
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot
 
 
 class ThreeWheelOdometryLocalizer(
@@ -19,7 +17,7 @@ class ThreeWheelOdometryLocalizer(
         private val rightModule: ExpansionHubMotor,
         private val rearModule : ExpansionHubMotor,
         private val expansionHub: ExpansionHubEx,
-        private val robot : OdometryRobot
+        private val robot : MisumiRobot
 )
     : ThreeTrackingWheelLocalizer(
         listOf(
@@ -52,7 +50,7 @@ class ThreeWheelOdometryLocalizer(
         modulesExt.forEach {
             wheelPositions.add((if (reverseOutput) -1.0 else 1.0) * (bulkData.getMotorCurrentPosition(it).toDouble() / TICKS_PER_REVOLUTION) * WHEEL_DIAMETER_mm * Math.PI)
         }
-        print("%% @OdometryLocalizer_REVExt   LEFT=${wheelPositions[0]}    RIGHT=${wheelPositions[1]}    REAR=${wheelPositions[2]}, EXTRA=${robot.extraOdometry.getDistanceNormalized(INCH)}")
+        print("%% @OdometryLocalizer_REVExt   LEFT=${wheelPositions[0]}    RIGHT=${wheelPositions[1]}    REAR=${wheelPositions[2]}")
 //        print("%% @OdometryLocalizer_REVNorm  LEFT=${robot.leftOdometry.getDistanceNormalized(INCH)}    RIGHT=${robot.rightOdometry.getDistanceNormalized(INCH)}    REAR=${robot.rearOdometry.getDistanceNormalized(INCH)}")
 //        val packet = TelemetryPacket()
 //        packet.put("left read", wheelPositions[0])

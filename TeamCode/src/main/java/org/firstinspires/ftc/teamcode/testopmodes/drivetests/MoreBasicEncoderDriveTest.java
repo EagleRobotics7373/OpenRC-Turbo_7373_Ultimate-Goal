@@ -2,20 +2,20 @@ package org.firstinspires.ftc.teamcode.testopmodes.drivetests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
+
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
 @Autonomous(name="More Basic Encoder Test", group="Test")
 public class MoreBasicEncoderDriveTest extends LinearOpMode {
-    BasicRobot robot;
+    MisumiRobot robot;
     static final double TICKS_PER_INCH = 134.4;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new BasicRobot(hardwareMap);
+        robot = new MisumiRobot(hardwareMap);
         drive(10, 0, 0.6);
         while (robot.holonomic.motorsAreBusy());
         robot.holonomic.stop();

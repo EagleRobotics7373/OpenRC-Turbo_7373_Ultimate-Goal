@@ -105,7 +105,8 @@ constructor(description: String,
 class ReflectiveMenuItemEnum<T>
 constructor(description: String,
             private val property: KMutableProperty<T>,
-            vararg val allowedElements: T)
+            vararg val allowedElements: T,
+            val toStringMethod : (T)->String = {it.toString()})
     : ReflectiveMenuItem(description) {
 
     var num = allowedElements.indexOf(property.getter.call())
@@ -115,7 +116,7 @@ constructor(description: String,
     }
 
     override fun toString(): String =
-            property.getter.call().toString()
+            toStringMethod(property.getter.call())
 
     override fun iterateForward() {
         if (canIterateForward()) property.setter.call(allowedElements[++num])
@@ -131,4 +132,27 @@ constructor(description: String,
 
     override fun canIterateBackward(): Boolean =
             num > 0
+}
+
+class ReflectiveMenuItemFeedback
+constructor(description: String,
+            val action: ()->String)
+    : ReflectiveMenuItem(description) {
+    override fun toString(): String {
+        return action()
+    }
+
+    override fun iterateForward() {
+    }
+
+    override fun iterateBackward() {
+    }
+
+    override fun canIterateForward(): Boolean {
+        return false
+    }
+
+    override fun canIterateBackward(): Boolean {
+        return false
+    }
 }

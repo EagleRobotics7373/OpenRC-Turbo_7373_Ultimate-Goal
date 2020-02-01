@@ -6,16 +6,17 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.library.functions.ExtDirMusicPlayer;
 import org.firstinspires.ftc.teamcode.library.functions.ExtMusicFile;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
+
 @TeleOp(name="AllMotorsFWTest", group="Test")
 public class AllMotorsFWOpMode extends OpMode {
-    BasicRobot robot;
+    MisumiRobot robot;
     ExtDirMusicPlayer player;
     boolean fw = true;
 
     @Override
     public void init() {
-        robot = new BasicRobot(hardwareMap);
+        robot = new MisumiRobot(hardwareMap);
         player = new ExtDirMusicPlayer(ExtMusicFile.MEGALOUNITY);
         player.play();
     }

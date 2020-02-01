@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
 import org.firstinspires.ftc.teamcode.opmodes.control.IMUPIDStrafer;
 
@@ -17,19 +17,19 @@ import kotlin.jvm.functions.Function0;
 @Autonomous(name="Odometry Strafe Test", group="Test")
 public class OdometryStrafeTest extends LinearOpMode {
 
-    BasicRobot robot;
+    MisumiRobot robot;
     IMUController imuController;
     MultipleTelemetry telem;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new BasicRobot(hardwareMap);
+        robot = new MisumiRobot(hardwareMap);
         imuController = new IMUController(hardwareMap);
         telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         waitForStart();
 
-        robot.rearOdometry.resetSWCounter();
+        robot.odometryModuleRear.resetSWCounter();
         IMUPIDStrafer strafer = new IMUPIDStrafer(
                 robot.holonomic,
                 imuController,
@@ -37,7 +37,7 @@ public class OdometryStrafeTest extends LinearOpMode {
                 OdometryStrafeTestConfig.angularPIDCoefficients,
                 new Function0<Double>() {
                     @Override
-                    public Double invoke() { return OdometryStrafeTestConfig.distance - robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH); }
+                    public Double invoke() { return OdometryStrafeTestConfig.distance - robot.odometryModuleRear.getDistanceNormalized(DistanceUnit.INCH); }
                 }
 
 

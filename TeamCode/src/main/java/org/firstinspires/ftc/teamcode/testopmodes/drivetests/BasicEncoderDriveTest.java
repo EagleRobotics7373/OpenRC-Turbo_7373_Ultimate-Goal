@@ -3,13 +3,14 @@ package org.firstinspires.ftc.teamcode.testopmodes.drivetests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
+
 
 @Autonomous(name="Encoder Drive Test", group="Test")
 public class BasicEncoderDriveTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        BasicRobot robot = new BasicRobot(hardwareMap);
+        MisumiRobot robot = new MisumiRobot(hardwareMap);
         waitForStart();
         robot.holonomic.runUsingEncoder(0,24, 0.05);
         do {

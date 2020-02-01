@@ -39,9 +39,9 @@ dependencies {
 //    turboImplementation 'com.acmerobotics.dashboard:dashboard:0.3.6'
     implementation 'com.acmerobotics.dashboard:dashboard:0.3.6'
 
-//    extremeTurboImplementation 'org.openftc:rev-extensions-2:1.2'
-//    turboImplementation 'org.openftc:rev-extensions-2:1.2'
-    implementation 'org.openftc:rev-extensions-2:1.2'
+    extremeTurboImplementation 'org.openftc:rev-extensions-2:1.2'
+    turboImplementation 'org.openftc:rev-extensions-2:1.2'
+    stockImplementation 'org.openftc:rev-extensions-2:1.2'
 
     
 }

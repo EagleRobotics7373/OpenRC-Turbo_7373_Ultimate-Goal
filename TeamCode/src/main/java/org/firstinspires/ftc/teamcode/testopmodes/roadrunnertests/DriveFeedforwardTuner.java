@@ -9,16 +9,14 @@ import com.acmerobotics.roadrunner.tuning.RampRegression;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.LoggingUtil;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR;
 
-import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.getMaxRpm;
-import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants.rpmToVelocity;
+import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.getMaxRpm;
+import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.rpmToVelocity;
 
 /*
  * Op mode for computing kV, kStatic, and kA from various drive routines. For the curious, here's an
@@ -45,7 +43,7 @@ public class DriveFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        HolonomicRR drive = new OdometryRobot(hardwareMap).holonomicRoadRunner;
+        HolonomicRR drive = new MisumiRobot(hardwareMap).holonomicRR;
 
         NanoClock clock = NanoClock.system();
 

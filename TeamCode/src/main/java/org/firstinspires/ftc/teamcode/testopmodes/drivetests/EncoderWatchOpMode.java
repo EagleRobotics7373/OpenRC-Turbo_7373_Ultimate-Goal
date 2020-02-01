@@ -7,16 +7,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule;
 
 @TeleOp(group="Test")
 public class EncoderWatchOpMode extends OpMode {
-    BasicRobot robot;
+    MisumiRobot robot;
     MultipleTelemetry telem;
     @Override
     public void init() {
-        robot = new BasicRobot(hardwareMap);
+        robot = new MisumiRobot(hardwareMap);
         robot.holonomic.setMotorsMode(DcMotor.RunMode.RUN_USING_ENCODER);
         telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -29,10 +29,8 @@ public class EncoderWatchOpMode extends OpMode {
         telem.addData("blm cp", robot.backLeftMotor.getCurrentPosition());
         telem.addData("brm cp", robot.backRightMotor.getCurrentPosition());
 
-        addOdometryData(robot.rearOdometry, "Rear");
-        addOdometryData(robot.leftOdometry, "Left");
-        addOdometryData(robot.rightOdometry, "Right");
-        addOdometryData(robot.extraOdometry, "Extra");
+        addOdometryData(robot.odometryModuleRear, "Rear");
+        addOdometryData(robot.odometryModuleLeft, "Left");
 
         telem.update();
 

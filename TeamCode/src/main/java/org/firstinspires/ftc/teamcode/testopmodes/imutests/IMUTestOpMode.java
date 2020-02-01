@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.testopmodes.imutests;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,10 +11,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
 
+@Config
 @TeleOp (name= "IMU Test OpMode", group="Test")
 public class IMUTestOpMode extends OpMode {
     IMUController imuControllerA;
     IMUController imuControllerB;
+
+    public static AxesReference orientation = AxesReference.INTRINSIC;
 
     @Override
     public void init() {
@@ -23,8 +27,8 @@ public class IMUTestOpMode extends OpMode {
 
     @Override
     public void loop() {
-        Orientation aoA = imuControllerA.imuA.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        Orientation aoB = imuControllerB.imuA.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation aoA = imuControllerA.imuA.getAngularOrientation(orientation, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation aoB = imuControllerB.imuA.getAngularOrientation(orientation, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("A_first", aoA.firstAngle);
         telemetry.addData("A_second", aoA.secondAngle);
         telemetry.addData("A_third", aoA.thirdAngle);

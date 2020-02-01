@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.OdometryRobot;
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstants;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR;
 
 /*
@@ -33,7 +33,7 @@ public class TrackWidthTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        HolonomicRR drive = new OdometryRobot(hardwareMap).holonomicRoadRunner;
+        HolonomicRR drive = new MisumiRobot(hardwareMap).holonomicRR;
 
         // TODO: if you haven't already, set the localizer to something that doesn't depend on
         // drive encoders for computing the heading
@@ -68,7 +68,7 @@ public class TrackWidthTuner extends LinearOpMode {
                 drive.update();
             }
 
-            double trackWidth = DriveConstants.TRACK_WIDTH * Math.toRadians(ANGLE) / headingAccumulator;
+            double trackWidth = DriveConstantsNew.TRACK_WIDTH * Math.toRadians(ANGLE) / headingAccumulator;
             trackWidthStats.add(trackWidth);
 
             sleep(DELAY);

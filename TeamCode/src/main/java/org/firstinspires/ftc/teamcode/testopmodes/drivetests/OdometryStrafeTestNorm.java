@@ -7,31 +7,31 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.BasicRobot;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 
 @Autonomous(name="Odometry Strafe Test Norm", group="Test")
 public class OdometryStrafeTestNorm extends LinearOpMode {
 
-    BasicRobot robot;
+    MisumiRobot robot;
     IMUController imuController;
     MultipleTelemetry telem;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new BasicRobot(hardwareMap);
+        robot = new MisumiRobot(hardwareMap);
         imuController = new IMUController(hardwareMap);
         telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         waitForStart();
 
         double lastRuntime = 0.0;
 
-        robot.rearOdometry.resetSWCounter();
+        robot.odometryModuleRear.resetSWCounter();
         {
                         double p1 = OdometryStrafeTestNormConfig.strafeP;
                         double i1 = OdometryStrafeTestNormConfig.strafeI;
-                        double c1 = robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
-                        double t1 = robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH) + OdometryStrafeTestNormConfig.distance;
+                        double c1 = robot.odometryModuleRear.getDistanceNormalized(DistanceUnit.INCH);
+                        double t1 = robot.odometryModuleRear.getDistanceNormalized(DistanceUnit.INCH) + OdometryStrafeTestNormConfig.distance;
                         double errorSum = 0;
 
 
@@ -44,7 +44,7 @@ public class OdometryStrafeTestNorm extends LinearOpMode {
 
 
                         do {
-                            c1 = robot.rearOdometry.getDistanceNormalized(DistanceUnit.INCH);
+                            c1 = robot.odometryModuleRear.getDistanceNormalized(DistanceUnit.INCH);
 
                             e1 = t1-c1;
 
