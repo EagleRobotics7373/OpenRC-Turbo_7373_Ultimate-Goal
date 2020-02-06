@@ -2,16 +2,11 @@ package org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH;
-
 @Config
-public class DriveConstants {
+public class DriveConstantsOld {
     public static double WHEEL_RADIUS = 2;
     public static double GEAR_RATIO = 0.5;
     public static double TRACK_WIDTH = 14.0;
@@ -25,7 +20,7 @@ public class DriveConstants {
 
     public static double kF = getMotorVelocityF();
 
-    public static boolean useTwoWheelLocalizer = true;
+    public static Pose2d globalPoseEstimate = null;
 
     public static boolean RUN_USING_ENCODER = true;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(40, 0, 20);
