@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.library.vision.skystone.opencv
 
-import org.firstinspires.ftc.teamcode.library.robot.systems.Stoppable
+import org.firstinspires.ftc.teamcode.library.functions.process.Stoppable
 import org.firstinspires.ftc.teamcode.library.vision.skystone.ImageResolution
 import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraRotation

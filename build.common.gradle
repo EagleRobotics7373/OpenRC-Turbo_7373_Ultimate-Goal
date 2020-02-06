@@ -67,8 +67,8 @@ android {
         matcher.find()
         def vName = matcher.group(1)
         //
-        versionCode vCode
-        versionName vName
+        versionCode 1
+        versionName '1'
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed

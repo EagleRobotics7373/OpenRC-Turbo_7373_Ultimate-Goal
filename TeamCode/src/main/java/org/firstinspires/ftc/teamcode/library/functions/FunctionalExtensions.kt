@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.library.functions
 
 import android.graphics.Color
+import com.acmerobotics.dashboard.FtcDashboard
 import com.qualcomm.robotcore.hardware.ColorSensor
 import java.util.function.Supplier
 
