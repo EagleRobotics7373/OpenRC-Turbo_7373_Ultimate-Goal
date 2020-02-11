@@ -5,8 +5,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.Holonomic
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.TwoWheelOdometryLocalizer
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.*
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.FoundationGrabbers
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.AutoBlockIntake
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.CapstonePlacer
@@ -14,19 +13,25 @@ import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.Intake
 import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
 
-open class MisumiRobot(protected val hardwareMap: HardwareMap) {
-    // Drivetrain Variables
-     @JvmField val frontLeftMotor          : DcMotorEx     = hwInit("frontLeftMotor")
-     @JvmField val backLeftMotor           : DcMotorEx     = hwInit("backLeftMotor")
-     @JvmField val frontRightMotor         : DcMotorEx     = hwInit("frontRightMotor")
-     @JvmField val backRightMotor          : DcMotorEx     = hwInit("backRightMotor")
+open class ExtMisumiRobot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
 
-     @OdometryDevice("left")
+    init {
+        RobotConstantsAccessor.load(
+                DriveConstantsNew::class.java,
+                OdometryConstants::class.java
+        )
+    }
+
+    // Drivetrain Variables
+            // @JvmField val frontLeftMotor  : DcMotorEx FROM BaseRobot
+            // @JvmField val backLeftMotor   : DcMotorEx FROM BaseRobot
+            // @JvmField val frontRightMotor : DcMotorEx FROM BaseRobot
+            // @JvmField val backRightMotor  : DcMotorEx FROM BaseRobot
+
      @JvmField val intakeLiftLeft          : DcMotorEx     = hwInit("intakeLiftLeft")
      @JvmField val intakeLiftRight         : DcMotorEx     = hwInit("intakeLiftRight")
      @JvmField val intakePivot             : DcMotorEx     = hwInit("intakePivot")
 
-     @OdometryDevice("rear")
      @JvmField val odometryRearAsMotor     : DcMotorEx     = hwInit("odometryRearAsMotor")
 
     // Servo/PWM Variables
@@ -45,7 +50,7 @@ open class MisumiRobot(protected val hardwareMap: HardwareMap) {
     @JvmField val blinkin                 : RevBlinkinLedDriver   = hwInit("blinkin")
 
     // Expansion Hub Variables
-    @JvmField val expansionhubs           : List<LynxModule>      = hardwareMap.getAll(LynxModule::class.java).apply { forEach {it.bulkCachingMode = LynxModule.BulkCachingMode.AUTO} }
+//    @JvmField val expansionhubs           : List<LynxModule>      = hardwareMap.getAll(LynxModule::class.java).apply { forEach {it.bulkCachingMode = LynxModule.BulkCachingMode.AUTO} }
 
     // IMU Variables
     @JvmField val imuControllerA          : IMUController         = IMUController(hardwareMap = hardwareMap, id = 'A')
@@ -57,8 +62,7 @@ open class MisumiRobot(protected val hardwareMap: HardwareMap) {
 
      @JvmField val intakeBlockGrabber      : IntakeBlockGrabber = IntakeBlockGrabber(intakeBlockGrabberServo, 0.00, 0.30, 1.00)
 
-     @JvmField val holonomic               : Holonomic = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
-     @JvmField val holonomicRR             : HolonomicRR           = HolonomicRR(imuControllerA,
+     override val holonomicRR             : HolonomicRR           = HolonomicRR(imuControllerA,
                                                                                  frontLeftMotor, backLeftMotor, backRightMotor, frontRightMotor,
                                                                                  TwoWheelOdometryLocalizer(intakeLiftLeft, odometryRearAsMotor, imuControllerA))
 
@@ -73,11 +77,4 @@ open class MisumiRobot(protected val hardwareMap: HardwareMap) {
 
      @JvmField val odometryModuleLeft = OdometryModule(intakeLiftLeft as DcMotor)
      @JvmField val odometryModuleRear = OdometryModule(odometryRearAsMotor as DcMotor)
-
-
-    protected inline fun <reified T> hwInit(name:String): T = hardwareMap.get(T::class.java, name)
 }
-
-@Target(AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.SOURCE)
-annotation class OdometryDevice(val name:String)

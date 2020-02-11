@@ -111,8 +111,8 @@ open class TeleOpRD : OpMode() {
         when {
             gamepad2.dpad_up -> robot.foundationGrabbersFront.unlock()
             gamepad2.dpad_down -> robot.foundationGrabbersFront.lock()
-            gamepad2.dpad_left -> robot.foundationGrabbersSide.unlock()
-            gamepad2.dpad_right -> robot.foundationGrabbersSide.lock()
+//            gamepad2.dpad_left -> robot.foundationGrabbersSide.unlock()
+//            gamepad2.dpad_right -> robot.foundationGrabbersSide.lock()
         }
     }
 

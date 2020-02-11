@@ -1,15 +1,18 @@
 package org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.library.functions.MathOperations;
+import org.firstinspires.ftc.teamcode.library.functions.process.Stoppable;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
-public class Holonomic extends Drivetrain {
+//@Config
+public class Holonomic implements Stoppable {
 
     private static final double WHEEL_DIAMETER = 4;
     private static final double WHEEL_CIRCUMFERENCE;
@@ -25,6 +28,13 @@ public class Holonomic extends Drivetrain {
 
     private static final int TARGET_POSITION_TOLERANCE = 90;
 
+    private DcMotorEx frontLeftMotor;
+    private DcMotorEx backLeftMotor;
+    private DcMotorEx backRightMotor;
+    private DcMotorEx frontRightMotor;
+
+    private DcMotorEx[] motors = new DcMotorEx[4];
+
     static {
         WHEEL_CIRCUMFERENCE = (WHEEL_DIAMETER * Math.PI);
         TICKS_PER_INCH = TICKS_PER_REVOLUTION / WHEEL_CIRCUMFERENCE;
@@ -38,32 +48,23 @@ public class Holonomic extends Drivetrain {
      * @param backRightMotor back right motor
      * @param chassis robot chassis type
      */
-    public Holonomic(DcMotor frontLeftMotor, DcMotor backLeftMotor, DcMotor frontRightMotor, DcMotor backRightMotor, Chassis chassis) {
-        super.frontLeftMotor = frontLeftMotor;
-        super.frontRightMotor = frontRightMotor;
-        super.backLeftMotor = backLeftMotor;
-        super.backRightMotor = backRightMotor;
-        super.frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        super.frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        super.backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        super.backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        ((DcMotorEx)frontLeftMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
-        ((DcMotorEx)backLeftMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
-        ((DcMotorEx)frontRightMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
-        ((DcMotorEx)backRightMotor).setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
+    public Holonomic(DcMotorEx frontLeftMotor, DcMotorEx backLeftMotor, DcMotorEx frontRightMotor, DcMotorEx backRightMotor, Chassis chassis) {
+        this.frontLeftMotor = frontLeftMotor;
+        this.frontRightMotor = frontRightMotor;
+        this.backRightMotor = backRightMotor;
+        this.backLeftMotor = backLeftMotor;
 
-//        ((DcMotorEx)frontLeftMotor).setPositionPIDFCoefficients(1.5);
-//        ((DcMotorEx)backLeftMotor).setPositionPIDFCoefficients(1.5);
-//        ((DcMotorEx)frontRightMotor).setPositionPIDFCoefficients(1.8);
-//        ((DcMotorEx)backRightMotor).setPositionPIDFCoefficients(1.5);
+        motors[0] = frontLeftMotor;
+        motors[1] = backLeftMotor;
+        motors[2] = backRightMotor;
+        motors[3] = frontLeftMotor;
 
-        if (chassis == Chassis.SSGOBILDA) {
-//            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//            frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//            backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//            backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        for (DcMotorEx motor: motors) {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setTargetPositionTolerance(TARGET_POSITION_TOLERANCE);
         }
     }
+
 
     /**
      * Creates instance with four motors and sets chassis type to {@link Chassis#SSGOBILDA}
@@ -72,7 +73,7 @@ public class Holonomic extends Drivetrain {
      * @param frontRightMotor front right motor
      * @param backRightMotor back right motor
      */
-    public Holonomic(DcMotor frontLeftMotor, DcMotor backLeftMotor, DcMotor frontRightMotor, DcMotor backRightMotor) {
+    public Holonomic(DcMotorEx frontLeftMotor, DcMotorEx backLeftMotor, DcMotorEx frontRightMotor, DcMotorEx backRightMotor) {
         this(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Chassis.SSGOBILDA);
     }
 
@@ -97,8 +98,6 @@ public class Holonomic extends Drivetrain {
         backLeftMotor.setPower(leftRearPower);
         frontRightMotor.setPower(rightFrontPower);
         backRightMotor.setPower(rightRearPower);
-
-
     }
 
     /**
@@ -299,6 +298,7 @@ public class Holonomic extends Drivetrain {
     @Override
     public void stop() {
         setMotorsMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        super.stop();
+        for (DcMotorEx motor : motors) motor.setPower(0.0);
+
     }
 }

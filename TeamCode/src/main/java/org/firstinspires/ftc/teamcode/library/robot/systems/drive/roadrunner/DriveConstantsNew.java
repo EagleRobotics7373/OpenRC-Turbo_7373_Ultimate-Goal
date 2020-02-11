@@ -25,8 +25,6 @@ public class DriveConstantsNew {
 
     public static double kF = getMotorVelocityF();
 
-    public static boolean useTwoWheelLocalizer = true;
-
     public static boolean RUN_USING_ENCODER = true;
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(50, 0.7, 30);
 

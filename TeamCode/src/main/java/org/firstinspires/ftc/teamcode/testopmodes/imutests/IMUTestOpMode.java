@@ -21,8 +21,8 @@ public class IMUTestOpMode extends OpMode {
 
     @Override
     public void init() {
-        imuControllerA = new IMUController(hardwareMap, AxesOrder.ZYX);
-        imuControllerB = new IMUController(hardwareMap, AxesOrder.ZYX, "imuB");
+        imuControllerA = new IMUController(hardwareMap, AxesOrder.ZYX, 'A');
+        imuControllerB = new IMUController(hardwareMap, AxesOrder.ZYX, 'B');
     }
 
     @Override

@@ -64,7 +64,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
 
         robot.autoBlockIntakeRear.pivotUp()
         robot.autoBlockIntakeRear.grabBlock()
-        robot.foundationGrabbersSide.unlock()
+//        robot.foundationGrabbersSide.unlock()
 //        robot.foundationGrabbersFront.unlock()
 
 
@@ -192,7 +192,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
                             .strafeTo(Vector2d(foundationXPositions[1], foundationYPosition-0.5))
                             .build()
             )
-            robot.foundationGrabbersSide.lock()
+//            robot.foundationGrabbersSide.lock()
             sleep(700)
             doBlockRelease(robot.autoBlockIntakeRear)
             sleep(500)
@@ -203,7 +203,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
     //            )
                 timeDrive(-1.0, 0.0, -0.45, 2500)
                 timeDrive(1.0, 0.0, 0.0, 1000)
-                robot.foundationGrabbersSide.unlock()
+//                robot.foundationGrabbersSide.unlock()
             }
             if (doParkAtEnd) {
                 robot.holonomicRR.followTrajectorySync(
@@ -257,7 +257,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
                             .strafeTo(Vector2d(foundationXPositions[0] reverseIf RED, foundationYPosition-1.0))
                             .build()
             )
-            robot.foundationGrabbersSide.lock()
+//            robot.foundationGrabbersSide.lock()
             sleep(700)
             doBlockRelease(robot.autoBlockIntakeFront)
             sleep(500)
@@ -267,7 +267,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
                 //                    .build()
                 //            )
                 timeDrive(-1.0, 0.35, 0.3, 2000)
-                robot.foundationGrabbersSide.unlock()
+//                robot.foundationGrabbersSide.unlock()
                 sleep(500)
                 timeDrive(1.0, 0.0, 0.0, 1000)
             }

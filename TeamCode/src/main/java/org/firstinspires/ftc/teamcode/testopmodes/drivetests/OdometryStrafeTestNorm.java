@@ -20,7 +20,7 @@ public class OdometryStrafeTestNorm extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new MisumiRobot(hardwareMap);
-        imuController = new IMUController(hardwareMap);
+        imuController = new IMUController(hardwareMap, 'A');
         telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         waitForStart();
 

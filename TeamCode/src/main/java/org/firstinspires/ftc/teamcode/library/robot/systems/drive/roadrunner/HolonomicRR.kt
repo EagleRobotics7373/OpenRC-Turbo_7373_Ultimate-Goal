@@ -27,78 +27,55 @@ import org.firstinspires.ftc.teamcode.library.functions.toDegrees
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
 import org.openftc.revextensions2.ExpansionHubEx
 import org.openftc.revextensions2.ExpansionHubMotor
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.*
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.baseConstraints
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.headingPID
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.kA
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.kStatic
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.kV
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.trackWidth
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.translationalXPID
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.translationalYPID
+
+//import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.*
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsOld.globalPoseEstimate
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.encoderTicksToInches
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.kF
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.motorVelocityPID
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.runUsingEncoder
 
 
 class HolonomicRR
 
-constructor (hardwareMap: HardwareMap,
+constructor (
              private val imuController: IMUController,
-             private val frontLeftExt: ExpansionHubMotor,
-             private val backLeftExt:  ExpansionHubMotor,
-             private val backRightExt: ExpansionHubMotor,
-             private val frontRightExt:ExpansionHubMotor,
+             private val frontLeftExt: DcMotorEx,
+             private val backLeftExt:  DcMotorEx,
+             private val backRightExt: DcMotorEx,
+             private val frontRightExt: DcMotorEx,
              localizer: Localizer)
 
-    : MecanumDrive(kV, kA, kStatic, TRACK_WIDTH) // TODO: Define these variables
+    : MecanumDrive(kV, kA, kStatic, trackWidth)
 {
-    constructor(_hardwareMap: HardwareMap,
-                _imuController: IMUController,
-                _frontLeftMotor: DcMotor,
-                _backLeftMotor: DcMotor,
-                _backRightMotor: DcMotor,
-                _frontRightMotor: DcMotor,
-                _localizer: Localizer) : this(
-            hardwareMap =  _hardwareMap,
-            imuController = _imuController,
-            frontLeftExt = (_frontLeftMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_frontLeftMotor).first())) as ExpansionHubMotor,
-            backLeftExt =  (_backLeftMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_backLeftMotor).first())) as ExpansionHubMotor,
-            backRightExt =  (_backRightMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_backRightMotor).first())) as ExpansionHubMotor,
-            frontRightExt = (_frontRightMotor.takeIf { it is ExpansionHubMotor } ?: _hardwareMap.get(ExpansionHubMotor::class.java, _hardwareMap.getNamesOf(_frontRightMotor).first())) as ExpansionHubMotor,
-            localizer = _localizer
-    )
 
-    val motorsExt = listOf(frontLeftExt, backLeftExt, backRightExt, frontRightExt)
-    val hubA = hardwareMap.get(ExpansionHubEx::class.java,"Expansion Hub A")
-    val hubB = hardwareMap.get(ExpansionHubEx::class.java, "Expansion Hub B")
+    private val motorsExt = listOf(frontLeftExt, backLeftExt, backRightExt, frontRightExt)
 
-    enum class Mode { IDLE, TURN, FOLLOW_TRAJECTORY }
-    var mode = Mode.IDLE
+    private enum class Mode { IDLE, TURN, FOLLOW_TRAJECTORY }
+    private var mode = Mode.IDLE
 
-    val constraints = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
+    private val clock = NanoClock.system()
+    private val dashboard = FtcDashboard.getInstance()
 
-    val clock = NanoClock.system()
-    val dashboard = FtcDashboard.getInstance()
+    private val turnController = PIDFController(headingPID)
+    private lateinit var turnProfile : MotionProfile
+    private var turnStart = 0.0
 
-    // TODO: set heading PID
-    // UPDATE: completed
-    val turnController = PIDFController(HEADING_PID)
-    lateinit var turnProfile : MotionProfile
-    var turnStart = 0.0
-
-    // TODO: set BASE_CONSTRAINTS, TRACK_WIDTH, and the other stuff
-    // UPDATE: completed
-    val driveConstraints = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
-    val follower = HolonomicPIDVAFollower(TRANSLATIONAL_X_PID, TRANSLATIONAL_Y_PID, HEADING_PID)
+    private val driveConstraints = MecanumConstraints(baseConstraints, trackWidth)
+    private val follower = HolonomicPIDVAFollower(translationalXPID, translationalYPID, headingPID)
 
     private lateinit var lastWheelPositions : List<Double>
     private var lastTimestamp = 0.0
     private var lastReadTime : Long = 0
-
-    private var currentDriveSignal = DriveSignal()
-//    private val driveSignalUpdateRunnable = {
-//        try {
-//            while (isBusy()) {
-//                setDriveSignal(currentDriveSignal)
-//                print("CURRENT SIGNAL = $currentDriveSignal")
-//            }
-//        } catch (e: InterruptedException) {
-//            e.printStackTrace()
-//        }
-//    }
-//    private var driveSignalUpdateThread = Thread(driveSignalUpdateRunnable)
-
 
     init {
         dashboard.telemetryTransmissionInterval = 25
@@ -111,20 +88,17 @@ constructor (hardwareMap: HardwareMap,
         motorsExt.forEach {
             it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-            if (RUN_USING_ENCODER) {
+            if (runUsingEncoder) {
                 it.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                if (MOTOR_VELO_PID != null) setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID)
+                if (motorVelocityPID != null) setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, motorVelocityPID as PIDCoefficients)
             }
         }
 
-        // TODO: Need to set localizer here to odometry system...
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         super.localizer = localizer
     }
 
-
-    val trajectoryBuilder : TrajectoryBuilder
-        get() = TrajectoryBuilder(poseEstimate, driveConstraints)
+//    val trajectoryBuilder : TrajectoryBuilder
+//        get() = TrajectoryBuilder(poseEstimate, driveConstraints)
 
     val lastError: Pose2d
         get() = when(mode) {
@@ -248,10 +222,6 @@ constructor (hardwareMap: HardwareMap,
         waitForIdle()
     }
 
-    fun trajectoryBuilder(): TrajectoryBuilder {
-        return TrajectoryBuilder(poseEstimate, constraints)
-    }
-
     fun turn(angle: Double) {
         val heading = poseEstimate.heading
 
@@ -291,42 +261,28 @@ constructor (hardwareMap: HardwareMap,
     fun setPIDCoefficients(runMode: DcMotor.RunMode, coefficients: PIDCoefficients) {
         motorsExt.forEach {
             (it as DcMotorEx).setPIDFCoefficients(runMode, PIDFCoefficients(coefficients.kP, coefficients.kI, coefficients.kD, kF))
-            // TODO : "set kF to motor velocity F coefficient, look at RR quickstart DriveConstantsNew"
+            // set kF to motor velocity F coefficient, look at RR quickstart, DriveConstantsNew
         }
     }
 
     @NonNull
     override fun getWheelPositions() : List<Double> {
-        val bulkDataA = hubA.bulkInputData
-        val bulkDataB = hubB.bulkInputData
-
-        bulkDataA ?: return listOf(0.0, 0.0, 0.0, 0.0)
-
-        val wheelPositions = emptyList<Double>().toMutableList()
-
-        wheelPositions.add(encoderTicksToInches(bulkDataA.getMotorCurrentPosition(frontLeftExt).toDouble()))
-        wheelPositions.add(encoderTicksToInches(bulkDataA.getMotorCurrentPosition(backLeftExt).toDouble()))
-        wheelPositions.add(encoderTicksToInches(bulkDataB.getMotorCurrentPosition(backRightExt).toDouble()))
-        wheelPositions.add(encoderTicksToInches(bulkDataB.getMotorCurrentPosition(frontRightExt).toDouble()))
-
-        return wheelPositions
+        return listOf(
+                encoderTicksToInches(frontLeftExt.currentPosition.toDouble()),
+                encoderTicksToInches(backLeftExt.currentPosition.toDouble()),
+                encoderTicksToInches(backRightExt.currentPosition.toDouble()),
+                encoderTicksToInches(frontRightExt.currentPosition.toDouble())
+        )
     }
 
     @NonNull
     fun getWheelVelocities() : List<Double> {
-        val bulkDataA = hubA.bulkInputData
-        val bulkDataB = hubB.bulkInputData
-
-        bulkDataA ?: return listOf(0.0, 0.0, 0.0, 0.0)
-
-        val wheelVelocities = emptyList<Double>().toMutableList()
-
-        wheelVelocities.add(encoderTicksToInches(bulkDataA.getMotorVelocity(frontLeftExt).toDouble()))
-        wheelVelocities.add(encoderTicksToInches(bulkDataA.getMotorVelocity(backLeftExt).toDouble()))
-        wheelVelocities.add(encoderTicksToInches(bulkDataB.getMotorVelocity(backRightExt).toDouble()))
-        wheelVelocities.add(encoderTicksToInches(bulkDataB.getMotorVelocity(frontRightExt).toDouble()))
-
-        return wheelVelocities
+        return listOf(
+                encoderTicksToInches(frontLeftExt.velocity),
+                encoderTicksToInches(backLeftExt.velocity),
+                encoderTicksToInches(backRightExt.velocity),
+                encoderTicksToInches(frontRightExt.velocity)
+        )
     }
 
     override val rawExternalHeading: Double
@@ -338,6 +294,8 @@ constructor (hardwareMap: HardwareMap,
         backRightExt .power = -rearRight
         frontRightExt.power = -frontRight
     }
+
+    fun trajectoryBuilder() = TrajectoryBuilder(poseEstimate, driveConstraints)
 
 
 }

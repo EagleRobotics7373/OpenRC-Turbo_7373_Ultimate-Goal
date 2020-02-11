@@ -16,17 +16,17 @@ class MultiDistanceTest : LinearOpMode() {
         waitForStart()
 
         val trajectory =
-                drive.trajectoryBuilder
+                drive.trajectoryBuilder()
                         .splineTo(Pose2d(70.0, -8.0))
                         .build()
 
         if (isStopRequested) return
 for (i in 1..4) {
-    drive.followTrajectorySync(drive.trajectoryBuilder
+    drive.followTrajectorySync(drive.trajectoryBuilder()
             .splineTo(Pose2d(70.0, -8.0))
             .build())
     sleep(0)
-    drive.followTrajectorySync(drive.trajectoryBuilder
+    drive.followTrajectorySync(drive.trajectoryBuilder()
             .reverse()
             .splineTo(Pose2d(0.0, 0.0))
             .build())
