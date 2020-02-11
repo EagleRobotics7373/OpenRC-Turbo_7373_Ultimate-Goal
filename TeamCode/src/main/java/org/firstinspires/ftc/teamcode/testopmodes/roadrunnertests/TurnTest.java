@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR;
 
+import static org.firstinspires.ftc.teamcode.library.robot.robotcore.RobotProvider.providePresetRobot;
+
 /*
  * This is a simple routine to test turning capabilities.
  */
@@ -17,7 +19,7 @@ public class TurnTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        HolonomicRR drive = new MisumiRobot(hardwareMap).holonomicRR;
+        HolonomicRR drive = providePresetRobot(hardwareMap).getHolonomicRR();
 
         waitForStart();
 

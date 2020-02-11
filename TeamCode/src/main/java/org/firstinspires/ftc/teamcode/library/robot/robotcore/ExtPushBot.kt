@@ -6,9 +6,10 @@ import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.*
 open class ExtPushBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
 
     init {
+        println("ExtPushBot being constructed!")
         RobotConstantsAccessor.load(
                 DriveConstantsNew::class.java,
-                OdometryConstants::class.java
+                OdometryConstantsPushbot::class.java
         )
     }
 

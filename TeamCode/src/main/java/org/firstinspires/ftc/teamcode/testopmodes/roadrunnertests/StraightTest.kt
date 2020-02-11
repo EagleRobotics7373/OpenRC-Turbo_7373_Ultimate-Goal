@@ -11,7 +11,6 @@ class StraightTest : LinearOpMode() {
     override fun runOpMode() {
         val robot = providePresetRobot(hardwareMap)
         val drive = robot.holonomicRR
-
         waitForStart()
 
         val trajectory =

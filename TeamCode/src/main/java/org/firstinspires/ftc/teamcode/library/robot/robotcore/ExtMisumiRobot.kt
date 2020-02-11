@@ -16,6 +16,7 @@ import org.openftc.revextensions2.ExpansionHubMotor
 open class ExtMisumiRobot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
 
     init {
+        println("ExtMisumiRobot being constructed!")
         RobotConstantsAccessor.load(
                 DriveConstantsNew::class.java,
                 OdometryConstants::class.java

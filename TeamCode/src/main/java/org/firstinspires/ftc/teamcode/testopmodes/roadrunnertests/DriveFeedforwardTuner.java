@@ -12,9 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.LoggingUtil;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR;
 
+import static org.firstinspires.ftc.teamcode.library.robot.robotcore.RobotProvider.providePresetRobot;
 import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.getMaxRpm;
 import static org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsNew.rpmToVelocity;
 
@@ -43,7 +43,7 @@ public class DriveFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        HolonomicRR drive = new MisumiRobot(hardwareMap).holonomicRR;
+        HolonomicRR drive = providePresetRobot(hardwareMap).getHolonomicRR();
 
         NanoClock clock = NanoClock.system();
 
