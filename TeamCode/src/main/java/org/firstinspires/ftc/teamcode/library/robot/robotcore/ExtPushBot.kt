@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.library.robot.robotcore
 
 import com.qualcomm.robotcore.hardware.*
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.*
 
 open class ExtPushBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
@@ -24,6 +25,10 @@ open class ExtPushBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
      @JvmField val odometryLeft         : DcMotorEx             = hwInit("odometryLeft")
      @JvmField val odometryRight        : DcMotorEx             = hwInit("odometryRight")
      @JvmField val odometryRear         : DcMotorEx             = hwInit("odometryRear")
+
+    override val leftOdometryModule     : OdometryModule?  = OdometryModule(odometryLeft)
+    override val rightOdometryModule    : OdometryModule?  = OdometryModule(odometryRight)
+    override val rearOdometryModule     : OdometryModule?  = OdometryModule(odometryRear)
 
     // IMU Variables
      @JvmField val imuControllerA       : IMUController         = IMUController(hardwareMap = hardwareMap, id= 'A')

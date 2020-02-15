@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes.gen2
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.library.functions.*
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.ExtMisumiRobot
 
 @TeleOp(name="TeleOp RD Gen2", group="Gen2 Basic")
 open class TeleOpRD : OpMode() {
     // robot hardware declaration; assignment occures during init()
-    lateinit var robot : MisumiRobot
+    lateinit var robot : ExtMisumiRobot
 
     // gamepad toggle button watchers, instantiated after opmode init
     protected lateinit var watch_gamepad1_buttonY : ToggleButtonWatcher
@@ -30,11 +31,12 @@ open class TeleOpRD : OpMode() {
     var intakeLiftBaseline = 0
     var intakePivotBaseline = 0
     var reverseIntakeLift = true
+    var useLEDs             = true
 
 
     override fun init() {
         // instantiate robot variables
-        robot = MisumiRobot(hardwareMap)
+        robot = ExtMisumiRobot(hardwareMap)
 
         // Instantiate toggle button watchers. Each statement below is calling a constructor with a single
         //   parameter, in this case being a function for calling the gamepad button. This does not set the
@@ -66,6 +68,7 @@ open class TeleOpRD : OpMode() {
         controlTelemetry()
         controlMusic()
 //        robot.holonomicRR.update()
+        if (!useLEDs) robot.blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK)
     }
 
     override fun stop() {
@@ -111,8 +114,8 @@ open class TeleOpRD : OpMode() {
         when {
             gamepad2.dpad_up -> robot.foundationGrabbersFront.unlock()
             gamepad2.dpad_down -> robot.foundationGrabbersFront.lock()
-//            gamepad2.dpad_left -> robot.foundationGrabbersSide.unlock()
-//            gamepad2.dpad_right -> robot.foundationGrabbersSide.lock()
+            gamepad2.dpad_left -> useLEDs = false
+            gamepad2.dpad_right -> useLEDs = true
         }
     }
 
@@ -126,9 +129,9 @@ open class TeleOpRD : OpMode() {
                     robot.autoBlockIntakeRear.pivotUp()
                     robot.autoBlockIntakeRear.grabBlock()
                 }
-                gamepad2.x -> robot.capstonePlacer.moveInside()
-                gamepad2.y -> robot.capstonePlacer.moveDeploy()
-                gamepad2.a -> robot.capstonePlacer.moveIn18()
+//                gamepad2.x -> robot.capstonePlacer.moveInside()
+//                gamepad2.y -> robot.capstonePlacer.moveDeploy()
+//                gamepad2.a -> robot.capstonePlacer.moveIn18()
 
             }
         }
@@ -151,9 +154,13 @@ open class TeleOpRD : OpMode() {
 
         if (watch_gamepad2_buttonB.call()) reverseIntakeLift = !reverseIntakeLift
 
+        var ledFlashing = true
+
         val inputSpoolPowerMod =
                 if (inputSpoolPower < 0.0 && !gamepad2.left_bumper)
-                    if (intakeLiftCurrent > intakeLiftBaseline) 0.0
+                    if (intakeLiftCurrent > intakeLiftBaseline) {
+                        0.0
+                    }
                     else if (intakeLiftCurrent + 75 > intakeLiftBaseline) 0.20
                     else if (intakeLiftCurrent + 500 > intakeLiftBaseline) 0.45
                     else if (intakeLiftCurrent + 800 > intakeLiftBaseline) 0.45
@@ -161,6 +168,13 @@ open class TeleOpRD : OpMode() {
                     else if (intakeLiftCurrent + 2000 > intakeLiftBaseline) 0.75
                     else 1.0
                 else 1.0
+
+
+        if (useLEDs) {
+            if (intakeLiftCurrent + 45 < intakeLiftBaseline) robot.blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED)
+            else robot.blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE)
+        }
+
 
         inputSpoolPower *= inputSpoolPowerMod
 

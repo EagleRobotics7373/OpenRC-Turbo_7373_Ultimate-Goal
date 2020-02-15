@@ -9,7 +9,7 @@ class AutoBlockIntake (
         private val pivotMid: Double,
         private val pivotPickup: Double,
         private val grabberServo: Servo,
-        private val grab18: Double,
+//        private val grab18: Double,
         private val grabPickup: Double,
         private val grabUp: Double,
         private val grabMid:Double
@@ -17,7 +17,7 @@ class AutoBlockIntake (
 {
     fun grabBlock() { grabberServo.position = grabPickup }
     fun releaseBlock() { grabberServo.position = grabUp }
-    fun grabberIn18() { grabberServo.position = grab18 }
+//    fun grabberIn18() { grabberServo.position = grab18 }
     fun grabberMid() { grabberServo.position = grabMid }
 
     fun pivotDown() { pivotServo.position = pivotPickup }

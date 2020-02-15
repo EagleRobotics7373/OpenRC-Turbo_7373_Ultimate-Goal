@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.legacyconfig.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController;
 import org.firstinspires.ftc.teamcode.opmodes.control.IMUPIDStrafer;
 

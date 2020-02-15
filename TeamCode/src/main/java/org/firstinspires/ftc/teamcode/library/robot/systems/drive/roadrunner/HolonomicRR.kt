@@ -21,12 +21,11 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
+import kotlinx.coroutines.flow.callbackFlow
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.DashboardUtil
 import org.firstinspires.ftc.teamcode.library.functions.toDegrees
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
-import org.openftc.revextensions2.ExpansionHubEx
-import org.openftc.revextensions2.ExpansionHubMotor
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.baseConstraints
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor.headingPID
@@ -76,6 +75,9 @@ constructor (
     private lateinit var lastWheelPositions : List<Double>
     private var lastTimestamp = 0.0
     private var lastReadTime : Long = 0
+
+    private var trajectoryStart = 0.0
+    private var trajectoryWaypointActions = emptyList<Pair<Double, ()->Unit>>().toMutableList()
 
     init {
         dashboard.telemetryTransmissionInterval = 25
@@ -178,6 +180,25 @@ constructor (
 
                 val trajectory = follower.trajectory
 
+                val currentTrajectoryDuration = clock.seconds() - trajectoryStart
+                val totalTrajectoryDuration = trajectory.duration()
+                val trajectoryTimeRatio = currentTrajectoryDuration/totalTrajectoryDuration
+
+//                if (trajectoryWaypointActions.isNotEmpty()) {
+//                    val currentActionPair = trajectoryWaypointActions.first()
+//                    if (trajectoryTimeRatio > currentActionPair.first) {
+//                        currentActionPair.second.invoke()
+//                        trajectoryWaypointActions.remove(currentActionPair)
+//                    }
+//                }
+
+                trajectoryWaypointActions.firstOrNull()?.also {
+                    if (trajectoryTimeRatio > it.first) {
+                        it.second.invoke()
+                        trajectoryWaypointActions.remove(it)
+                    }
+                }
+
                 fieldOverlay.setStrokeWidth(1)
                 fieldOverlay.setStroke("#4CAF50")
                 DashboardUtil.drawSampledPath(fieldOverlay, trajectory.path)
@@ -209,16 +230,18 @@ constructor (
         globalPoseEstimate = poseEstimate
     }
 
-    fun followTrajectory(trajectory: Trajectory) {
+    @JvmOverloads fun followTrajectory(trajectory: Trajectory, waypointActions: List<Pair<Double, ()->Unit>> = emptyList()) {
         follower.followTrajectory(trajectory)
         lastReadTime = System.currentTimeMillis()
 //        driveSignalUpdateThread = Thread(driveSignalUpdateRunnable)
 //        driveSignalUpdateThread.start()
         mode = Mode.FOLLOW_TRAJECTORY
+        trajectoryStart = clock.seconds()
+        trajectoryWaypointActions = waypointActions.sortedBy { it.first }.toMutableList()
     }
 
-    fun followTrajectorySync(trajectory: Trajectory) {
-        followTrajectory(trajectory)
+    @JvmOverloads fun followTrajectorySync(trajectory: Trajectory, waypointActions: List<Pair<Double, ()->Unit>> = emptyList()) {
+        followTrajectory(trajectory, waypointActions)
         waitForIdle()
     }
 

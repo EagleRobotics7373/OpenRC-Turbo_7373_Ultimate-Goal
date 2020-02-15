@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ3DI58K" parentModuleAddress="1">
+        <LynxModule name="Expansion Hub A" port="1">
+            <Matrix12vMotor name="odometryLeftAsMotor" port="0"/> <!--LEFT ODOMETRY-->
+            <Matrix12vMotor name="intakeLiftLeft" port="1" /> <!--CENTER ODOMETRY-->
+            <Matrix12vMotor name="backLeftMotor" port="2"/>
+            <Matrix12vMotor name="frontLeftMotor" port="3"/>
+
+            <Servo name="foundationGrabFrontLeft" port="0"/>
+            <Servo name="intakeBlockGrabber" port="1"/>
+            <RevBlinkinLedDriver name="blinkin" port="2"/>
+
+            <LynxEmbeddedIMU name="imuA" port="0" bus="0" />
+        </LynxModule>
+        <LynxModule name="Expansion Hub B" port="2">
+            <Matrix12vMotor name="frontRightMotor" port="0" />
+            <Matrix12vMotor name="backRightMotor" port="1" />
+            <Matrix12vMotor name="intakeLiftRight" port="2" />
+            <Matrix12vMotor name="intakePivotMotor" port="3" />
+
+            <Servo name="autoBlockGrabRear" port="0"/>
+            <Servo name="autoBlockPivotRear" port="1"/>
+            <Servo name="autoBlockGrabFront" port="2"/>
+            <Servo name="autoBlockPivotFront" port="3"/>
+            <Servo name="foundationGrabFrontRight" port="4"/>
+
+            <LynxEmbeddedIMU name="imuB" port="0" bus="0" />
+        </LynxModule>
+    </LynxUsbDevice>
+    <Webcam name="Webcam 720p" serialNumber="B7EDC3E0"/>
+</Robot>

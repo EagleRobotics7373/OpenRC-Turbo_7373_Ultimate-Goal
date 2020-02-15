@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.testopmodes.drivetests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.legacyconfig.MisumiRobot;
 
 
 @Autonomous(name="Encoder Drive Test", group="Test")

@@ -6,11 +6,11 @@ import com.acmerobotics.dashboard.config.Config;
 public class OdometryConstantsPushbot {
 
     public static double leftXcm = -1.6;
-    public static double leftYcm = 18.4;
+    public static double leftYcm = 18.5;
     public static double leftAngleDeg = 180.0;
 
     public static double rightXcm = -1.6;
-    public static double rightYcm = -19.6;
+    public static double rightYcm = -19.3;
     public static double rightAngleDeg = 180.0;
 
     public static double rearXcm = 0.6;

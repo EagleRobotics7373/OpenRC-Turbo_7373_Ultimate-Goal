@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.testopmodes.gen2tests
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.legacyconfig.MisumiRobot
 
 @TeleOp(group="Test")
 class Gen2GamepadControl : OpMode() {

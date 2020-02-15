@@ -1,19 +1,13 @@
-package org.firstinspires.ftc.teamcode.library.robot.robotcore
+package org.firstinspires.ftc.teamcode.library.robot.robotcore.legacyconfig
 
 import com.qualcomm.hardware.lynx.LynxModule
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.hardware.*
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.Holonomic
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.TwoWheelOdometryLocalizer
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.FoundationGrabbers
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.AutoBlockIntake
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.CapstonePlacer
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.IntakeBlockGrabber
-import org.openftc.revextensions2.ExpansionHubEx
-import org.openftc.revextensions2.ExpansionHubMotor
 
+@Deprecated("replaced by ExtPushBot")
 open class PushBot(protected val hardwareMap: HardwareMap) {
     // Drivetrain Variables
      @JvmField val frontLeftMotor       : DcMotorEx             = hwInit("frontLeftMotor")
@@ -29,7 +23,7 @@ open class PushBot(protected val hardwareMap: HardwareMap) {
      @JvmField val expansionhubs           : List<LynxModule>      = hardwareMap.getAll(LynxModule::class.java).apply { forEach {it.bulkCachingMode = LynxModule.BulkCachingMode.AUTO} }
 
     // IMU Variables
-     @JvmField val imuControllerA          : IMUController         = IMUController(hardwareMap = hardwareMap, id= 'A')
+     @JvmField val imuControllerA          : IMUController = IMUController(hardwareMap = hardwareMap, id = 'A')
 
     // Robot Systems Variables
      @JvmField val holonomic               : Holonomic = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)

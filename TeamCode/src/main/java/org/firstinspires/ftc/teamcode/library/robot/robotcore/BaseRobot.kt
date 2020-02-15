@@ -11,8 +11,6 @@ import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.Founda
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.AutoBlockIntake
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.CapstonePlacer
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.IntakeBlockGrabber
-import org.openftc.revextensions2.ExpansionHubEx
-import org.openftc.revextensions2.ExpansionHubMotor
 
 abstract class BaseRobot(protected val hardwareMap: HardwareMap) {
     // Drivetrain Variables
@@ -22,12 +20,16 @@ abstract class BaseRobot(protected val hardwareMap: HardwareMap) {
      @JvmField val backRightMotor       : DcMotorEx             = hwInit("backRightMotor")
 
     // Expansion Hub Variables
-     @JvmField val expansionhubs           : List<LynxModule>      = hardwareMap.getAll(LynxModule::class.java).apply { forEach {it.bulkCachingMode = LynxModule.BulkCachingMode.AUTO} }
+     @JvmField val expansionhubs        : List<LynxModule>      = hardwareMap.getAll(LynxModule::class.java).apply { forEach {it.bulkCachingMode = LynxModule.BulkCachingMode.AUTO} }
 
     // Robot Systems Variables
-     @JvmField val holonomic               : Holonomic = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
+     @JvmField val holonomic            : Holonomic = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
 
-     abstract val holonomicRR             : HolonomicRR
+     abstract val holonomicRR           : HolonomicRR
+
+     abstract val leftOdometryModule             : OdometryModule?
+     abstract val rightOdometryModule            : OdometryModule?
+     abstract val rearOdometryModule             : OdometryModule?
 
      protected inline fun <reified T> hwInit(name:String): T = hardwareMap.get(T::class.java, name)
 }

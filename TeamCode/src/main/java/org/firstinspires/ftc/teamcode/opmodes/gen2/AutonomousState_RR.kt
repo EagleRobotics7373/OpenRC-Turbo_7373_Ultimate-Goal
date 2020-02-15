@@ -2,34 +2,41 @@ package org.firstinspires.ftc.teamcode.opmodes.gen1
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder
+import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.qualcomm.ftccommon.SoundPlayer
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.library.functions.*
 import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.kotlin.*
 import org.firstinspires.ftc.teamcode.library.functions.AllianceColor.*
+import org.firstinspires.ftc.teamcode.library.functions.Position.*
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.ExtMisumiRobot
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.PixelStatsPipeline
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.AutoBlockIntake
 import org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.OpenCvContainer
 import org.firstinspires.ftc.teamcode.opmodes.gen2.AutonomousConstants.*
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous LT (Kotlin + RR)", group = "Main")
-class AutonomousKotlinLT_RR : LinearOpMode() {
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous State (Kotlin + RR)", group = "Main")
+class AutonomousState_RR : LinearOpMode() {
 
     /*
         VARIABLES: Hardware and Control
      */
-    private lateinit var robot           : MisumiRobot
+    private lateinit var robot           : ExtMisumiRobot
     private lateinit var imuController   : IMUController
 
     private          val telem           : MultipleTelemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
     private lateinit var elapsedTime     : ElapsedTime
 
     private lateinit var cvContainer     : OpenCvContainer<PixelStatsPipeline>
+
+    private lateinit var player          : ExtDirMusicPlayer
 
     /*
         VARIABLES: Menu Options
@@ -54,7 +61,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
         /*
             Main autonomous variable initialization
          */
-        robot = MisumiRobot(hardwareMap)
+        robot = ExtMisumiRobot(hardwareMap)
         imuController = robot.imuControllerA
         cvContainer = VisionFactory.createOpenCv(
                 VisionFactory.CameraType.WEBCAM,
@@ -62,10 +69,13 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
                 PixelStatsPipeline(PixelStatsPipeline.StatsDetector.DETECTOR_VALUE_STDDEV))
 
 
-        robot.autoBlockIntakeRear.pivotUp()
-        robot.autoBlockIntakeRear.grabBlock()
-//        robot.foundationGrabbersSide.unlock()
-//        robot.foundationGrabbersFront.unlock()
+        robot.autoBlockIntakeRear.pivotIn18()
+        robot.autoBlockIntakeRear.releaseBlock()
+
+        robot.autoBlockIntakeFront.pivotIn18()
+        robot.autoBlockIntakeFront.releaseBlock()
+
+        robot.foundationGrabbersFront.unlock()
 
 
         /*
@@ -83,7 +93,7 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
         /*
             Prepare music and setup additional components.
          */
-        val player = ExtDirMusicPlayer(musicFile, true)
+        player = ExtDirMusicPlayer(musicFile, true)
         player.play()
 
         elapsedTime = ElapsedTime()
@@ -105,8 +115,14 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
         while (opModeIsActive()) robot.holonomicRR.update()
 
         cvContainer.stop()
+        cvContainer.camera.closeCameraDevice()
         player.stop()
     }
+
+//    override fun internalPostLoop() {
+//        super.internalPostLoop()
+//        player.stop()
+//    }
 
     fun doParkOnlyAuto() {
         sleep(delayBeforeParking * 1000.toLong())
@@ -114,171 +130,99 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
     }
 
     fun doCrossField() {
-        cvContainer.pipeline.tracking = true
-        while (cvContainer.pipeline.tracking);
+//        cvContainer.pipeline.tracking = true
+//        while (cvContainer.pipeline.tracking);
+//
+//        val skystonePosition = cvContainer.pipeline.skystonePos
 
-        val skystonePosition = cvContainer.pipeline.skystonePos
-        val modifiedSkystonePosition =
-                when (skystonePosition) {
-                    null -> Position.RIGHT
-                    Position.CENTER -> Position.RIGHT
-                    Position.LEFT -> Position.CENTER
-                    Position.RIGHT -> Position.RIGHT
-                    Position.NULL -> Position.LEFT
+//        val skystonePositionFromWall =
+//                when (allianceColor) {
+//                    RED ->
+//                        when (skystonePosition) {
+//                            NULL  -> 0 // Not in camera frame
+//                            LEFT  -> 1 // LEFT
+//                            else  -> 2 // RIGHT, or unknown
+//                        }
+//                    BLUE ->
+//                        when (skystonePosition) {
+//                            RIGHT -> 0 // RIGHT
+//                            LEFT  -> 1 // LEFT
+//                            else  -> 2 // Not in camera frame, or unknown
+//                        }
+//                }
+
+        val stonesOrder = arrayOf(1, 5, 4, 3).take(NUM_STONES)
+//            when (skystonePositionFromWall) {
+//                0    -> arrayOf(0, 3, 5)
+//                1    -> arrayOf(1, 4, 5)
+//                else -> arrayOf(2, 5, 4)
+//            }
+
+        val nextToStonePosY = RR_NEXT_TO_STONE_Y reverseIf RED
+        val drivingAgainstBridgePosY = RR_AGAINST_BRIDGE_Y reverseIf RED
+        val againstFoundationY = RR_AGAINST_FOUNDATION_Y reverseIf RED
+
+        val stonePositionsFromWall = arrayOf(
+                -62.0, -55.0, -48.0, -42.0, -31.0, -23.0)
+
+        val foundationPlacementPositions = arrayOf(
+                42.0, 46.0, 51.0, 52.0)
+
+        robot.holonomicRR.poseEstimate =
+                if (allianceColor == BLUE) Pose2d(-38.5, 63.0, 0.0)
+                                      else Pose2d(-32.0, -63.0, 180.0.toRadians())
+
+        builder()
+                .strafeTo(Vector2d(stonePositionsFromWall[stonesOrder[0]], nextToStonePosY))
+                .buildAndRun(Pair(0.3) { robot.autoBlockIntakeRear.pivotMid(); robot.autoBlockIntakeRear.grabberMid(); })
+
+        for (i in stonesOrder.indices) {
+            doBlockGrab(robot.autoBlockIntakeRear)
+            builder()
+                    .strafeTo(Vector2d(-16.0, drivingAgainstBridgePosY))
+                    .strafeTo(Vector2d(18.0, drivingAgainstBridgePosY))
+                    .strafeTo(Vector2d(foundationPlacementPositions[i], againstFoundationY))
+                    .buildAndRun(Pair(0.7) { robot.autoBlockIntakeRear.pivotMid(); })
+
+            doBlockRelease(robot.autoBlockIntakeRear)
+
+            if (i < stonesOrder.size - 1) {
+                builder()
+                        .strafeTo(Vector2d(18.0, drivingAgainstBridgePosY))
+                        .strafeTo(Vector2d(-16.0, drivingAgainstBridgePosY))
+                        .strafeTo(Vector2d(stonePositionsFromWall[stonesOrder[i + 1]], nextToStonePosY))
+                        .buildAndRun(Pair(0.7) { robot.autoBlockIntakeRear.pivotMid(); robot.autoBlockIntakeRear.grabberMid(); })
+
+            } else {
+                robot.autoBlockIntakeRear.releaseBlock()
+                robot.autoBlockIntakeRear.pivotUp()
+                if (doFoundationPull) {
+
+                    builder().strafeTo(Vector2d(52.0, 40.0 reverseIf RED)).buildAndRun()
+                    robot.foundationGrabbersFront.mid()
+                    robot.holonomicRR.turnSync((-90.0).toRadians())
+                    builder().strafeTo(Vector2d(52.0, 30.0 reverseIf RED)).buildAndRun()
+                    robot.foundationGrabbersFront.lock()
+                    sleep(350)
+                    timeDrive(0.4, -0.6, -0.7, 1100)
+                    timeDrive(0.0, 0.7, -0.15, 700)
+                    robot.foundationGrabbersFront.unlock()
+
+                    builder()
+                            .strafeTo(Vector2d(0.0, 48.0 reverseIf RED))
+                            .buildAndRun()
+
+                } else {
+                    builder()
+                            .strafeTo(Vector2d(0.0, 48.0 reverseIf RED))
+                            .buildAndRun()
+
+                    break
                 }
-
-//        val stonePositionsFromWall = listOf()
-
-        robot.autoBlockIntakeRear.pivotUp()
-        robot.autoBlockIntakeFront.pivotUp()
-
-        val closeStoneXPositionsBlue = mapOf(
-                Pair(Position.LEFT, 3.0+16),
-                Pair(Position.CENTER, 3.0+8),
-                Pair(Position.RIGHT, 3.0)
-        )
-        val wallStoneXPositionsBlue = closeStoneXPositionsBlue.mapValues { it.value - 24 }
-
-
-        val closeStoneXPositionsRed = mapOf(
-                Pair(Position.LEFT, 3.0),
-                Pair(Position.CENTER, 3.0 - 8),
-                Pair(Position.RIGHT, 3.0 - 16)
-        )
-        val wallStoneXPositionsRed = closeStoneXPositionsRed.mapValues { it.value + 24 }
-
-        val atStoneY = -27.0
-        val awayFromBridgeY = -20.5
-
-        val foundationXPositions = listOf(80.0, 89.0)
-        val foundationYPosition = -30.5
-
-//        robot.holonomicRR.poseEstimate = Pose2d(-39.0, 60.0 reverseIf RED, 0.0)
-
-        if (allianceColor == BLUE) {
-            robot.autoBlockIntakeFront.grabBlock()
-            robot.autoBlockIntakeRear.releaseBlock()
-
-            if (doLiftLower) doIntakeDrop()
-
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d((wallStoneXPositionsBlue[modifiedSkystonePosition]?:0.0) reverseIf RED, atStoneY))
-                            .build()
-            )
-            doBlockGrab(robot.autoBlockIntakeRear)
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d(28.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(57.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(foundationXPositions[0], foundationYPosition))
-                            .build()
-            )
-            doBlockRelease(robot.autoBlockIntakeRear)
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d(57.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(28.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(closeStoneXPositionsBlue[modifiedSkystonePosition]?:0.0, atStoneY))
-                            .build()
-            )
-            robot.autoBlockIntakeRear.releaseBlock()
-            sleep(450)
-            doBlockGrab(robot.autoBlockIntakeRear)
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d(28.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(57.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(foundationXPositions[1], foundationYPosition-0.5))
-                            .build()
-            )
-//            robot.foundationGrabbersSide.lock()
-            sleep(700)
-            doBlockRelease(robot.autoBlockIntakeRear)
-            sleep(500)
-            if (doFoundationPull) {
-    //            robot.holonomicRR.followTrajectorySync(robot.holonomicRR.trajectoryBuilder()
-    //                    .strafeTo(Vector2d(foundationXPositions[1], 0.0))
-    //                    .build()
-    //            )
-                timeDrive(-1.0, 0.0, -0.45, 2500)
-                timeDrive(1.0, 0.0, 0.0, 1000)
-//                robot.foundationGrabbersSide.unlock()
-            }
-            if (doParkAtEnd) {
-                robot.holonomicRR.followTrajectorySync(
-                        robot.holonomicRR.trajectoryBuilder()
-                                .reverse()
-                                .strafeTo(Vector2d(44.0, -23.5))
-                                .build()
-                )
-            }
-        } else {
-
-            robot.autoBlockIntakeFront.grabberMid()
-            robot.autoBlockIntakeRear.grabBlock()
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d((wallStoneXPositionsRed[modifiedSkystonePosition]?:0.0), atStoneY))
-                            .build()
-            )
-            doBlockGrab(robot.autoBlockIntakeFront)
-
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d(-4.0, awayFromBridgeY))
-                            .build()
-            )
-
-            if (doLiftLower) doIntakeDrop()
-
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d(28.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(57.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(foundationXPositions[1] reverseIf RED, foundationYPosition))
-                            .build()
-            )
-            doBlockRelease(robot.autoBlockIntakeFront)
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d(57.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(28.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(closeStoneXPositionsRed[modifiedSkystonePosition]?:0.0, atStoneY))
-                            .build()
-            )
-            robot.autoBlockIntakeFront.releaseBlock()
-            sleep(450)
-            doBlockGrab(robot.autoBlockIntakeFront)
-            robot.holonomicRR.followTrajectorySync(
-                    robot.holonomicRR.trajectoryBuilder()
-                            .strafeTo(Vector2d(28.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(57.0 reverseIf RED, awayFromBridgeY))
-                            .strafeTo(Vector2d(foundationXPositions[0] reverseIf RED, foundationYPosition-1.0))
-                            .build()
-            )
-//            robot.foundationGrabbersSide.lock()
-            sleep(700)
-            doBlockRelease(robot.autoBlockIntakeFront)
-            sleep(500)
-            if (doFoundationPull) {
-                //            robot.holonomicRR.followTrajectorySync(robot.holonomicRR.trajectoryBuilder()
-                //                    .strafeTo(Vector2d(foundationXPositions[1], 0.0))
-                //                    .build()
-                //            )
-                timeDrive(-1.0, 0.35, 0.3, 2000)
-//                robot.foundationGrabbersSide.unlock()
-                sleep(500)
-                timeDrive(1.0, 0.0, 0.0, 1000)
-            }
-            if (doParkAtEnd) {
-                robot.holonomicRR.followTrajectorySync(
-                        robot.holonomicRR.trajectoryBuilder()
-                                .strafeTo(Vector2d(40.0 reverseIf RED, -3.0))
-                                .build()
-                )
             }
         }
+
+
 
     }
 
@@ -328,20 +272,17 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
 
     private fun doBlockGrab(grabber: AutoBlockIntake) {
         grabber.pivotDown()
-        sleep(550)
+        sleep(600)
         grabber.grabBlock()
-        sleep(650)
-        if (grabber == robot.autoBlockIntakeFront) grabber.pivotUp()
-        else grabber.pivotMid()
         sleep(700)
+        grabber.pivotUp()
+        sleep(400)
     }
 
     private fun doBlockRelease(grabber: AutoBlockIntake) {
-//        grabber.pivotMid()
-//        sleep(400)
         grabber.grabberMid()
-        sleep(600)
-        grabber.pivotMid()
+        sleep(350)
+        grabber.pivotUp()
     }
 
     /**
@@ -441,5 +382,10 @@ class AutonomousKotlinLT_RR : LinearOpMode() {
         }
         robot.holonomic.stop()
     }
+
+    private fun builder() = robot.holonomicRR.trajectoryBuilder()
+
+    private fun BaseTrajectoryBuilder.buildAndRun(vararg waypointActions: Pair<Double, ()->Unit>) =
+            robot.holonomicRR.followTrajectorySync(this.build(), waypointActions.toList())
 
 }

@@ -7,11 +7,11 @@ class FoundationGrabbers(
         private val leftServo: Servo,
         private val leftLock: Double,
         private val leftUnlock: Double,
-        private val leftInv: Boolean,
+        private val leftMid: Double,
         private val rightServo: Servo,
         private val rightLock: Double,
         private val rightUnlock: Double,
-        private val rightInv: Boolean) {
+        private val rightMid: Double) {
 
 //    val leftPos = {pos:Double -> if (leftInv) leftMax - (leftMax - leftMin)*pos else leftMin + (leftMax-leftMin)*pos }
 //    val rightPos= {pos:Double -> if (rightInv) rightMax - (rightMax - rightMin)*pos else rightMin + (rightMax-rightMin*pos) }
@@ -24,6 +24,11 @@ class FoundationGrabbers(
     fun lock() {
         leftServo.position = leftLock
         rightServo.position = rightLock
+    }
+
+    fun mid() {
+        leftServo.position = leftMid
+        rightServo.position = rightMid
     }
 
 //    fun setPosition(pos: Double) {
