@@ -48,7 +48,7 @@ open class TeleOpRD : OpMode() {
         watch_gamepad2_rightStickButton = ToggleButtonWatcher { gamepad2.right_stick_button }
         watch_gamepad2_buttonB = ToggleButtonWatcher { !gamepad2.right_bumper && gamepad2.b }
 
-        intakeLiftBaseline = robot.intakeLiftRight.currentPosition
+        intakeLiftBaseline = 0
         intakePivotBaseline = robot.intakePivot.currentPosition
 
 
@@ -149,8 +149,13 @@ open class TeleOpRD : OpMode() {
         // control intake arm up/down
         // This variable is being set by a Kotlin expression -
         //   meaning the variable will be set to last value in an if/else/when branch
-        var inputSpoolPower = -gamepad2.left_stick_y.toDouble() * (if (reverseIntakeLift) -1.0 else 1.0)
+        var inputSpoolPower = -gamepad2.left_stick_y.toDouble()
+
         val intakeLiftCurrent = robot.intakeLiftRight.currentPosition
+
+        if (reverseIntakeLift) inputSpoolPower *= -1.0
+
+        if (intakeLiftCurrent < -2000) inputSpoolPower += 0.13
 
         if (watch_gamepad2_buttonB.call()) reverseIntakeLift = !reverseIntakeLift
 

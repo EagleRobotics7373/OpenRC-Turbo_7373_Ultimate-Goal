@@ -25,12 +25,19 @@ public class LocalizationTest extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         BaseRobot robot = providePresetRobot(hardwareMap);
         HolonomicRR drive = robot.getHolonomicRR();
+
         boolean fast = false;
+        boolean reverse = true;
+        boolean fod = false;
+
+        double baselineAngle = 0.0;
+
+
 
         waitForStart();
 
         while (!isStopRequested()) {
-            robot.holonomic.runWithoutEncoder(gamepad1.left_stick_x * (fast?1.0:0.4), -gamepad1.left_stick_y * (fast?1.0:0.4), gamepad1.right_stick_x * (fast?1.0:0.4));
+            robot.holonomic.runWithoutEncoderVectored(gamepad1.left_stick_x * (fast?1.0:0.4) * (reverse?-1.0:1.0), -gamepad1.left_stick_y * (fast?1.0:0.4) * (reverse?-1.0:1.0), gamepad1.right_stick_x * (fast?1.0:0.4), (fod?(baselineAngle - drive.getExternalHeading()):0.0));
             drive.update();
 
             if (gamepad1.dpad_up) fast = true;
@@ -40,6 +47,12 @@ public class LocalizationTest extends LinearOpMode {
 //            telemetry.addData("y", poseEstimate.getY());
 //            telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
+
+            if (gamepad1.a)      { reverse = false; fod = false; }
+            else if (gamepad1.b) { reverse = true; fod = false; }
+            else if (gamepad1.x) { fod = true; }
+
+            if (gamepad1.y) baselineAngle = drive.getExternalHeading();
         }
     }
 }

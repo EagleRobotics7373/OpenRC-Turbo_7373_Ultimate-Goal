@@ -16,7 +16,7 @@ open class ExtMisumiRobot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
     init {
         println("ExtMisumiRobot being constructed!")
         RobotConstantsAccessor.load(
-                DriveConstantsSlowMisumi::class.java,
+                DriveConstantsTunedMisumi::class.java,
                 OdometryConstants::class.java
         )
     }
@@ -57,8 +57,8 @@ open class ExtMisumiRobot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
     @JvmField val imuControllerB          : IMUController         = IMUController(hardwareMap = hardwareMap, id = 'B')
 
 //     Robot Systems Variables
-     @JvmField val foundationGrabbersFront : FoundationGrabbers = FoundationGrabbers(leftServo = foundationGrabFrontLeft, leftLock = 0.00, leftUnlock = 0.49, leftMid = 0.10,
-        rightServo = foundationGrabFrontRight, rightLock = 0.25, rightUnlock = 0.80, rightMid = 0.37)
+     @JvmField val foundationGrabbersFront : FoundationGrabbers = FoundationGrabbers(leftServo = foundationGrabFrontLeft, leftLock = 0.00, leftUnlock = 0.49, leftMid = 0.16,
+        rightServo = foundationGrabFrontRight, rightLock = 0.25, rightUnlock = 0.80, rightMid = 0.41)
 
      @JvmField val intakeBlockGrabber      : IntakeBlockGrabber = IntakeBlockGrabber(intakeBlockGrabberServo, 0.00, 0.30, 1.00)
 

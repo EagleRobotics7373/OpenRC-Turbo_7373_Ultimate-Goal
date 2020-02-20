@@ -15,6 +15,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
 import com.acmerobotics.roadrunner.profile.MotionState
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -318,7 +319,7 @@ constructor (
         frontRightExt.power = -frontRight
     }
 
-    fun trajectoryBuilder() = TrajectoryBuilder(poseEstimate, driveConstraints)
+    @JvmOverloads fun trajectoryBuilder(_driveConstraints : DriveConstraints = driveConstraints) = TrajectoryBuilder(poseEstimate, _driveConstraints)
 
 
 }
