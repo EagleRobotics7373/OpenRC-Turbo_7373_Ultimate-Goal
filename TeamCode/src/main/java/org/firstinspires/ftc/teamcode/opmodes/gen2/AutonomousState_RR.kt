@@ -16,11 +16,16 @@ import org.firstinspires.ftc.teamcode.library.functions.Position.*
 import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.kotlin.*
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.ExtMisumiRobot
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsBlueMisumi
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsSlowMisumi
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsTunedMisumi
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.AutoBlockIntake
 import org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.OpenCvContainer
 import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.PixelStatsPipeline
 import org.firstinspires.ftc.teamcode.opmodes.gen2.AutonomousConstants.*
+import java.util.*
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous State (Kotlin + RR)", group = "Main")
 class AutonomousState_RR : LinearOpMode() {
@@ -42,20 +47,19 @@ class AutonomousState_RR : LinearOpMode() {
         VARIABLES: Menu Options
      */
     var allianceColor                       = _allianceColor
-    var startingPosition                    = _startingPosition
+//    var startingPosition                    = _startingPosition
+    var autonomousType               = _autonomousType
+    var driveClass                              = _driveClass
     var musicFile                           = _musicFile
     var parkOnly                            = _parkOnly
     var visionDetector                      = PixelStatsPipeline.StatsDetector.DETECTOR_VALUE_STDDEV
     var delayBeforeParking                  = _delayBeforeParking
-    var foundationSwivel                    = _foundationSwivel
+//    var foundationSwivel                    = _foundationSwivel
     var doFoundationPull                    = _doFoundationPull
     var doParkAtEnd                                 = _doParkAtEnd
     var liftLowerOnly = _liftLowerOnly
     var doLiftLower = false
     var parkNearDS                          = false
-    var parkAfterTask                       = true
-    var foundationRedundancy                = true
-    var pushAlliancePartner                 = true
     var numStonesToMove                    = _numStonesToMove
 
     override fun runOpMode() {
@@ -94,6 +98,9 @@ class AutonomousState_RR : LinearOpMode() {
         /*
             Prepare music and setup additional components.
          */
+        RobotConstantsAccessor.loadedOdometryClass = driveClass
+        robot.holonomicRR.redefine()
+
         player = ExtDirMusicPlayer(musicFile, true)
         player.play()
 
@@ -105,9 +112,13 @@ class AutonomousState_RR : LinearOpMode() {
         /*
             Perform actions
          */
-        if (parkOnly) doParkOnlyAuto()
-        else if (liftLowerOnly) doIntakeDrop()
-        else doCrossField()
+        if (liftLowerOnly) doIntakeDrop()
+        else when (autonomousType) {
+            AutonomousType.PARK -> doParkOnlyAuto();
+            AutonomousType.FOUNDATION_BASIC -> doBasicFoundationAuto()
+            AutonomousType.FOUNDATION_RR -> doRRFoundationAuto()
+            AutonomousType.MULTISTONE -> doCrossField()
+        }
 
 
         /*
@@ -129,8 +140,56 @@ class AutonomousState_RR : LinearOpMode() {
 //    }
 
     fun doParkOnlyAuto() {
+        if (doLiftLower) doIntakeDrop()
         sleep(delayBeforeParking * 1000.toLong())
         drive(0.0, 12.0, 0.5)
+    }
+
+    fun doBasicFoundationAuto() {
+        robot.foundationGrabbersFront.mid()
+        drive(24.0, 0.0, 0.8)
+        robot.foundationGrabbersFront.lock()
+        sleep(700)
+        timeDrive(0.0, -0.5, 0.0, 2000)
+        robot.foundationGrabbersFront.unlock()
+        sleep(700)
+    }
+
+    fun doRRFoundationAuto() {
+        robot.foundationGrabbersFront.mid()
+        robot.holonomicRR.poseEstimate = Pose2d(38.0, 63.0 reverseIf RED, (-90.0 reverseIf RED).toRadians())
+        builder()
+                .strafeTo(Vector2d(48.0, 48.0 reverseIf RED))
+                .strafeTo(Vector2d(51.75, 30.5 reverseIf RED))
+                .buildAndRun()
+
+        robot.foundationGrabbersFront.lock()
+        sleep(700)
+
+        if (allianceColor == BLUE) {
+            timeDrive(0.4, -0.7, -0.6, 1100)
+            timeDrive(0.0, 0.8, -0.15, 1000)
+        } else {
+            timeDrive(-0.4, -0.75, 0.475, 1000)
+            timeDrive(0.0, 0.8, 0.2, 1000)
+        }
+
+        robot.foundationGrabbersFront.unlock()
+        sleep(700)
+
+//                    DriveConstantsTunedMisumi.BASE_CONSTRAINTS.maxVel = 85.0
+//                    DriveConstantsTunedMisumi.BASE_CONSTRAINTS.maxAccel = 70.0
+
+        val parkLocation = (if (parkNearDS) 62.0 else 38.0) reverseIf RED
+
+        robot.holonomicRR.trajectoryBuilder(DriveConstraints( //                    50.0, 30.0, 40.0,
+                80.0, 70.0, 40.0,
+                Math.PI, Math.PI, 0.0
+        ))
+                .strafeTo(Vector2d(0.0, parkLocation))
+                .buildAndRun()
+
+
     }
 
     fun doCrossField() {
@@ -233,8 +292,8 @@ class AutonomousState_RR : LinearOpMode() {
                         timeDrive(0.4, -0.7, -0.6, 1100)
                         timeDrive(0.0, 0.8, -0.15, 1000)
                     } else {
-                        timeDrive(-0.4, -0.75, 0.475, 1000)
-                        timeDrive(0.0, 0.8, 0.2, 1000)
+                        timeDrive(-0.4, -0.75, 0.475, 1100)
+                        timeDrive(0.0, 0.85, 0.40, 1500)
                     }
 
 
@@ -272,13 +331,16 @@ class AutonomousState_RR : LinearOpMode() {
         val menu = ReflectiveTelemetryMenu(telem,
                 ReflectiveMenuItemFeedback("Status") { if (doLiftLower) "Prepared" else "NOT PREPARED!"},
                 ReflectiveMenuItemEnum("Alliance Color", ::allianceColor, AllianceColor.RED, AllianceColor.BLUE),
-                ReflectiveMenuItemEnum("Starting Position", ::startingPosition, FieldSide.WAFFLE_SIDE, FieldSide.LOADING_ZONE),
+                ReflectiveMenuItemEnum("Autonomous Type", ::autonomousType, *AutonomousType.values()),
+                ReflectiveMenuItemEnum("Constants", ::driveClass, DriveConstantsTunedMisumi::class.java, DriveConstantsSlowMisumi::class.java, DriveConstantsBlueMisumi::class.java, toStringMethod = { it.simpleName }),
                 ReflectiveMenuItemEnum("Music", ::musicFile, *ExtMusicFile.values()),
-                ReflectiveMenuItemBoolean("Foundation Swivel", ::foundationSwivel),
+//                ReflectiveMenuItemBoolean("Foundation Swivel", ::foundationSwivel),
                 ReflectiveMenuItemBoolean("Foundation Pull", ::doFoundationPull),
                 ReflectiveMenuItemBoolean("Park at End", ::doParkAtEnd),
                 ReflectiveMenuItemBoolean("Lift Lower Only", ::liftLowerOnly),
-                ReflectiveMenuItemInteger("Number of Stones", ::numStonesToMove, 1, 3, 1)
+                ReflectiveMenuItemInteger("Number of Stones", ::numStonesToMove, 1, 3, 1),
+                ReflectiveMenuItemInteger("Park Delay", ::delayBeforeParking, 0, 25, 1),
+                ReflectiveMenuItemBoolean("Park Near DS (FOUNDATION TYPE)", ::parkNearDS)
         )
 
         val dpadUpWatch = ToggleButtonWatcher {gamepad1.dpad_up}
@@ -296,7 +358,7 @@ class AutonomousState_RR : LinearOpMode() {
             if (gamepad1.x && !doLiftLower) {
                 robot.intakeLiftRight.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                 doLiftLower = true
-                robot.intakeLiftRight.targetPosition = -875
+                robot.intakeLiftRight.targetPosition = -1100
                 robot.intakeLiftRight.mode = DcMotor.RunMode.RUN_TO_POSITION
                 robot.intakeLiftRight.power = 0.3
                 while (gamepad1.x && !isStarted);
@@ -317,13 +379,13 @@ class AutonomousState_RR : LinearOpMode() {
         grabber.pivotDown()
         sleep(600)
         grabber.grabBlock()
-        sleep(700)
+        sleep(750)
         grabber.pivotUp()
         sleep(400)
     }
 
     private fun doBlockRelease(grabber: AutoBlockIntake) {
-        grabber.grabberMid()
+        grabber.releaseBlock()
         sleep(350)
         grabber.pivotUp()
     }

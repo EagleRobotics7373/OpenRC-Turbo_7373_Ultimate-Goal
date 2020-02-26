@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.gen2
 
+import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -37,7 +38,7 @@ open class TeleOpRD : OpMode() {
     override fun init() {
         // instantiate robot variables
         robot = ExtMisumiRobot(hardwareMap)
-
+        robot.expansionhubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.OFF}
         // Instantiate toggle button watchers. Each statement below is calling a constructor with a single
         //   parameter, in this case being a function for calling the gamepad button. This does not set the
         //   current gamepad state only in the ToggleButtonWatcher; rather, it sets the ability for the

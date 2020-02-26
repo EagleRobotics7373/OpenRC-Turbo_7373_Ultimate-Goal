@@ -30,13 +30,13 @@ public class DriveConstantsTunedMisumi {
             );
 
     public static PIDCoefficients TRANSLATIONAL_X_PID =
-            new PIDCoefficients(5.8, 0.08, 0.50);
+            new PIDCoefficients(6.0, 0.08, 0.52);
 
     public static PIDCoefficients TRANSLATIONAL_Y_PID =
-            new PIDCoefficients(5.75, 0.06, 0.48);
+            new PIDCoefficients(6.0, 0.06, 0.52);
 
     public static PIDCoefficients HEADING_PID =
-            new PIDCoefficients(2.9, 0.27, 0.0);
+            new PIDCoefficients(3.5, 0.27, 0.0);
 
     public static double rpmToVelocity(double rpm) {
         return rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;

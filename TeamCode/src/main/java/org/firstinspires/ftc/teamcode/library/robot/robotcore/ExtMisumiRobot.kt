@@ -60,15 +60,15 @@ open class ExtMisumiRobot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
      @JvmField val foundationGrabbersFront : FoundationGrabbers = FoundationGrabbers(leftServo = foundationGrabFrontLeft, leftLock = 0.00, leftUnlock = 0.49, leftMid = 0.16,
         rightServo = foundationGrabFrontRight, rightLock = 0.25, rightUnlock = 0.80, rightMid = 0.41)
 
-     @JvmField val intakeBlockGrabber      : IntakeBlockGrabber = IntakeBlockGrabber(intakeBlockGrabberServo, 0.00, 0.30, 1.00)
+     @JvmField val intakeBlockGrabber      : IntakeBlockGrabber = IntakeBlockGrabber(intakeBlockGrabberServo, 0.00, 0.30, 0.8)
 
      override val holonomicRR             : HolonomicRR           = HolonomicRR(imuControllerA,
                                                                                  frontLeftMotor, backLeftMotor, backRightMotor, frontRightMotor,
                                                                                  TwoWheelOdometryLocalizer(odometryLeftAsMotor, intakeLiftLeft, imuControllerA))
 
      @JvmField val autoBlockIntakeFront    : AutoBlockIntake = AutoBlockIntake(
-             pivotServo = autoBlockPivotFront,  pivot18 = 0.22, pivotMid = 0.40, pivotVertical = 0.27, pivotPickup = 0.61,
-             grabberServo = autoBlockGrabFront, grabUp = 0.99, grabMid = 0.69, grabPickup = 0.43)
+             pivotServo = autoBlockPivotFront,  pivot18 = 0.13, pivotMid = 0.28, pivotVertical = 0.18, pivotPickup = 0.48,
+             grabberServo = autoBlockGrabFront, grabUp = 0.99, grabMid = 0.64, grabPickup = 0.37)
      @JvmField val autoBlockIntakeRear     : AutoBlockIntake = AutoBlockIntake(
             pivotServo = autoBlockPivotRear,  pivot18 = 0.60, pivotMid = 0.43, pivotVertical = 0.55, pivotPickup = 0.23,
             grabberServo = autoBlockGrabRear, grabUp = 0.95, grabMid = 0.65, grabPickup = 0.30)

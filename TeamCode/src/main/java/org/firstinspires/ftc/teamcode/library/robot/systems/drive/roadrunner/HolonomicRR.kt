@@ -70,8 +70,8 @@ constructor (
     private lateinit var turnProfile : MotionProfile
     private var turnStart = 0.0
 
-    private val driveConstraints = MecanumConstraints(baseConstraints, trackWidth)
-    private val follower = HolonomicPIDVAFollower(translationalXPID, translationalYPID, headingPID)
+    private var driveConstraints = MecanumConstraints(baseConstraints, trackWidth)
+    private var follower = HolonomicPIDVAFollower(translationalXPID, translationalYPID, headingPID)
 
     private lateinit var lastWheelPositions : List<Double>
     private var lastTimestamp = 0.0
@@ -317,6 +317,11 @@ constructor (
         backLeftExt  .power =  rearLeft
         backRightExt .power = -rearRight
         frontRightExt.power = -frontRight
+    }
+
+    fun redefine() {
+        follower = HolonomicPIDVAFollower(translationalXPID, translationalYPID, headingPID)
+        driveConstraints = MecanumConstraints(baseConstraints, trackWidth)
     }
 
     @JvmOverloads fun trajectoryBuilder(_driveConstraints : DriveConstraints = driveConstraints) = TrajectoryBuilder(poseEstimate, _driveConstraints)
