@@ -4,18 +4,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.BaseRobot;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+import static org.firstinspires.ftc.teamcode.library.robot.robotcore.RobotProvider.providePresetRobot;
 
 @Autonomous(name="More Basic Encoder Test", group="Test")
 public class MoreBasicEncoderDriveTest extends LinearOpMode {
-    MisumiRobot robot;
+    BaseRobot robot;
     static final double TICKS_PER_INCH = 134.4;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new MisumiRobot(hardwareMap);
+        robot = providePresetRobot(hardwareMap);
         drive(10, 0, 0.6);
         while (robot.holonomic.motorsAreBusy());
         robot.holonomic.stop();

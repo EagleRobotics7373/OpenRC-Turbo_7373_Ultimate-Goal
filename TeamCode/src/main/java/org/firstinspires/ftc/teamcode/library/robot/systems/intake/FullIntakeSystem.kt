@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.library.robot.systems.intake
 import com.qualcomm.hardware.rev.RevTouchSensor
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.IntakeBlockGrabber
-import org.openftc.revextensions2.ExpansionHubMotor
 
 class FullIntakeSystem(
         private val intakePivot : DcMotor,

@@ -5,8 +5,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR;
+
+import static org.firstinspires.ftc.teamcode.library.robot.robotcore.RobotProvider.providePresetRobot;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -19,7 +20,7 @@ public class SplineTest extends LinearOpMode {
     public static boolean reverse = false;
     @Override
     public void runOpMode() throws InterruptedException {
-        HolonomicRR drive = new MisumiRobot(hardwareMap).holonomicRR;
+        HolonomicRR drive = providePresetRobot(hardwareMap).getHolonomicRR();
 
         waitForStart();
 

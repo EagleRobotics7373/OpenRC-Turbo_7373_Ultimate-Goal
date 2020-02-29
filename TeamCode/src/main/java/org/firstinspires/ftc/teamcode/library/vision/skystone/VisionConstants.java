@@ -14,6 +14,6 @@ public class VisionConstants {
 
     //OpenCV Hue Stats Pipeline Constants
     public static       int     HS_STONE_WIDTH           = 90;
-    public static       int     HS_STONE_GAP             = /*40*/ 50;
-    public static       Point   HS_FIRST_STONE_PT        = new Point(/*270*/ 250, 325);
+    public static       int     HS_STONE_GAP             = /*40*/ 85;
+    public static       Point   HS_FIRST_STONE_PT        = new Point(/*270*/ 250, 273);
 }

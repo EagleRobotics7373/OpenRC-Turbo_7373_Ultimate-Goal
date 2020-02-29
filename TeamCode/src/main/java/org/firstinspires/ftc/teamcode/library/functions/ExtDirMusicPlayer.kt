@@ -39,6 +39,7 @@ class ExtDirMusicPlayer(extMusicFile: ExtMusicFile, seekAtBeginning: Boolean = f
     }
 
     fun stop() {
+        mediaPlayer.pause()
         mediaPlayer.stop()
         mediaPlayer.release()
     }
@@ -63,5 +64,7 @@ constructor (@JvmField val fileName: String, @JvmField val beginSeekTo: Int = 0)
     CANTINABAND("cantinaband.mp3"),
     CREEPER_AWMAN("creeperawman.mp3",38000),
     RIDEOFTHEVALKRIES("rideofthevalkries.mp3"),
+    WATERBUFFALO("waterbuffalo.mp3"),
+    GOURMETRACE("gourmetrace.mp3"),
     NONE("none")
 }

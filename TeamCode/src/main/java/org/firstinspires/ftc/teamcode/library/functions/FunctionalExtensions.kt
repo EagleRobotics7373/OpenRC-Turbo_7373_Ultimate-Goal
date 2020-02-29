@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.library.functions
 import android.graphics.Color
 import com.acmerobotics.dashboard.FtcDashboard
 import com.qualcomm.robotcore.hardware.ColorSensor
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import java.util.function.Supplier
 
 
@@ -35,6 +36,7 @@ fun Double.upperLimit(limitAt: Double) = if (this > limitAt) limitAt else this
 
 fun Double.withinRange(target: Double, range: Double) = this in target-range..target+range
 
+fun Double.convertUnit(from: DistanceUnit, to: DistanceUnit) = to.fromUnit(from, this)
 
 /*
     ColorSensor extension functions

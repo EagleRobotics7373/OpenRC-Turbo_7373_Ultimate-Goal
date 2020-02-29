@@ -5,13 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.library.functions.ToggleButtonWatcher
 import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.kotlin.*
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.MisumiRobot
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.legacyconfig.MisumiRobot
 
 @TeleOp
 class SelectableServoTest : OpMode() {
     lateinit var menu: ReflectiveTelemetryMenu
     lateinit var servo: Servo
-    lateinit var robot : MisumiRobot
     lateinit var servos : Array<Servo>
 
     var useGamepadTrigger = true
@@ -25,18 +24,18 @@ class SelectableServoTest : OpMode() {
     lateinit var dpadRightWatch : ToggleButtonWatcher
 
     override fun init() {
-        robot = MisumiRobot(hardwareMap)
-        servos = arrayOf(robot.intakeBlockGrabberServo, robot.foundationGrabSideFront, robot.foundationGrabSideRear, robot.foundationGrabFrontLeft, robot.foundationGrabFrontRight,
-                robot.autoBlockGrabFront, robot.autoBlockGrabRear, robot.autoBlockPivotFront, robot.autoBlockPivotRear, robot.capstonePlacerAsServo)
+        servos = hardwareMap.getAll(Servo::class.java).toTypedArray()
+        if (servos.isNullOrEmpty()) throw(IllegalStateException("There are no registered servo devices!"))
         servo = servos.first()
+
         menu = ReflectiveTelemetryMenu(
                 telemetry,
-                ReflectiveMenuItemEnum<Servo>("servo", ::servo, *servos, toStringMethod = {hardwareMap.getNamesOf(it).first()}),
+                ReflectiveMenuItemEnum("servo", ::servo, *servos, toStringMethod = {hardwareMap.getNamesOf(it).first()}),
                 ReflectiveMenuItemInteger("0.x0", ::tenths, 0, 9, 1),
                 ReflectiveMenuItemInteger("0.0x", ::hundredths, 0, 9, 1),
                 ReflectiveMenuItemBoolean("use gamepad trigger", ::useGamepadTrigger),
-                ReflectiveMenuItemFeedback("servo position", {servo.position.toString()}),
-                ReflectiveMenuItemFeedback("enable", {enable.toString()})
+                ReflectiveMenuItemFeedback("servo position") {servo.position.toString()},
+                ReflectiveMenuItemFeedback("enable") {enable.toString()}
         )
 
         dpadUpWatch = ToggleButtonWatcher {gamepad1.dpad_up}
