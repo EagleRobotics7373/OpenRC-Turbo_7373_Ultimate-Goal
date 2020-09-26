@@ -1,13 +1,15 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 26
-        versionCode 70
-        versionName "11.12"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 76
+        versionName "14.0"
+
+        buildConfigField "int", "RS_TARGET_API", "28"
     }
 }
 
@@ -17,13 +19,9 @@ dependencies {
      * inherit these dependencies as well
      */
     api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    api 'com.google.code.gson:gson:2.8.6'
-    api 'com.android.support:support-annotations:28.0.0'
+    api 'com.google.code.gson:gson:2.8.0'
     api 'org.openftc:tfod-google-ftcsdk-repackaged:5.0' //Specific version of TFOD core library used by FTC SDK
     api 'org.openftc:tfod-ftc-repackaged:5.0' //FTC specific addons to core TFOD lib
-
-    /*
-     * These are only for us, nobody else needs them, so we use 'implementation'
-     */
-    implementation 'com.android.support:support-compat:26.0.0'
+    api 'androidx.annotation:annotation:1.1.0'
+    api 'androidx.core:core:1.3.0'
 }
