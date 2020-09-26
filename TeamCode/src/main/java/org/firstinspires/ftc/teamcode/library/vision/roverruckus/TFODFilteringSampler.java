@@ -31,9 +31,7 @@ class TFODFilteringSampler implements TensorFlowSampler {
     private TFObjectDetector tfod;
 
     public TFODFilteringSampler(HardwareMap hardwareMap) throws UnsupportedHardwareException {
-        // check if tfod is supported
-        if (!ClassFactory.getInstance().canCreateTFObjectDetector())
-            throw new UnsupportedHardwareException();
+
         // init vuforia
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = VUFORIA_KEY;

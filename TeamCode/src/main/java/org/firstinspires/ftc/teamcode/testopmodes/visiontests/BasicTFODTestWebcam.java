@@ -28,11 +28,6 @@ private ExtDirMusicPlayer musicPlayer;
         // first.
         initVuforia();
 
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
