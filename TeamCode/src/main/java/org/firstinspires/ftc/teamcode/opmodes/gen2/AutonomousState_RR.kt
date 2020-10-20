@@ -15,16 +15,16 @@ import org.firstinspires.ftc.teamcode.library.functions.AllianceColor.BLUE
 import org.firstinspires.ftc.teamcode.library.functions.AllianceColor.RED
 import org.firstinspires.ftc.teamcode.library.functions.Position.*
 import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.kotlin.*
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.ExtMisumiRobot
+import org.firstinspires.ftc.teamcode.library.robot.robotcore.ExtRingPlaceBot
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.IMUController
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsBlueMisumi
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsSlowMisumi
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.DriveConstantsTunedMisumi
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.constants.DriveConstantsBlueMisumi
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.constants.DriveConstantsSlowMisumi
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.constants.DriveConstantsTunedMisumi
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.RobotConstantsAccessor
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.AutoBlockIntake
-import org.firstinspires.ftc.teamcode.library.vision.skystone.VisionFactory
-import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.OpenCvContainer
-import org.firstinspires.ftc.teamcode.library.vision.skystone.opencv.PixelStatsPipeline
+import org.firstinspires.ftc.teamcode.library.vision.base.VisionFactory
+import org.firstinspires.ftc.teamcode.library.vision.base.OpenCvContainer
+import org.firstinspires.ftc.teamcode.library.vision.skystone.SkystonePixelStatsPipeline
+import org.firstinspires.ftc.teamcode.library.vision.ultimategoal.RingPixelAnalysisPipeline
 import org.firstinspires.ftc.teamcode.opmodes.gen2.AutonomousConstants.*
 import java.util.*
 import kotlin.math.PI
@@ -35,13 +35,13 @@ class AutonomousState_RR : LinearOpMode() {
     /*
         VARIABLES: Hardware and Control
      */
-    private lateinit var robot           : ExtMisumiRobot
+    private lateinit var robot           : ExtRingPlaceBot
     private lateinit var imuController   : IMUController
 
     private          val telem           : MultipleTelemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
     private lateinit var elapsedTime     : ElapsedTime
 
-    private lateinit var cvContainer     : OpenCvContainer<PixelStatsPipeline>
+    private lateinit var cvContainer     : OpenCvContainer<RingPixelAnalysisPipeline>
 
     private lateinit var player          : ExtDirMusicPlayer
 
@@ -54,7 +54,7 @@ class AutonomousState_RR : LinearOpMode() {
     var driveClass                              = _driveClass
     var musicFile                           = _musicFile
     var parkOnly                            = _parkOnly
-    var visionDetector                      = PixelStatsPipeline.StatsDetector.DETECTOR_VALUE_STDDEV
+//    var visionDetector                      = SkystonePixelStatsPipeline.StatsDetector.DETECTOR_VALUE_STDDEV
     var delayBeforeParking                  = _delayBeforeParking
 //    var foundationSwivel                    = _foundationSwivel
     var doFoundationPull                    = _doFoundationPull
@@ -68,21 +68,12 @@ class AutonomousState_RR : LinearOpMode() {
         /*
             Main autonomous variable initialization
          */
-        robot = ExtMisumiRobot(hardwareMap)
-        imuController = robot.imuControllerA
+        robot = ExtRingPlaceBot(hardwareMap)
+        imuController = robot.imuControllerC
         cvContainer = VisionFactory.createOpenCv(
                 VisionFactory.CameraType.WEBCAM,
                 hardwareMap,
-                PixelStatsPipeline(PixelStatsPipeline.StatsDetector.DETECTOR_VALUE_STDDEV))
-
-
-        robot.autoBlockIntakeRear.pivotIn18()
-        robot.autoBlockIntakeRear.releaseBlock()
-
-        robot.autoBlockIntakeFront.pivotIn18()
-        robot.autoBlockIntakeFront.releaseBlock()
-
-        robot.foundationGrabbersFront.unlock()
+                RingPixelAnalysisPipeline())
 
 
         /*
@@ -108,19 +99,28 @@ class AutonomousState_RR : LinearOpMode() {
 
         elapsedTime = ElapsedTime()
 
-        cvContainer.pipeline.detector = visionDetector
+//        cvContainer.pipeline.detector = visionDetector
 
 
         /*
             Perform actions
          */
-        if (liftLowerOnly) doIntakeDrop()
-        else when (autonomousType) {
-            AutonomousType.PARK -> doParkOnlyAuto();
-            AutonomousType.FOUNDATION_BASIC -> doBasicFoundationAuto()
-            AutonomousType.FOUNDATION_RR -> doRRFoundationAuto()
-            AutonomousType.MULTISTONE -> doCrossField()
-        }
+        cvContainer.pipeline.shouldKeepTracking = false
+        cvContainer.pipeline.tracking = true
+        while (cvContainer.pipeline.tracking);
+
+        val numRings = cvContainer.pipeline.numberOfRings
+        val startingVectorMap = mapOf(0 to Vector2d(0.0, -60.0), 1 to Vector2d(24.0, -36.0), 4 to Vector2d(48.0, -60.0))
+
+        robot.holonomicRR.poseEstimate = Pose2d(-59.8, -48.0, 120.0.toRadians())
+
+        robot.holonomicRR.trajectoryBuilder(0.0)
+                .splineToSplineHeading(Pose2d(-24.0, -60.0), 0.0)
+                .splineToConstantHeading(startingVectorMap[numRings]!!, 0.0)
+                .buildAndRun()
+
+
+
 
 
         /*
@@ -136,196 +136,6 @@ class AutonomousState_RR : LinearOpMode() {
 
     }
 
-//    override fun internalPostLoop() {
-//        super.internalPostLoop()
-//        player.stop()
-//    }
-
-    fun doParkOnlyAuto() {
-        if (doLiftLower) doIntakeDrop()
-        sleep(delayBeforeParking * 1000.toLong())
-        drive(0.0, 12.0, 0.5)
-    }
-
-    fun doBasicFoundationAuto() {
-        robot.foundationGrabbersFront.mid()
-        drive(24.0, 0.0, 0.8)
-        robot.foundationGrabbersFront.lock()
-        sleep(700)
-        timeDrive(0.0, -0.5, 0.0, 2000)
-        robot.foundationGrabbersFront.unlock()
-        sleep(700)
-    }
-
-    fun doRRFoundationAuto() {
-        robot.foundationGrabbersFront.mid()
-        robot.holonomicRR.poseEstimate = Pose2d(38.0, 63.0 reverseIf RED, (-90.0 reverseIf RED).toRadians())
-        builder()
-                .strafeTo(Vector2d(48.0, 48.0 reverseIf RED))
-                .strafeTo(Vector2d(51.75, 30.5 reverseIf RED))
-                .buildAndRun()
-
-        robot.foundationGrabbersFront.lock()
-        sleep(700)
-
-        if (allianceColor == BLUE) {
-            timeDrive(0.4, -0.7, -0.6, 1100)
-            timeDrive(0.0, 0.8, -0.15, 1000)
-        } else {
-            timeDrive(-0.4, -0.75, 0.475, 1000)
-            timeDrive(0.0, 0.8, 0.2, 1000)
-        }
-
-        robot.foundationGrabbersFront.unlock()
-        sleep(700)
-
-//                    DriveConstantsTunedMisumi.BASE_CONSTRAINTS.maxVel = 85.0
-//                    DriveConstantsTunedMisumi.BASE_CONSTRAINTS.maxAccel = 70.0
-
-        val parkLocation = (if (parkNearDS) 62.0 else 38.0) reverseIf RED
-
-        robot.holonomicRR.trajectoryBuilder(DriveConstraints( //                    50.0, 30.0, 40.0,
-                80.0, 70.0, 40.0,
-                Math.PI, Math.PI, 0.0
-        ))
-                .strafeTo(Vector2d(0.0, parkLocation))
-                .buildAndRun()
-
-
-    }
-
-    fun doCrossField() {
-        cvContainer.pipeline.tracking = true
-        while (cvContainer.pipeline.tracking);
-
-        val skystonePosition = cvContainer.pipeline.skystonePos
-
-        val skystonePositionFromWall =
-                when (allianceColor) {
-                    RED ->
-                        when (skystonePosition) {
-                            NULL  -> 2 // Not in camera frame
-                            LEFT  -> 0 // LEFT
-                            else  -> 1 // RIGHT, or unknown
-                        }
-                    BLUE ->
-                        when (skystonePosition) {
-                            RIGHT -> 0 // RIGHT
-                            LEFT  -> 1 // LEFT
-                            else  -> 2 // Not in camera frame, or unknown
-                        }
-                }
-
-        val stonesOrder = /*arrayOf(STONE_0, STONE_1, STONE_2, STONE_3).take(numStonesToMove)*/
-            when (skystonePositionFromWall) {
-                0    -> arrayOf(0, 3, 5, 4)
-                1    -> arrayOf(1, 4, 5, 3)
-                else -> arrayOf(2, 5, 4, 3)
-            }.take(numStonesToMove)
-
-        telemetry.addData("Skystone pos from wall", skystonePositionFromWall)
-        telemetry.update()
-
-        val nextToStonePosY = RR_NEXT_TO_STONE_Y reverseIf RED
-        val drivingAgainstBridgePosY = RR_AGAINST_BRIDGE_Y reverseIf RED
-        val againstFoundationY = RR_AGAINST_FOUNDATION_Y reverseIf RED
-
-        val stonePositionsFromWall =
-                (if (allianceColor == BLUE) arrayOf(-62.0, -55.0, -48.0, -42.0, -31.0, -23.0)
-                        else arrayOf(-64.0, -55.0, -48.0, -39.0, -31.0, -23.0))
-
-                        .map { if (allianceColor == RED) it + RR_RED_STONE_OFFSET else it}
-
-        val foundationPlacementPositions = arrayOf(
-                42.0, 46.0, 52.0, 52.0).map { if (allianceColor == RED) it + RR_RED_STONE_OFFSET else it}
-
-        robot.holonomicRR.poseEstimate =
-                if (allianceColor == BLUE) Pose2d(-38.5, 63.0, 0.0)
-                                      else Pose2d(-39.25, -62.0, PI)
-
-        builder(PI)
-                .splineToConstantHeading(Pose2d(stonePositionsFromWall[stonesOrder[0]], nextToStonePosY, PI/-2))
-                .buildAndRun(Pair(0.30) { neededBlockGrabber.pivotMid(); neededBlockGrabber.grabberMid(); })
-        doBlockGrab(neededBlockGrabber)
-
-        builder()
-                .strafeTo(Vector2d(-16.0, drivingAgainstBridgePosY))
-                .buildAndRun()
-
-        if (doLiftLower) doIntakeDrop()
-
-        builder(0.0)
-                .splineToConstantHeading(Pose2d(RR_PAST_BRIDGE_X, drivingAgainstBridgePosY))
-                .splineToConstantHeading(Pose2d(foundationPlacementPositions[0], againstFoundationY))
-                .buildAndRun(Pair(0.60) { neededBlockGrabber.pivotMid(); })
-
-        for (i in stonesOrder.indices) {
-
-            doBlockRelease(neededBlockGrabber)
-
-            if (i < stonesOrder.size - 1) {
-                builder(PI)
-                        .splineToConstantHeading(Pose2d(18.0, drivingAgainstBridgePosY, PI))
-                        .splineToConstantHeading(Pose2d(-16.0, drivingAgainstBridgePosY, PI))
-                        .splineToConstantHeading(Pose2d(stonePositionsFromWall[stonesOrder[i + 1]], nextToStonePosY, PI))
-                        .buildAndRun(Pair(0.60) { neededBlockGrabber.pivotMid(); neededBlockGrabber.grabberMid(); })
-
-                doBlockGrab(neededBlockGrabber)
-
-                builder(0.0)
-                        .splineToConstantHeading(Pose2d(-16.0, drivingAgainstBridgePosY))
-                        .splineToConstantHeading(Pose2d(RR_PAST_BRIDGE_X, drivingAgainstBridgePosY))
-                        .splineToConstantHeading(Pose2d(foundationPlacementPositions[i], againstFoundationY))
-                        .buildAndRun(Pair(0.40) { neededBlockGrabber.pivotMid(); })
-
-            } else {
-                neededBlockGrabber.releaseBlock()
-                neededBlockGrabber.pivotUp()
-                if (doFoundationPull) {
-
-                    builder(PI)
-                            .splineToConstantHeading(Pose2d(48.0, 45.0 reverseIf RED, 0.0))
-                            .splineTo(Pose2d(52.00, 28.50, (-87.50).toRadians()))
-                            .buildAndRun(
-                                    Pair(0.50) {robot.foundationGrabbersFront.mid()},
-                                    Pair(0.95) {robot.foundationGrabbersFront.lock()}
-                            )
-
-                    sleep(350)
-
-                    if (allianceColor == BLUE) {
-                        timeDrive(0.4, -0.7, -0.6, 1100)
-                        timeDrive(0.0, 0.8, -0.15, 1000)
-                    } else {
-                        timeDrive(-0.4, -0.75, 0.475, 1100)
-                        timeDrive(0.0, 0.85, 0.40, 1500)
-                    }
-
-
-                    robot.foundationGrabbersFront.unlock()
-
-//                    DriveConstantsTunedMisumi.BASE_CONSTRAINTS.maxVel = 85.0
-//                    DriveConstantsTunedMisumi.BASE_CONSTRAINTS.maxAccel = 70.0
-
-                    robot.holonomicRR.trajectoryBuilder(DriveConstraints( //                    50.0, 30.0, 40.0,
-                            100.0, 100.0, 40.0,
-                            Math.PI, Math.PI, 0.0
-                    ))
-                            .strafeTo(Vector2d(0.0, 38.0 reverseIf RED))
-                            .buildAndRun()
-
-                } else {
-                    builder()
-                            .strafeTo(Vector2d(0.0, 37.5 reverseIf RED))
-                            .buildAndRun()
-                }
-                break
-            }
-        }
-
-
-
-    }
 
     /**
      * Creates and operates [ReflectiveTelemetryMenu] before the init period.
@@ -360,40 +170,11 @@ class AutonomousState_RR : LinearOpMode() {
                 dpadLeftWatch.call()  -> menu.iterateBackward()
                 dpadRightWatch.call() -> menu.iterateForward()
             }
-            if (gamepad1.x && !doLiftLower) {
-                robot.intakeLiftRight.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-                doLiftLower = true
-                robot.intakeLiftRight.targetPosition = -1100
-                robot.intakeLiftRight.mode = DcMotor.RunMode.RUN_TO_POSITION
-                robot.intakeLiftRight.power = 0.3
-                while (gamepad1.x && !isStarted);
-//                robot.intakeLiftRight.power = 0.0
-//                robot.intakeLiftRight.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-//                robot.intakeLiftRight.power = 0.0
-                menu.refresh()
-            }
         }
 
 
     }
 
-    private val neededBlockGrabber : AutoBlockIntake
-        get() = if (allianceColor == RED) robot.autoBlockIntakeFront else robot.autoBlockIntakeRear
-
-    private fun doBlockGrab(grabber: AutoBlockIntake) {
-        grabber.pivotDown()
-        sleep(600)
-        grabber.grabBlock()
-        sleep(750)
-        grabber.pivotUp()
-        sleep(400)
-    }
-
-    private fun doBlockRelease(grabber: AutoBlockIntake) {
-        grabber.releaseBlock()
-        sleep(350)
-        grabber.pivotUp()
-    }
 
     /**
      * Robot strafes for desired distance until motors have reached target.
@@ -419,37 +200,6 @@ class AutonomousState_RR : LinearOpMode() {
 
     }
 
-    private fun doIntakeDrop() {
-//        while (opModeIsActive()) {
-//            val intakeLiftCurrent = robot.intakeLiftRight.currentPosition
-//            val inputSpoolPower =
-//                        if (intakeLiftCurrent > 0.0) 0.0
-//                        else if (intakeLiftCurrent + 75 > 0.0) 0.20
-//                        else if (intakeLiftCurrent + 500 > 0.0) 0.45
-//                        else if (intakeLiftCurrent + 800 > 0.0) 0.45
-//                        else if (intakeLiftCurrent + 1200 > 0.0) 0.60
-//                        else if (intakeLiftCurrent + 2000 > 0.0) 0.75
-//                        else 1.0
-//
-//            robot.intakeLiftLeft.power = -inputSpoolPower
-//            robot.intakeLiftRight.power = inputSpoolPower
-//
-//            if (intakeLiftCurrent > -316) {
-//                robot.intakeLiftLeft.power = 0.0
-//                robot.intakeLiftRight.power = 0.0
-//                break
-//            }
-//        }
-        robot.intakeLiftRight.mode = DcMotor.RunMode.RUN_TO_POSITION
-        do {
-            robot.intakeLiftRight.targetPosition = INTAKE_DROP_POSITION
-            telemetry.addData("current", robot.intakeLiftRight.currentPosition)
-            telemetry.update()
-            robot.intakeLiftRight.power = 1.0
-            robot.intakeLiftRight.targetPositionTolerance = 20
-        }
-        while (opModeIsActive() and robot.intakeLiftRight.isBusy)
-    }
 
     /**
      * Reverses input number if [testColor] matches [allianceColor]
