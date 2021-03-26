@@ -34,12 +34,13 @@ open class ExtZoomBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
     init { zoomWheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, ExtZoomBotConstants.VELOCITY_PID)}
 
     @JvmField val ringLoadServo          : Servo                  = hwInit("ringLoadServo")
-    @JvmField val ringTapperServo        : Servo                  = hwInit("ringTapperServo")
-    @JvmField val intakeStage2S          : CRServo                = hwInit("intakeStage2S")
     @JvmField val ringTapThruServo       : Servo                  = hwInit("ringTapThruServo")
 
     @JvmField val wobblePivotServo       : Servo                  = hwInit("wobblePivotServo")
     @JvmField val wobbleGrabServo        : Servo                  = hwInit("wobbleGrabServo")
+
+    @JvmField val wobbleSidePivotServo   : Servo                  = hwInit("wobbleSidePivotServo")
+    @JvmField val wobbleSideGrabServo    : Servo                  = hwInit("wobbleSideGrabServo")
 
     @JvmField val deflectionServo       : Servo                   = hwInit("ringDeflectionServo")
 
@@ -72,8 +73,8 @@ open class ExtZoomBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
      override val holonomicRR             : HolonomicRR           = HolonomicRR(imuControllerC,
             frontLeftMotor, backLeftMotor, backRightMotor, frontRightMotor,
             TwoWheelOdometryLocalizer(odometryLeft, odometryRear, imuControllerC))
-    @JvmField val ringTapThru             : RingTapper = RingTapper(ringTapThruServo, 0.87, 0.55)
-    @JvmField val ringTapper              : RingTapper = RingTapper(ringTapperServo, 0.6, 0.45)
+    @JvmField val ringTapIntoMagazine     : RingTapper = RingTapper(ringTapThruServo, 0.87, 0.55)
+//    @JvmField val ringTapper              : RingTapper = RingTapper(ringTapperServo, 0.6, 0.45)
     @JvmField val wobbleGrabber           : WobbleGrabber = WobbleGrabber(wobblePivotServo, wobbleGrabServo)
 
     @JvmField val intakeTouchSensor       : DigitalChannel     = hwInit("intakeTouchSensor")

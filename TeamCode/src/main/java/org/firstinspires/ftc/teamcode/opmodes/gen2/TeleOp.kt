@@ -300,11 +300,11 @@ open class TeleOp : OpMode() {
         }
 
         robot.ringLoadServo.position = when {
-            gamepad2.y || (this.gamepad1CanControlIntakeOrientation && gamepad1.y) -> ExtZoomBotConstants.RING_LOAD_SERVO_PUSH
+            !robot.intakeTouchSensor.state || gamepad2.y || (this.gamepad1CanControlIntakeOrientation && gamepad1.y) -> ExtZoomBotConstants.RING_LOAD_SERVO_PUSH
             else -> ExtZoomBotConstants.RING_LOAD_SERVO_BACK
         }
 
-        robot.ringTapThru.move(when {
+        robot.ringTapIntoMagazine.move(when {
             gamepad2.x || (this.gamepad1CanControlIntakeOrientation && gamepad1.x) -> RingTapper.Position.TAP
             else -> RingTapper.Position.STORAGE
         })

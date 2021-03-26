@@ -18,7 +18,7 @@ public class ExtZoomBotConstants {
     public static double SMALL_CHANGE = 25;
     public static double ZOOM_POWER = 0.5;
     public static double ZOOM_VELOCITY = 1100;
-    public static double STAGE2_POWER_LIMIT = 0.50;
+    public static double STAGE2_POWER_LIMIT = 0.75;
     public static double PS_ROTATE_SPEED = 0.3;
     public static boolean PS_FRONT_LEFT = true;
     public static boolean PS_FRONT_RIGHT = true;
