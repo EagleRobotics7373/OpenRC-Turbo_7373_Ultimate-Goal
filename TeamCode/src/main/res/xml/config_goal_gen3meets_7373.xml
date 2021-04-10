@@ -25,11 +25,12 @@
 
             <Matrix12vMotor name="zoomWheel" port="1"/>
             <Motor name="odometryRear" port="0"/>
-            <Servo name="ringShotServo" port="2"/>
-            <Servo name="ringDeflectionServo" port="5"/>
+            <Servo name="wobbleSideGrabServo" port="0"/>
+            <Servo name="wobbleSidePivotServo" port="1"/>
+            <Servo name="ringLoadServo" port="2"/>
             <Servo name="wobbleGrabServo" port="3"/>
             <Servo name="wobblePivotServo" port="4"/>
-
+            <Servo name="ringDeflectionServo" port="5"/>
             <!--            <Motor name="odometryRear" port="0"/>-->
             <!--            <Motor name="odometryLeft" port="1"/>-->
             <!--            <Servo name="ringDropServo" port="2"/>-->

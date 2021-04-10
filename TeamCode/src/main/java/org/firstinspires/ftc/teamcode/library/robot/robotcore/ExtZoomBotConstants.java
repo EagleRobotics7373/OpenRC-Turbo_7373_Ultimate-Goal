@@ -14,7 +14,7 @@ public class ExtZoomBotConstants {
     public static double LARGE_CHANGE = 100;
     public static int AUTO_SHOOT_WAIT = 350;
     public static int TELEOP_SHOOT_WAIT = 150;
-    public static int AUTO_POWER_WAIT = 350;
+    public static int AUTO_POWER_WAIT = 200;
     public static double SMALL_CHANGE = 25;
     public static double ZOOM_POWER = 0.5;
     public static double ZOOM_VELOCITY = 1100;
@@ -34,10 +34,20 @@ public class ExtZoomBotConstants {
     public static PIDFCoefficients VELOCITY_PID = new PIDFCoefficients(140, 0, 0, 13.5);
 
     public static double SERVO_DEFLECTION_POS = 0.50;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_STORED = 0.50;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_EXTENDED = 0.46;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG = 0.46;
+    public static double SERVO_DEFLECTION_SMALL_CHANGE = 0.01;
+    public static double SERVO_DEFLECTION_LARGE_CHANGE = 0.02;
 
     public static double AUTO_TEST_1 = 800.0;
     public static double AUTO_TEST_2 = 1000.0;
     public static double AUTO_TEST_ANG = 0.08;
+
+    public static double AUTO_DEFLECT_1 = 0.18;
+    public static double AUTO_DEFLECT_2 = 0.17;
+    public static double AUTO_DEFLECT_3 = 0.16;
+    public static int AUTO_DEFLECT_WAIT = 50;
 
     public static double AUTO_SERVO_POS_1 = 0.60;
     public static double AUTO_SERVO_SPEED_1 = 1200;
