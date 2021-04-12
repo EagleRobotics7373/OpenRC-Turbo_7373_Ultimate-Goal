@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.library.robot.robotcore
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.Encoder
@@ -53,6 +54,8 @@ open class ExtZoomBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
     @JvmField val magColorSensor2D       : DistanceSensor         = hwInit("mgcs2")
     @JvmField val magColorSensor3D       : DistanceSensor         = hwInit("mgcs3")
 
+    @JvmField val sideWobbleDistSensor   : Rev2mDistanceSensor    = hwInit("sideWobbleDistSensor")
+
 
     // Odometry module variables - these will be set once we determine plug-in locations on REV Hubs
     override val leftOdometryModule: Encoder?  = null
@@ -73,7 +76,7 @@ open class ExtZoomBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
             TwoWheelOdometryLocalizer(odometryLeft, odometryRear, imuControllerC))
     @JvmField val ringTapIntoMagazine     : RingTapper = RingTapper(ringTapThruServo, 0.87, 0.55)
     @JvmField val wobbleGrabber           : WobbleGrabber = WobbleGrabber(wobblePivotServo, wobbleGrabServo)
-    @JvmField val wobbleGrabberSide       : WobbleGrabber = WobbleGrabber(wobbleSidePivotServo, wobbleSideGrabServo)
+    @JvmField val wobbleGrabberSide       : WobbleGrabber = WobbleGrabber(wobbleSidePivotServo, wobbleSideGrabServo, true)
 
     @JvmField val intakeTouchSensor       : DigitalChannel     = hwInit("intakeTouchSensor")
 

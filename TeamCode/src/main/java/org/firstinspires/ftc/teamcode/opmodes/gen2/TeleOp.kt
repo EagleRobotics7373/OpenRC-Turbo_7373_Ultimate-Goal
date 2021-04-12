@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.library.functions.*
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.ExtZoomBot
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.ExtZoomBotConstants
@@ -39,6 +40,7 @@ open class TeleOp : OpMode() {
     private lateinit var watch_gamepad1_buttonB: ToggleButtonWatcher
     private lateinit var watch_gamepad2_buttonA: ToggleButtonWatcher
     private lateinit var watch_gamepad2_buttonB: ToggleButtonWatcher
+    private lateinit var watch_gamepad2_buttonY: ToggleButtonWatcher
     private lateinit var watch_gamepad2_dpadLeft: ToggleButtonWatcher
     private lateinit var watch_gamepad2_dpadRight: ToggleButtonWatcher
     private lateinit var watch_gamepad2_dpadUp: ToggleButtonWatcher
@@ -119,6 +121,7 @@ open class TeleOp : OpMode() {
         watch_gamepad2_rightStickButton = ToggleButtonWatcher { gamepad2.right_stick_button }
         watch_gamepad2_buttonA = ToggleButtonWatcher { gamepad2.a }
         watch_gamepad2_buttonB = ToggleButtonWatcher { gamepad2.b && !gamepad2.start }
+        watch_gamepad2_buttonY = ToggleButtonWatcher { gamepad2.y }
         watch_gamepad2_dpadLeft = ToggleButtonWatcher { gamepad2.dpad_left }
         watch_gamepad2_dpadRight = ToggleButtonWatcher { gamepad2.dpad_right }
         watch_gamepad2_dpadUp = ToggleButtonWatcher { gamepad2.dpad_up }
@@ -135,6 +138,7 @@ open class TeleOp : OpMode() {
     override fun start() {
         container?.pipeline?.tracking = false
         robot.wobbleGrabber.state = WobbleGrabber.WobbleGrabberState.STORAGE
+        robot.wobbleGrabberSide.state = WobbleGrabber.WobbleGrabberState.STORAGE
     }
 
     override fun loop() {
@@ -259,9 +263,9 @@ open class TeleOp : OpMode() {
         when {
             (prevStateChangeByGamepad1 && !gamepad1ExtensionControlsActive) || (prevStateChangeByGamepad2 && !gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabber.prevState()
-            (nextStateChangeByGamepad1 && gamepad1ExtensionControlsActive) || (nextStateChangeByGamepad2 && gamepad2ExtensionControlsActive) ->
+            (nextStateChangeByGamepad1 && !gamepad1ExtensionControlsActive) || (nextStateChangeByGamepad2 && !gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabber.nextState()
-            (prevStateChangeByGamepad1 && !gamepad1ExtensionControlsActive) || (prevStateChangeByGamepad2 && !gamepad2ExtensionControlsActive) ->
+            (prevStateChangeByGamepad1 && gamepad1ExtensionControlsActive) || (prevStateChangeByGamepad2 && gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabberSide.prevState()
             (nextStateChangeByGamepad1 && gamepad1ExtensionControlsActive) || (nextStateChangeByGamepad2 && gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabberSide.nextState()
@@ -287,7 +291,7 @@ open class TeleOp : OpMode() {
                 watch_gamepad2_dpadLeft() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS += ExtZoomBotConstants.SERVO_DEFLECTION_SMALL_CHANGE
                 watch_gamepad2_dpadUp() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS -= ExtZoomBotConstants.SERVO_DEFLECTION_LARGE_CHANGE
                 watch_gamepad2_dpadDown() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS += ExtZoomBotConstants.SERVO_DEFLECTION_LARGE_CHANGE
-                gamepad2.left_stick_button -> ExtZoomBotConstants.SERVO_DEFLECTION_POS =
+                watch_gamepad2_buttonY() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS =
                     if (ExtZoomBotConstants.SERVO_DEFLECTION_POS == ExtZoomBotConstants.SERVO_DEFLECTION_POS_DEFAULT_STORED)
                         ExtZoomBotConstants.SERVO_DEFLECTION_POS_DEFAULT_EXTENDED
                     else
@@ -332,7 +336,7 @@ open class TeleOp : OpMode() {
         }
 
         robot.ringLoadServo.position = when {
-            !robot.intakeTouchSensor.state || gamepad2.y || (this.gamepad1ExtensionControlsActive && gamepad1.y) -> ExtZoomBotConstants.RING_LOAD_SERVO_PUSH
+            !robot.intakeTouchSensor.state || (gamepad2.y && !gamepad2ExtensionControlsActive) || (this.gamepad1ExtensionControlsActive && gamepad1.y) -> ExtZoomBotConstants.RING_LOAD_SERVO_PUSH
             else -> ExtZoomBotConstants.RING_LOAD_SERVO_BACK
         }
 
@@ -360,9 +364,6 @@ open class TeleOp : OpMode() {
                 else RevBlinkinLedDriver.BlinkinPattern.BLACK
         )
 
-        if (gamepad2ExtensionControlsActive) {
-
-        }
     }
 
     var lastR = System.currentTimeMillis()
@@ -406,7 +407,9 @@ open class TeleOp : OpMode() {
 //        telemetry.addData("ADJUSTMENT factor", adjustmentFactor)
         telemetry.addLine()
         telemetry.addData("wobble grabber state", robot.wobbleGrabber.state)
-        telemetry.addData("servo deflection pos", ExtZoomBotConstants.SERVO_DEFLECTION_POS)
+        telemetry.addData("wobble grabber (side) state", robot.wobbleGrabberSide.state)
+        telemetry.addData("servo deflection pos", String.format("%.3f", ExtZoomBotConstants.SERVO_DEFLECTION_POS))
+        telemetry.addData("side wobble dist", String.format("%.2f", robot.sideWobbleDistSensor.getDistance(DistanceUnit.INCH)))
         telemetry.addLine()
         telemetry.addData("controlled zoom op", ExtZoomBotConstants.ACTIVE_FLYWHEEL)
         telemetry.addData("controlled zoom speed", ExtZoomBotConstants.ZOOM_POWER)

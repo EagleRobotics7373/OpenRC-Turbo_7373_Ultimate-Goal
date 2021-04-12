@@ -33,16 +33,30 @@ public class ExtZoomBotConstants {
     public static DcMotor.RunMode ZOOM_MODE = DcMotor.RunMode.RUN_USING_ENCODER;
     public static PIDFCoefficients VELOCITY_PID = new PIDFCoefficients(140, 0, 0, 13.5);
 
-    public static double SERVO_DEFLECTION_POS = 0.50;
-    public static double SERVO_DEFLECTION_POS_DEFAULT_STORED = 0.50;
-    public static double SERVO_DEFLECTION_POS_DEFAULT_EXTENDED = 0.46;
-    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG = 0.46;
-    public static double SERVO_DEFLECTION_SMALL_CHANGE = 0.01;
-    public static double SERVO_DEFLECTION_LARGE_CHANGE = 0.02;
+    public static double SERVO_DEFLECTION_POS = 0.53;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_STORED = 0.53;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_EXTENDED = 0.37;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG = 0.405;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SLIM = 0.465;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SHOT_CENTER = 0.395;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SHOT_RIGHT = 0.380;
+    public static double SERVO_DEFLECTION_SMALL_CHANGE = 0.015;
+    public static double SERVO_DEFLECTION_LARGE_CHANGE = 0.03;
 
     public static double AUTO_TEST_1 = 800.0;
     public static double AUTO_TEST_2 = 1000.0;
     public static double AUTO_TEST_ANG = 0.08;
+
+    public static double AUTO_INTAKE_POWER_1 = 1.0;
+    public static double AUTO_INTAKE_POWER_2 = -0.7;
+    public static double AUTO_INTAKE_DRIVE_SPEED = 0.3;
+    public static double AUTO_INTAKE_DRIVE_SPEED_REV = -0.25;
+    public static int AUTO_INTAKE_TAP_SLEEP_SHORT = 200;
+    public static int AUTO_INTAKE_TAP_SLEEP_LONG = 400;
+    public static int AUTO_INTAKE_TIME = 400;
+    public static int AUTO_INTAKE_TIME_REV = 350;
+    public static int AUTO_INTAKE_RUN_AFTER_DRIVE_STOP = 400;
+
 
     public static double AUTO_DEFLECT_1 = 0.18;
     public static double AUTO_DEFLECT_2 = 0.17;

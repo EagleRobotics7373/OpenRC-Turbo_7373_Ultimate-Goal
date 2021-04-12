@@ -21,17 +21,19 @@
 
             <Matrix12vMotor name="zoomWheel" port="1"/>
             <Motor name="odometryRear" port="0"/>
-            <Servo name="wobbleSideGrabServo" port="0"/>
-            <Servo name="wobbleSidePivotServo" port="1"/>
+            <Servo name="wobbleSideGrabServo" port="1"/>
+            <Servo name="wobbleSidePivotServo" port="0"/>
             <Servo name="ringLoadServo" port="2"/>
             <Servo name="wobbleGrabServo" port="3"/>
             <Servo name="wobblePivotServo" port="4"/>
             <Servo name="ringDeflectionServo" port="5"/>
+
             <!--            <Motor name="odometryRear" port="0"/>-->
             <!--            <Motor name="odometryLeft" port="1"/>-->
             <!--            <Servo name="ringDropServo" port="2"/>-->
             <!--            <AnalogInput name="liftPotentiometer" port="0" />-->
             <LynxEmbeddedIMU name="imuE" port="0" bus="0" />
+            <REV_VL53L0X_RANGE_SENSOR name="sideWobbleDistSensor" port="1" bus="0" />
 
             <DigitalDevice name="intakeTouchSensor" port="1" />
         </LynxModule>

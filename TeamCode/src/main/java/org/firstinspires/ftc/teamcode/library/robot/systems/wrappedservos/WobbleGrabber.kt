@@ -4,7 +4,8 @@ import com.qualcomm.robotcore.hardware.Servo
 
 class WobbleGrabber
 constructor (private val pivotServo : Servo,
-             private val grabServo  : Servo)
+             private val grabServo  : Servo,
+             private val reverse    : Boolean = false)
 {
 
     /**
@@ -32,7 +33,7 @@ constructor (private val pivotServo : Servo,
      * Pivot the wobble grabber arm to a specified position
      * @param loc the position to pivot
      */
-    private fun pivot(loc: PivotPosition) { pivotServo.position = loc.position }
+    private fun pivot(loc: PivotPosition) { pivotServo.position = loc.position.oneMinus() }
 
     /**
      * Pivot the wobble grabber end effector to a specified position
@@ -113,5 +114,7 @@ constructor (private val pivotServo : Servo,
      * Re-run the state action function to allow for time-delayed actions
      */
     fun update() { state.action?.invoke(this, stateDuration) }
+
+    private fun Double.oneMinus() = if (reverse) (1-this) else this
 
 }
