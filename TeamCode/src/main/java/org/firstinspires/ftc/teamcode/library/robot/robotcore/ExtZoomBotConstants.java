@@ -13,7 +13,8 @@ public class ExtZoomBotConstants {
     public static double RING_LOAD_SERVO_BACK = 0.27; // was 0.18
     public static double LARGE_CHANGE = 100;
     public static int AUTO_SHOOT_WAIT = 350;
-    public static int TELEOP_SHOOT_WAIT = 150;
+    public static int TELEOP_SHOOT_WAIT_HIT = 50;
+    public static int TELEOP_SHOOT_WAIT_STORED = 200;
     public static int AUTO_POWER_WAIT = 200;
     public static double SMALL_CHANGE = 25;
     public static double ZOOM_POWER = 0.5;
@@ -32,10 +33,13 @@ public class ExtZoomBotConstants {
     public static boolean ENERGIZE = true;
     public static DcMotor.RunMode ZOOM_MODE = DcMotor.RunMode.RUN_USING_ENCODER;
     public static PIDFCoefficients VELOCITY_PID = new PIDFCoefficients(140, 0, 0, 13.5);
+    public static int SIDE_ADJUSTMENT = 90;
 
     public static double SERVO_DEFLECTION_POS = 0.53;
+    public static double SERVO_DEFLECTION_POS_PS_CENTER = 0.445;
+    public static double SERVO_DEFLECTION_POS_PS_RIGHT = 0.410;
     public static double SERVO_DEFLECTION_POS_DEFAULT_STORED = 0.53;
-    public static double SERVO_DEFLECTION_POS_DEFAULT_EXTENDED = 0.37;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_EXTENDED = 0.39;
     public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG = 0.405;
     public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SLIM = 0.465;
     public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SHOT_CENTER = 0.395;
@@ -73,7 +77,7 @@ public class ExtZoomBotConstants {
 
     public static double VELO_PRESET_1 = 1000.0;
     public static double VELO_PRESET_2 = 1100.0;
-    public static double VELO_PRESET_3 = 1150.0;
+    public static double VELO_PRESET_3 = 1175;
 
     public static RevBlinkinLedDriver.BlinkinPattern VELO_PRESET_1_COLOR = RevBlinkinLedDriver.BlinkinPattern.RED;
     public static RevBlinkinLedDriver.BlinkinPattern VELO_PRESET_2_COLOR = RevBlinkinLedDriver.BlinkinPattern.GREEN;

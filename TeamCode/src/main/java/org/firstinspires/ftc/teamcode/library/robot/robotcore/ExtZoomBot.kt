@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.con
 import org.firstinspires.ftc.teamcode.library.robot.systems.intakegen3.MagazineRingSensor
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.BlinkinController
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.RingTapper
+import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.TimedShooter
 import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.WobbleGrabber
 
 open class ExtZoomBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
@@ -77,6 +78,7 @@ open class ExtZoomBot(_hardwareMap: HardwareMap) : BaseRobot(_hardwareMap) {
     @JvmField val ringTapIntoMagazine     : RingTapper = RingTapper(ringTapThruServo, 0.87, 0.55)
     @JvmField val wobbleGrabber           : WobbleGrabber = WobbleGrabber(wobblePivotServo, wobbleGrabServo)
     @JvmField val wobbleGrabberSide       : WobbleGrabber = WobbleGrabber(wobbleSidePivotServo, wobbleSideGrabServo, true)
+    @JvmField val timedShooter            : TimedShooter = TimedShooter(ringLoadServo)
 
     @JvmField val intakeTouchSensor       : DigitalChannel     = hwInit("intakeTouchSensor")
 

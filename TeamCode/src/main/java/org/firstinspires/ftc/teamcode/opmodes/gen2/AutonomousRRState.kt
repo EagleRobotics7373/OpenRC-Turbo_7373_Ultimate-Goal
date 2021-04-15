@@ -140,7 +140,7 @@ class AutonomousRRState : LinearOpMode() {
         )
         val secondaryWobbleDropoffs = wobbleDropoffs.mapValues {
             Vector2d(
-                    x = it.value.x + 18.0 + if (it.key == 0) 4.0 else 0.0,
+                    x = it.value.x + 18.0 + if (it.key == 0) 4.0 else 3.0,
                     y = it.value.y + (18.0 reverseIf BLUE)
             )
         }
@@ -184,6 +184,8 @@ class AutonomousRRState : LinearOpMode() {
                 .buildAndRun()
 
         if (collectStarterStack && numRings > 0) {
+
+            if (numRings != 1) singleRingIntoPowerShot = Position.NULL
 
             robot.deflectionServo.position = when(singleRingIntoPowerShot) {
                 Position.CENTER -> ExtZoomBotConstants.SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SHOT_CENTER

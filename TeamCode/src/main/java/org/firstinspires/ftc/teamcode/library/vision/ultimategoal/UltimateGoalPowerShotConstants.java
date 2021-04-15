@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.library.functions.AllianceColor;
 @Config
 public class UltimateGoalPowerShotConstants {
 
-    public static AllianceColor ALLIANCE_COLOR = AllianceColor.RED;
-    public static int TARGET_X = 420;
+    public static AllianceColor ALLIANCE_COLOR = AllianceColor.BLUE;
+    public static int TARGET_X = 405;
 
     public static int GET_MODIFIED_TARGET_X() {
         return TARGET_X - CUTOFF_LEFT;
@@ -18,7 +18,7 @@ public class UltimateGoalPowerShotConstants {
     public static double SAFE_SHOT = 0.75;
 
     public static int CUTOFF_TOP = 425;
-    public static int CUTOFF_BOTTOM = 550;
+    public static int CUTOFF_BOTTOM = 600;
     public static int CUTOFF_LEFT = 100;
     public static int CUTOFF_RIGHT = 800;
 

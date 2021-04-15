@@ -40,6 +40,7 @@ open class TeleOp : OpMode() {
     private lateinit var watch_gamepad1_buttonB: ToggleButtonWatcher
     private lateinit var watch_gamepad2_buttonA: ToggleButtonWatcher
     private lateinit var watch_gamepad2_buttonB: ToggleButtonWatcher
+    private lateinit var watch_gamepad2_buttonX: ToggleButtonWatcher
     private lateinit var watch_gamepad2_buttonY: ToggleButtonWatcher
     private lateinit var watch_gamepad2_dpadLeft: ToggleButtonWatcher
     private lateinit var watch_gamepad2_dpadRight: ToggleButtonWatcher
@@ -53,7 +54,9 @@ open class TeleOp : OpMode() {
     var elapsedTime: ElapsedTime? = null
     var last = 0.0
     var current = 0.0
-    var zeroAngle = 0.0
+    var ringShootingAuto = true
+//        set(value) { field = value; if (!field)}
+//    var zeroAngle = 0.0
 
     /*
     DRIVE CONSTANTS
@@ -71,7 +74,9 @@ open class TeleOp : OpMode() {
 
     // If current drive mode is reversed
     val reverse get() = ( driveMode is NewDriveMode.RobotCentric
-            && (driveMode as? NewDriveMode.RobotCentric)?.reverse == true )
+            && (driveMode as? NewDriveMode.RobotCentric)?.orientation == NewDriveMode.RobotCentric.Orientation.REVERSE )
+    val side get() = ( driveMode is NewDriveMode.RobotCentric
+            && (driveMode as? NewDriveMode.RobotCentric)?.orientation == NewDriveMode.RobotCentric.Orientation.SIDE_BLUE )
 
     // Current drivetrain speed
     var speed = 3
@@ -121,6 +126,7 @@ open class TeleOp : OpMode() {
         watch_gamepad2_rightStickButton = ToggleButtonWatcher { gamepad2.right_stick_button }
         watch_gamepad2_buttonA = ToggleButtonWatcher { gamepad2.a }
         watch_gamepad2_buttonB = ToggleButtonWatcher { gamepad2.b && !gamepad2.start }
+        watch_gamepad2_buttonX = ToggleButtonWatcher { gamepad2.x }
         watch_gamepad2_buttonY = ToggleButtonWatcher { gamepad2.y }
         watch_gamepad2_dpadLeft = ToggleButtonWatcher { gamepad2.dpad_left }
         watch_gamepad2_dpadRight = ToggleButtonWatcher { gamepad2.dpad_right }
@@ -213,24 +219,32 @@ open class TeleOp : OpMode() {
             val z = gamepad1.right_stick_x.toDouble().rangeBuffer(-0.1, 0.1, 0.0).times(0.33 * speed)
 
             // set gamepad inputs to robot output
-            robot.holonomic.runWithoutEncoderVectored(x, y, z, if (driveMode == NewDriveMode.FieldCentric) zeroAngle - robot.imuControllerC.getHeading() else 0.0)
+            robot.holonomic.runWithoutEncoderVectored(x, y, z,
+                    when {
+                        (driveMode == NewDriveMode.FieldCentric) -> NewDriveMode.FieldCentric.zeroAngle - robot.imuControllerC.getHeading()
+                        side -> ExtZoomBotConstants.SIDE_ADJUSTMENT.toDouble().toRadians()
+                        else -> 0.0
+                    })
 
             // read 'a' and 'b' buttons to reverse robot orientation
             if (canControlDrivetrainOrientation && gamepad1.a)
-                driveMode = NewDriveMode.RobotCentric.apply { reverse = false }
+                driveMode = NewDriveMode.RobotCentric.apply { orientation = NewDriveMode.RobotCentric.Orientation.FORWARD }
             else if (canControlDrivetrainOrientation && gamepad1.b)
-                driveMode = NewDriveMode.RobotCentric.apply { reverse = true }
+                driveMode = NewDriveMode.RobotCentric.apply { orientation = NewDriveMode.RobotCentric.Orientation.REVERSE }
+            else if (canControlDrivetrainOrientation && gamepad1.y)
+                driveMode = NewDriveMode.RobotCentric.apply { orientation = NewDriveMode.RobotCentric.Orientation.SIDE_BLUE }
             else if (canControlDrivetrainOrientation && gamepad1.x)
                 driveMode = NewDriveMode.FieldCentric
+
 
             // reverse robot orientation using toggle feature in addition to static buttons
             // if y button is pressed, make reverse variable opposite of what it is now
             //   then wait until y is released before letting it change the variable again
-            if (canControlDrivetrainOrientation && watch_gamepad1_buttonY.invoke())
-                NewDriveMode.RobotCentric.reverse = !NewDriveMode.RobotCentric.reverse
+//            if (canControlDrivetrainOrientation && watch_gamepad1_leftStickButton.invoke())
+//                NewDriveMode.RobotCentric.reverse = !NewDriveMode.RobotCentric.reverse
 
             // Change to Power Shot mode if the right stick button is pressed
-            if (gamepad1.right_stick_button) driveMode = NewDriveMode.PowerShot
+            if (gamepad1.left_stick_button) driveMode = NewDriveMode.PowerShot
         }
 
 
@@ -247,6 +261,12 @@ open class TeleOp : OpMode() {
         if (watch_gamepad1_dpadDown.invoke() and (speed > 1)) speed--
         if (watch_gamepad1_dpadUp.invoke() and (speed < 3)) speed++
 
+        if (!(gamepad1.left_bumper || gamepad1.right_bumper) && watch_gamepad1_rightStickButton())
+            speed = when(speed) {
+                1 -> 3
+                else -> 1
+            }
+
 
     }
 
@@ -256,18 +276,18 @@ open class TeleOp : OpMode() {
     private fun controlOtherDevices() {
 
         val prevStateChangeByGamepad1 = watch_gamepad1_leftStickButton()
-        val nextStateChangeByGamepad1 = watch_gamepad1_rightStickButton()
+        val nextStateChangeByGamepad1 = if (gamepad1.left_bumper || gamepad1.right_bumper) watch_gamepad1_rightStickButton() else false
         val prevStateChangeByGamepad2 = watch_gamepad2_leftStickButton()
         val nextStateChangeByGamepad2 = watch_gamepad2_rightStickButton()
 
         when {
-            (prevStateChangeByGamepad1 && !gamepad1ExtensionControlsActive) || (prevStateChangeByGamepad2 && !gamepad2ExtensionControlsActive) ->
+            (prevStateChangeByGamepad1 && gamepad1.left_bumper) || (prevStateChangeByGamepad2 && !gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabber.prevState()
-            (nextStateChangeByGamepad1 && !gamepad1ExtensionControlsActive) || (nextStateChangeByGamepad2 && !gamepad2ExtensionControlsActive) ->
+            (nextStateChangeByGamepad1 && gamepad1.left_bumper) || (nextStateChangeByGamepad2 && !gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabber.nextState()
-            (prevStateChangeByGamepad1 && gamepad1ExtensionControlsActive) || (prevStateChangeByGamepad2 && gamepad2ExtensionControlsActive) ->
+            (prevStateChangeByGamepad1 && gamepad1.right_bumper) || (prevStateChangeByGamepad2 && gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabberSide.prevState()
-            (nextStateChangeByGamepad1 && gamepad1ExtensionControlsActive) || (nextStateChangeByGamepad2 && gamepad2ExtensionControlsActive) ->
+            (nextStateChangeByGamepad1 && gamepad1.right_bumper) || (nextStateChangeByGamepad2 && gamepad2ExtensionControlsActive) ->
                 robot.wobbleGrabberSide.nextState()
         }
         robot.wobbleGrabber.update()
@@ -287,15 +307,28 @@ open class TeleOp : OpMode() {
 
         if (gamepad2ExtensionControlsActive) {
             when {
-                watch_gamepad2_dpadRight() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS -= ExtZoomBotConstants.SERVO_DEFLECTION_SMALL_CHANGE
-                watch_gamepad2_dpadLeft() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS += ExtZoomBotConstants.SERVO_DEFLECTION_SMALL_CHANGE
-                watch_gamepad2_dpadUp() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS -= ExtZoomBotConstants.SERVO_DEFLECTION_LARGE_CHANGE
-                watch_gamepad2_dpadDown() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS += ExtZoomBotConstants.SERVO_DEFLECTION_LARGE_CHANGE
+                watch_gamepad2_dpadRight() && !gamepad2.start -> ExtZoomBotConstants.SERVO_DEFLECTION_POS -= ExtZoomBotConstants.SERVO_DEFLECTION_SMALL_CHANGE
+                watch_gamepad2_dpadLeft() && !gamepad2.start -> ExtZoomBotConstants.SERVO_DEFLECTION_POS += ExtZoomBotConstants.SERVO_DEFLECTION_SMALL_CHANGE
+                watch_gamepad2_dpadUp() && !gamepad2.start -> ExtZoomBotConstants.SERVO_DEFLECTION_POS -= ExtZoomBotConstants.SERVO_DEFLECTION_LARGE_CHANGE
+                watch_gamepad2_dpadDown() && !gamepad2.start -> ExtZoomBotConstants.SERVO_DEFLECTION_POS += ExtZoomBotConstants.SERVO_DEFLECTION_LARGE_CHANGE
                 watch_gamepad2_buttonY() -> ExtZoomBotConstants.SERVO_DEFLECTION_POS =
                     if (ExtZoomBotConstants.SERVO_DEFLECTION_POS == ExtZoomBotConstants.SERVO_DEFLECTION_POS_DEFAULT_STORED)
                         ExtZoomBotConstants.SERVO_DEFLECTION_POS_DEFAULT_EXTENDED
                     else
                         ExtZoomBotConstants.SERVO_DEFLECTION_POS_DEFAULT_STORED
+            }
+        } else {
+            when {
+                watch_gamepad2_buttonY() -> if (ringShootingAuto) robot.timedShooter.hit(if (gamepad2.start) 3 else 1)
+                watch_gamepad1_buttonY() -> robot.timedShooter.hit()
+                watch_gamepad2_buttonX() && gamepad2.start -> {
+                    ringShootingAuto = !ringShootingAuto
+                    robot.timedShooter.resetQueue()
+                }
+                gamepad2.dpad_left && gamepad2.start -> ExtZoomBotConstants.SERVO_DEFLECTION_POS = ExtZoomBotConstants.SERVO_DEFLECTION_POS_DEFAULT_STORED
+                gamepad2.dpad_up && gamepad2.start -> ExtZoomBotConstants.SERVO_DEFLECTION_POS = ExtZoomBotConstants.SERVO_DEFLECTION_POS_PS_CENTER
+                gamepad2.dpad_right && gamepad2.start -> ExtZoomBotConstants.SERVO_DEFLECTION_POS = ExtZoomBotConstants.SERVO_DEFLECTION_POS_PS_RIGHT
+
             }
         }
 
@@ -304,14 +337,14 @@ open class TeleOp : OpMode() {
                 ExtZoomBotConstants.ACTIVE_FLYWHEEL = true
             (gamepad2.b && !gamepad2ExtensionControlsActive) || (this.gamepad1ExtensionControlsActive && gamepad1.b) ->
                 ExtZoomBotConstants.ACTIVE_FLYWHEEL = false
-            (!gamepad2ExtensionControlsActive && watch_gamepad2_dpadUp()) || (this.gamepad1ExtensionControlsActive && watch_gamepad1_dpadUp()) ->
+            (!gamepad2ExtensionControlsActive && watch_gamepad2_dpadUp() && !gamepad2.start) || (this.gamepad1ExtensionControlsActive && watch_gamepad1_dpadUp()) ->
                 ExtZoomBotConstants.ZOOM_VELOCITY += ExtZoomBotConstants.SMALL_CHANGE
-            (!gamepad2ExtensionControlsActive && watch_gamepad2_dpadDown()) || (this.gamepad1ExtensionControlsActive && watch_gamepad1_dpadDown()) ->
+            (!gamepad2ExtensionControlsActive && watch_gamepad2_dpadDown() && !gamepad2.start) || (this.gamepad1ExtensionControlsActive && watch_gamepad1_dpadDown()) ->
                 ExtZoomBotConstants.ZOOM_VELOCITY -= ExtZoomBotConstants.SMALL_CHANGE
-            (!gamepad2.start && !gamepad2ExtensionControlsActive && watch_gamepad2_dpadLeft())
+            (!gamepad2.start && !gamepad2ExtensionControlsActive && watch_gamepad2_dpadLeft() && !gamepad2.start)
                     || (this.gamepad1ExtensionControlsActive && driveMode !is NewDriveMode.PowerShot && watch_gamepad1_dpadLeft()) ->
                 ExtZoomBotConstants.ZOOM_VELOCITY -= ExtZoomBotConstants.LARGE_CHANGE
-            (!gamepad2.start && !gamepad2ExtensionControlsActive && watch_gamepad2_dpadRight())
+            (!gamepad2.start && !gamepad2ExtensionControlsActive && watch_gamepad2_dpadRight() && !gamepad2.start)
                     || (this.gamepad1ExtensionControlsActive && driveMode !is NewDriveMode.PowerShot && watch_gamepad1_dpadRight()) ->
                 ExtZoomBotConstants.ZOOM_VELOCITY += ExtZoomBotConstants.LARGE_CHANGE
         }
@@ -335,13 +368,16 @@ open class TeleOp : OpMode() {
                     )
         }
 
-        robot.ringLoadServo.position = when {
-            !robot.intakeTouchSensor.state || (gamepad2.y && !gamepad2ExtensionControlsActive) || (this.gamepad1ExtensionControlsActive && gamepad1.y) -> ExtZoomBotConstants.RING_LOAD_SERVO_PUSH
-            else -> ExtZoomBotConstants.RING_LOAD_SERVO_BACK
-        }
+        robot.timedShooter.update(
+                when {
+                    ringShootingAuto -> null
+                    !robot.intakeTouchSensor.state || (gamepad2.y && !gamepad2ExtensionControlsActive) || (this.gamepad1ExtensionControlsActive && gamepad1.y) -> ExtZoomBotConstants.RING_LOAD_SERVO_PUSH
+                    else -> ExtZoomBotConstants.RING_LOAD_SERVO_BACK
+                }
+        )
 
         robot.ringTapIntoMagazine.move(when {
-            gamepad2.x || (this.gamepad1ExtensionControlsActive && gamepad1.x) -> RingTapper.Position.TAP
+            (gamepad2.x && !gamepad2.start) || (this.gamepad1ExtensionControlsActive && gamepad1.x) -> RingTapper.Position.TAP
             else -> RingTapper.Position.STORAGE
         })
 
@@ -404,11 +440,12 @@ open class TeleOp : OpMode() {
             ExtZoomBotConstants.VELO_PRESET_3 -> "LONG RANGE"
             else -> "no preset"
         })
+        telemetry.addData("servo deflection pos", String.format("%.3f", ExtZoomBotConstants.SERVO_DEFLECTION_POS))
 //        telemetry.addData("ADJUSTMENT factor", adjustmentFactor)
         telemetry.addLine()
         telemetry.addData("wobble grabber state", robot.wobbleGrabber.state)
         telemetry.addData("wobble grabber (side) state", robot.wobbleGrabberSide.state)
-        telemetry.addData("servo deflection pos", String.format("%.3f", ExtZoomBotConstants.SERVO_DEFLECTION_POS))
+        telemetry.addData("timed shooter status", if (ringShootingAuto) robot.timedShooter.queue else "Manual")
         telemetry.addData("side wobble dist", String.format("%.2f", robot.sideWobbleDistSensor.getDistance(DistanceUnit.INCH)))
         telemetry.addLine()
         telemetry.addData("controlled zoom op", ExtZoomBotConstants.ACTIVE_FLYWHEEL)
@@ -440,9 +477,14 @@ open class TeleOp : OpMode() {
 
     sealed class NewDriveMode {
         object RobotCentric : NewDriveMode() {
-            var reverse = false
 
-            override fun toString(): String = "RobotCentric: ${if (reverse) "REVERSE" else "FORWARD"}"
+            enum class Orientation {
+                FORWARD, REVERSE, SIDE_BLUE
+            }
+
+            var orientation: Orientation = Orientation.REVERSE
+
+            override fun toString(): String = "RobotCentric: $orientation"
         }
         object FieldCentric : NewDriveMode() {
             var zeroAngle = 0.0
