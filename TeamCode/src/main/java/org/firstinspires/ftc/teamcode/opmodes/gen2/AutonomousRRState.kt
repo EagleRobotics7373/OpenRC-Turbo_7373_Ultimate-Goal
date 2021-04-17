@@ -31,7 +31,7 @@ import kotlin.math.PI
 import org.firstinspires.ftc.teamcode.opmodes.gen1b.OpModeConfig
 import kotlin.math.absoluteValue
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous State (Kotlin + RR)", group = "Main")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous State (Kotlin + RR)", group = "Main", preselectTeleOp = "TeleOp Gen3")
 class AutonomousRRState : LinearOpMode() {
 
     /*
@@ -59,7 +59,7 @@ class AutonomousRRState : LinearOpMode() {
     private var sleepBeforeShoot: Int by config.int("Delay Before Shoot (ms)", 400, 0..1000 step 100)
     private var intoSquareDisp: Int by config.int("Target Zone Displacement (in)", -2, -4..7);
     private var wobbleYDisp: Int by config.int("Wobble Y Displacement (in)", 0, -4..4);
-    private var idealDistFromWobble: Int by config.int("Ideal Dist From Wobble", 5, 2..9);
+    private var idealDistFromWobble: Int by config.int("Ideal Dist From Wobble", 6, 2..9);
     private var collectStarterStack: Boolean by config.boolean("Collect Starter Stack", true);
     private var singleRingIntoPowerShot: Position by config.custom("Single Ring Into Power Shot", Position.RIGHT, Position.CENTER, Position.NULL);
 
@@ -136,11 +136,11 @@ class AutonomousRRState : LinearOpMode() {
         val wobbleDropoffs = mapOf(
                 0 to Vector2d(-6.5 + intoSquareDisp, -farStartY reverseIf BLUE),
                 1 to Vector2d(16.0 + intoSquareDisp, -36.0 reverseIf BLUE),
-                4 to Vector2d(43.0 + intoSquareDisp, -60.0 reverseIf BLUE)
+                4 to Vector2d(39.0 + intoSquareDisp, -60.0 reverseIf BLUE)
         )
         val secondaryWobbleDropoffs = wobbleDropoffs.mapValues {
             Vector2d(
-                    x = it.value.x + 18.0 + if (it.key == 0) 4.0 else 3.0,
+                    x = it.value.x + 18.0 + if (it.key == 0) 4.0 else if (it.key == 1) 3.0 else -1.0,
                     y = it.value.y + (18.0 reverseIf BLUE)
             )
         }
@@ -175,10 +175,11 @@ class AutonomousRRState : LinearOpMode() {
 
         // Strafe towards the starter stack.
         builder(-PI)
-                .strafeTo(
-                        endPosition = Vector2d(
+                .lineToLinearHeading(
+                        endPose = Pose2d(
                                 x = -12.0,
-                                y = 37.0 reverseIf RED
+                                y = 37.0 reverseIf RED,
+                                heading = PI
                         )
                 )
                 .buildAndRun()
@@ -204,6 +205,9 @@ class AutonomousRRState : LinearOpMode() {
                 robot.intakeStage2.power = ExtZoomBotConstants.AUTO_INTAKE_POWER_2
                 timeDrive(0.0, ExtZoomBotConstants.AUTO_INTAKE_DRIVE_SPEED, 0.0, ExtZoomBotConstants.AUTO_INTAKE_TIME.toLong())
                 timeDrive(0.0, ExtZoomBotConstants.AUTO_INTAKE_DRIVE_SPEED_REV, 0.0, ExtZoomBotConstants.AUTO_INTAKE_TIME_REV.toLong())
+                sleep(
+                        ExtZoomBotConstants.AUTO_INTAKE_RUN_AFTER_DRIVE_STOP.toLong()
+                )
                 robot.intakeStage1.power = 0.0
                 robot.ringTapIntoMagazine.move(RingTapper.Position.TAP)
                 sleep(
@@ -215,11 +219,12 @@ class AutonomousRRState : LinearOpMode() {
 
             robot.intakeStage2.power = 0.0
 
-            builder()
-                    .strafeTo(
-                            endPosition = Vector2d(
+            builder(tangent = 0.0)
+                    .lineToLinearHeading(
+                            endPose = Pose2d(
                                     x = -3.0,
-                                    y = 37.0
+                                    y = 37.0,
+                                    heading = PI
                             ),
                             constraintsOverride = DriveConstraints(
                                     30.0, 25.0, 40.0,
@@ -277,11 +282,17 @@ class AutonomousRRState : LinearOpMode() {
             builder(-PI / 2 reverseIf RED)
                     .splineToConstantHeading(
                             endPosition = Vector2d(-6.5, secondWobbleVector.y),
-                            endTangent = PI reverseIf RED
+                            endTangent = PI reverseIf RED,
+                            constraintsOverride = DriveConstraints(
+                                    50.0, 40.0, 40.0,
+                                    PI, PI, 0.0)
                     )
                     .splineToConstantHeading(
                             endPosition = secondWobbleVector,
-                            endTangent = -PI
+                            endTangent = -PI,
+                            constraintsOverride = DriveConstraints(
+                                    35.0, 25.0, 40.0,
+                                    PI, PI, 0.0)
                     )
                     .addDisplacementMarker(
                             0.1,
@@ -289,13 +300,13 @@ class AutonomousRRState : LinearOpMode() {
                             MarkerCallback { robot.wobbleGrabberSide.move(pivot = WobbleGrabber.PivotPosition.VERTICAL)})
                     .buildAndRun()
         }
-
+        sleep(100);
         val currentDistFromWobble = doGetCurrentDistFromWobble()
-        val distanceToTravel = currentDistFromWobble - idealDistFromWobble + 0.5
+        val distanceToTravel = currentDistFromWobble - (idealDistFromWobble)
 
         telemetry.addData("Current Dist from Wobble", currentDistFromWobble)
         telemetry.addData("Distance to Travel Right", distanceToTravel)
-        if (distanceToTravel.absoluteValue > 0.5)
+        if (distanceToTravel.absoluteValue > 0.25 && distanceToTravel < 10)
             builder()
                     .strafeRight(distanceToTravel)
                     .buildAndRun()
@@ -351,7 +362,7 @@ class AutonomousRRState : LinearOpMode() {
                                     y = robot.holonomicRR.poseEstimate.y
                             ),
                             constraintsOverride = DriveConstraints(
-                                    80.0, 90.0, 50.0,
+                                    90.0, 100.0, 50.0,
                                     PI, PI, 0.0)
                     )
                     .buildAndRun()
@@ -385,7 +396,7 @@ class AutonomousRRState : LinearOpMode() {
     fun doWobblePlace(wobbleGrabber: WobbleGrabber) {
         // Drop wobble goal after rings shot
         wobbleGrabber.move(pivot = WobbleGrabber.PivotPosition.PERPENDICULAR)
-        sleep(700)
+        sleep(850)
         wobbleGrabber.move(grab = WobbleGrabber.GrabPosition.STORAGE)
         sleep(400)
         wobbleGrabber.move(pivot = WobbleGrabber.PivotPosition.VERTICAL)
@@ -395,7 +406,7 @@ class AutonomousRRState : LinearOpMode() {
     fun doWobblePickup(wobbleGrabber: WobbleGrabber) {
         // Drop wobble goal after rings shot
         wobbleGrabber.state = WobbleGrabber.WobbleGrabberState.GRAB_PREP
-        sleep(1200)
+        sleep(1000)
         wobbleGrabber.state = WobbleGrabber.WobbleGrabberState.GRAB
         sleep(600)
         wobbleGrabber.nextState()
@@ -404,11 +415,16 @@ class AutonomousRRState : LinearOpMode() {
 
     fun doGetCurrentDistFromWobble(): Double {
         var accumulatedSum = 0.0
-        val count = 10
-        for (i in 1..count) {
-            accumulatedSum += robot.sideWobbleDistSensor.getDistance(DistanceUnit.INCH)
+        var count = 0
+        for (i in 1..10) {
+            val distance = robot.sideWobbleDistSensor.getDistance(DistanceUnit.INCH)
+            if (distance < 10) {
+                accumulatedSum += distance
+                count++
+            }
             sleep(25)
         }
+        if (count == 0) return Double.NaN
         return accumulatedSum / count
     }
 

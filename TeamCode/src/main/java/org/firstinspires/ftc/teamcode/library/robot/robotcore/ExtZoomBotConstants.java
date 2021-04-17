@@ -37,10 +37,10 @@ public class ExtZoomBotConstants {
 
     public static double SERVO_DEFLECTION_POS = 0.53;
     public static double SERVO_DEFLECTION_POS_PS_CENTER = 0.445;
-    public static double SERVO_DEFLECTION_POS_PS_RIGHT = 0.410;
+    public static double SERVO_DEFLECTION_POS_PS_RIGHT = 0.419;
     public static double SERVO_DEFLECTION_POS_DEFAULT_STORED = 0.53;
     public static double SERVO_DEFLECTION_POS_DEFAULT_EXTENDED = 0.39;
-    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG = 0.405;
+    public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG = 0.40;
     public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SLIM = 0.465;
     public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SHOT_CENTER = 0.395;
     public static double SERVO_DEFLECTION_POS_DEFAULT_AUTO_DIAG_SHOT_RIGHT = 0.380;
@@ -59,7 +59,7 @@ public class ExtZoomBotConstants {
     public static int AUTO_INTAKE_TAP_SLEEP_LONG = 400;
     public static int AUTO_INTAKE_TIME = 400;
     public static int AUTO_INTAKE_TIME_REV = 350;
-    public static int AUTO_INTAKE_RUN_AFTER_DRIVE_STOP = 400;
+    public static int AUTO_INTAKE_RUN_AFTER_DRIVE_STOP = 0;
 
 
     public static double AUTO_DEFLECT_1 = 0.18;

@@ -100,6 +100,7 @@ open class TeleOp : OpMode() {
     var intakePivotBaseline = 0
     var reverseIntakeLift = true
     var useLEDs = true
+    var yPressed = false
 
     var servoPosAccumulator = 0.0
 
@@ -149,6 +150,7 @@ open class TeleOp : OpMode() {
 
     override fun loop() {
         // invoke methods for each individual system for streamlined navigation
+        yPressed = watch_gamepad1_buttonY()
         robot.expansionhubs.forEach { it.clearBulkCache() }
         controlDrivetrain()
         controlOtherDevices()
@@ -231,8 +233,8 @@ open class TeleOp : OpMode() {
                 driveMode = NewDriveMode.RobotCentric.apply { orientation = NewDriveMode.RobotCentric.Orientation.FORWARD }
             else if (canControlDrivetrainOrientation && gamepad1.b)
                 driveMode = NewDriveMode.RobotCentric.apply { orientation = NewDriveMode.RobotCentric.Orientation.REVERSE }
-            else if (canControlDrivetrainOrientation && gamepad1.y)
-                driveMode = NewDriveMode.RobotCentric.apply { orientation = NewDriveMode.RobotCentric.Orientation.SIDE_BLUE }
+//            else if (canControlDrivetrainOrientation && gamepad1.y)
+//                driveMode = NewDriveMode.RobotCentric.apply { orientation = NewDriveMode.RobotCentric.Orientation.SIDE_BLUE }
             else if (canControlDrivetrainOrientation && gamepad1.x)
                 driveMode = NewDriveMode.FieldCentric
 
@@ -240,8 +242,15 @@ open class TeleOp : OpMode() {
             // reverse robot orientation using toggle feature in addition to static buttons
             // if y button is pressed, make reverse variable opposite of what it is now
             //   then wait until y is released before letting it change the variable again
-//            if (canControlDrivetrainOrientation && watch_gamepad1_leftStickButton.invoke())
-//                NewDriveMode.RobotCentric.reverse = !NewDriveMode.RobotCentric.reverse
+            if (canControlDrivetrainOrientation && yPressed) {
+                driveMode = NewDriveMode.RobotCentric
+                if ((driveMode as NewDriveMode.RobotCentric).orientation == NewDriveMode.RobotCentric.Orientation.REVERSE) {
+                    (driveMode as NewDriveMode.RobotCentric).orientation = NewDriveMode.RobotCentric.Orientation.FORWARD
+                } else {
+                    (driveMode as NewDriveMode.RobotCentric).orientation = NewDriveMode.RobotCentric.Orientation.REVERSE
+                }
+            }
+
 
             // Change to Power Shot mode if the right stick button is pressed
             if (gamepad1.left_stick_button) driveMode = NewDriveMode.PowerShot
@@ -320,7 +329,7 @@ open class TeleOp : OpMode() {
         } else {
             when {
                 watch_gamepad2_buttonY() -> if (ringShootingAuto) robot.timedShooter.hit(if (gamepad2.start) 3 else 1)
-                watch_gamepad1_buttonY() -> robot.timedShooter.hit()
+                yPressed && gamepad1ExtensionControlsActive -> robot.timedShooter.hit()
                 watch_gamepad2_buttonX() && gamepad2.start -> {
                     ringShootingAuto = !ringShootingAuto
                     robot.timedShooter.resetQueue()
@@ -483,6 +492,10 @@ open class TeleOp : OpMode() {
             }
 
             var orientation: Orientation = Orientation.REVERSE
+
+            var reverse: Boolean
+                get() = orientation == Orientation.REVERSE
+                set(newValue) { if (newValue) orientation = Orientation.REVERSE else Orientation.FORWARD }
 
             override fun toString(): String = "RobotCentric: $orientation"
         }

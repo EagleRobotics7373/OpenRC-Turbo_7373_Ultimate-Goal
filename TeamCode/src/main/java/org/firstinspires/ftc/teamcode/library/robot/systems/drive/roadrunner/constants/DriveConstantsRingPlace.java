@@ -37,7 +37,7 @@ public class DriveConstantsRingPlace {
             new PIDCoefficients(3.5, 0.0, 0.1);
 
     public static PIDCoefficients HEADING_PID =
-            new PIDCoefficients(4, 0.1, 0.05);
+            new PIDCoefficients(4.5, 0.1, 0.25);
 
     public static double rpmToVelocity(double rpm) {
         return rpm * GEAR_RATIO * 2 * Math.PI * WHEEL_RADIUS / 60.0;
