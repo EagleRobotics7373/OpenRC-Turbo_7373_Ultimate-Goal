@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.library.functions.ToggleButtonWatcher
 import org.firstinspires.ftc.teamcode.library.functions.telemetrymenu.kotlin.*
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.legacyconfig.MisumiRobot
 
 @TeleOp
 class SelectableServoTest : OpMode() {
@@ -48,10 +47,10 @@ class SelectableServoTest : OpMode() {
 
     override fun loop() {
             when {
-                dpadUpWatch.call()    -> menu.previousItem()
-                dpadDownWatch.call()  -> menu.nextItem()
-                dpadLeftWatch.call()  -> menu.iterateBackward()
-                dpadRightWatch.call() -> menu.iterateForward()
+                dpadUpWatch.invoke()    -> menu.previousItem()
+                dpadDownWatch.invoke()  -> menu.nextItem()
+                dpadLeftWatch.invoke()  -> menu.iterateBackward()
+                dpadRightWatch.invoke() -> menu.iterateForward()
                 else -> menu.refresh()
             }
         if (enable) {

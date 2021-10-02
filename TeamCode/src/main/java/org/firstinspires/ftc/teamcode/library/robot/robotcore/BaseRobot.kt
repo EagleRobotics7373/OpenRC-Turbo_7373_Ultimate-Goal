@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.library.robot.robotcore
 
 import com.qualcomm.hardware.lynx.LynxModule
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.hardware.*
+import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.Encoder
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.Holonomic
+import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.HolonomicImpl
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.HolonomicRR
-import org.firstinspires.ftc.teamcode.library.robot.systems.drive.roadrunner.TwoWheelOdometryLocalizer
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.FoundationGrabbers
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.AutoBlockIntake
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.CapstonePlacer
-import org.firstinspires.ftc.teamcode.library.robot.systems.wrappedservos.IntakeBlockGrabber
 
 abstract class BaseRobot(protected val hardwareMap: HardwareMap) {
     // Drivetrain Variables
@@ -23,13 +19,14 @@ abstract class BaseRobot(protected val hardwareMap: HardwareMap) {
      @JvmField val expansionhubs        : List<LynxModule>      = hardwareMap.getAll(LynxModule::class.java).apply { forEach {it.bulkCachingMode = LynxModule.BulkCachingMode.AUTO} }
 
     // Robot Systems Variables
-     @JvmField val holonomic            : Holonomic = Holonomic(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
+     @JvmField val holonomic            : Holonomic = HolonomicImpl(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor)
 
      abstract val holonomicRR           : HolonomicRR
 
-     abstract val leftOdometryModule             : OdometryModule?
-     abstract val rightOdometryModule            : OdometryModule?
-     abstract val rearOdometryModule             : OdometryModule?
+     abstract val leftOdometryModule             : Encoder?
+     abstract val rightOdometryModule            : Encoder?
+     abstract val rearOdometryModule             : Encoder?
 
      protected inline fun <reified T> hwInit(name:String): T = hardwareMap.get(T::class.java, name)
+
 }

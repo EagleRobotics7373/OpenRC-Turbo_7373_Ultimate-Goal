@@ -98,6 +98,7 @@ import com.qualcomm.robotcore.util.WebServer;
 import com.qualcomm.robotcore.wifi.NetworkConnection;
 import com.qualcomm.robotcore.wifi.NetworkConnectionFactory;
 import com.qualcomm.robotcore.wifi.NetworkType;
+import com.qualcomm.robotcore.wifi.RobotControllerAccessPointAssistant;
 
 import org.firstinspires.ftc.ftccommon.external.SoundPlayingRobotMonitor;
 import org.firstinspires.ftc.ftccommon.internal.FtcRobotControllerWatchdogService;
@@ -107,13 +108,13 @@ import org.firstinspires.ftc.onbotjava.OnBotJavaProgrammingMode;
 import org.firstinspires.ftc.robotcore.external.navigation.MotionDetection;
 import org.firstinspires.ftc.robotcore.internal.hardware.android.AndroidBoard;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManagerFactory;
+import org.firstinspires.ftc.robotcore.internal.network.InvalidNetworkSettingException;
 import org.firstinspires.ftc.robotcore.internal.network.PreferenceRemoterRC;
 import org.firstinspires.ftc.robotcore.internal.network.StartResult;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectChannelChanger;
 import org.firstinspires.ftc.robotcore.internal.network.WifiMuteEvent;
 import org.firstinspires.ftc.robotcore.internal.network.WifiMuteStateMachine;
 import org.firstinspires.ftc.robotcore.internal.opmode.ClassManager;
-import org.firstinspires.ftc.robotcore.internal.system.AppAliveNotifier;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
@@ -122,6 +123,7 @@ import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotserver.internal.programmingmode.ProgrammingModeManager;
+import org.firstinspires.ftc.teamcode.testopmodes.exceptiontests.ExceptionHandler;
 import org.firstinspires.inspection.RcInspectionActivity;
 
 import java.util.List;
@@ -260,6 +262,7 @@ public class FtcRobotControllerActivity extends Activity
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+
     super.onCreate(savedInstanceState);
 
     if (enforcePermissionValidator()) {
@@ -385,8 +388,27 @@ public class FtcRobotControllerActivity extends Activity
 
     FtcAboutActivity.setBuildTimeFromBuildConfig(BuildConfig.BUILD_TIME);
 
-    // check to see if there is a preferred Wi-Fi to use.
-    checkPreferredChannel();
+    // Implementation of custom code to restart robot controller app post-crash
+    Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+    if (getIntent().getBooleanExtra("crash", false)) {
+      System.out.println("\n\n\n\n\n\n\n\n\nApp restarted after crash (EPIC WIN)\n\n\n\n\n\n\n\n\n");
+      AppUtil.getInstance().showToast(UILocation.BOTH, "App restarted after crash (EPIC WIN)");
+    }
+
+    // Set Wi-Fi network settings
+//    boolean didUpdateWiFiSettings = NetworkUtil.INSTANCE.loadNetworkSettingsFromFile();
+//    AppUtil.getInstance().showToast(UILocation.BOTH, (didUpdateWiFiSettings ? "Loaded" : "Could not load") + " network settings from file.");
+//    try {
+//      RobotControllerAccessPointAssistant
+//              .getRobotControllerAccessPointAssistant(AppUtil.getDefContext())
+//              .setNetworkSettings(
+//                      "7373-C-RC",
+//                      "eaglerobotics_7373",
+//                      null
+//              );
+//    } catch (InvalidNetworkSettingException e) {
+//      e.printStackTrace();
+//    }
   }
 
   protected UpdateUI createUpdateUI() {
@@ -407,6 +429,17 @@ public class FtcRobotControllerActivity extends Activity
   protected void onStart() {
     super.onStart();
     RobotLog.vv(TAG, "onStart()");
+
+    // If we're start()ing after a stop(), then shut the old robot down so
+    // we can refresh it with new state (e.g., with new hw configurations)
+    shutdownRobot();
+
+    updateUIAndRequestRobotSetup();
+
+    cfgFileMgr.getActiveConfigAndUpdateUI();
+
+    // check to see if there is a preferred Wi-Fi to use.
+    checkPreferredChannel();
 
     entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -602,9 +635,6 @@ public class FtcRobotControllerActivity extends Activity
         }
       }
 
-      // Allow the user to use the Control Hub operating system's UI, instead of relaunching the app
-      AppAliveNotifier.getInstance().disableAppWatchdogUntilNextAppStart();
-
       //Finally, nuke the VM from orbit
       AppUtil.getInstance().exitApplication();
 
@@ -655,9 +685,7 @@ public class FtcRobotControllerActivity extends Activity
     // was some historical confusion about launch codes here, so we err safely
     if (request == RequestCode.CONFIGURE_ROBOT_CONTROLLER.ordinal() || request == RequestCode.SETTINGS_ROBOT_CONTROLLER.ordinal()) {
       // We always do a refresh, whether it was a cancel or an OK, for robustness
-      shutdownRobot();
       cfgFileMgr.getActiveConfigAndUpdateUI();
-      updateUIAndRequestRobotSetup();
     }
   }
 
@@ -679,7 +707,7 @@ public class FtcRobotControllerActivity extends Activity
         return service.getRobot().eventLoopManager;
       }
     });
-//    FtcDashboard.attachWebServer(service.getWebServer());
+    FtcDashboard.attachWebServer(service.getWebServer());
   }
 
   private void updateUIAndRequestRobotSetup() {

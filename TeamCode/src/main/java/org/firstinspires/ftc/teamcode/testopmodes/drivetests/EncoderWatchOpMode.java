@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.library.functions.FunctionalExtensionsKt;
+import org.firstinspires.ftc.teamcode.library.functions.roadrunnersupport.Encoder;
 import org.firstinspires.ftc.teamcode.library.robot.robotcore.BaseRobot;
-import org.firstinspires.ftc.teamcode.library.robot.robotcore.legacyconfig.MisumiRobot;
 import org.firstinspires.ftc.teamcode.library.robot.systems.drive.legacy.OdometryModule;
 
 import static org.firstinspires.ftc.teamcode.library.robot.robotcore.RobotProvider.providePresetRobot;
@@ -41,13 +41,21 @@ public class EncoderWatchOpMode extends OpMode {
 
         telem.update();
 
+        robot.holonomic.runWithoutEncoderVectored(
+                gamepad1.left_stick_x,
+                -gamepad1.left_stick_y,
+                gamepad1.right_stick_x,
+                0.0
+        );
+
     }
 
-    private void addOdometryData(OdometryModule module, String name) {
+    private void addOdometryData(Encoder module, String name) {
         if (module != null) {
-            telem.addData("odo" + name + " cp raw", module.getDistanceRaw());
-            telem.addData("oxo" + name + " cp cm", module.getDistanceNormalized(DistanceUnit.CM));
-            telem.addData("oxo" + name + " cp in", module.getDistanceNormalized(DistanceUnit.INCH));
+            int pos = module.getCurrentPosition();
+            telem.addData("odo" + name + " cp raw", pos);
+            telem.addData("oxo" + name + " cp cm", module.normalizePosition(pos, DistanceUnit.CM));
+            telem.addData("oxo" + name + " cp in", module.normalizePosition(pos, DistanceUnit.INCH));
         }
     }
 

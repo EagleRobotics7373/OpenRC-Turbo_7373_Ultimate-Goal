@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.testopmodes.roadrunnertests;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -27,9 +28,8 @@ public class SplineTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .setReversed(reverse)
-                        .splineTo(new Pose2d(distX, distY, 0))
+                drive.trajectoryBuilder(reverse?Math.PI:0)
+                        .splineTo(new Vector2d(distX, distY), 0.0)
                         .build()
         );
 
